@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IPL Fantasy Selector</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #f5a623;
+    --accent2: #e8365d;
+    --green: #22c55e;
+    --text: #e8eaf0;
+    --muted: #7a8ba0;
+    --card-glow: 0 0 30px rgba(245,166,35,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245,166,35,0.07) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px);
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    position: relative;
+  }
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .cricket-icon { font-size: 2rem; }
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #f5a623, #e8365d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .divider {
+    width: 80px; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    margin: 16px auto;
+    border-radius: 2px;
+  }
+
+  /* USER GREETING */
+  #user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 6px 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  #user-badge .dot { width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green); }
+
+  /* MAIN LAYOUT */
+  .container { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* STEP CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--card-glow);
+    transition: border-color 0.2s;
+  }
+  .card.active { border-color: rgba(245,166,35,0.4); }
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-num {
+    width: 22px; height: 22px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #000;
+    flex-shrink: 0;
+  }
+
+  /* MATCH SELECT */
+  .match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .match-option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .match-option:hover { border-color: rgba(245,166,35,0.5); background: #1f2d42; }
+  .match-option.selected {
+    border-color: var(--accent);
+    background: rgba(245,166,35,0.08);
+    box-shadow: 0 0 16px rgba(245,166,35,0.15);
+  }
+  .match-option.past { opacity: 0.4; cursor: not-allowed; }
+  .match-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .match-meta { font-size: 0.75rem; color: var(--muted); }
+  .match-status {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 0.6rem; letter-spacing: 1px;
+    padding: 2px 6px; border-radius: 4px;
+    text-transform: uppercase;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .match-status.pending { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .match-status.complete { background: rgba(122,139,160,0.15); color: var(--muted); border: 1px solid rgba(122,139,160,0.3); }
+
+  /* TEAM BADGES */
+  .team-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .team-col-header {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .team-col-header.t1 { background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.3); color: var(--accent); }
+  .team-col-header.t2 { background: rgba(232,54,93,0.1); border: 1px solid rgba(232,54,93,0.3); color: var(--accent2); }
+  .team-count {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    margin-top: 2px;
+    font-weight: 400;
+  }
+
+  /* PLAYER SLOTS */
+  .players-section { margin-top: 10px; }
+  .slot-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .slot-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-align: center;
+    font-weight: 600;
+  }
+  select, .styled-select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 10px 14px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.9rem;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8ba0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+  select option { background: #1a2235; }
+  .slot-team-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    min-width: 48px;
+    text-align: center;
+  }
+  .slot-team-badge.t1 { background: rgba(245,166,35,0.15); color: var(--accent); border: 1px solid rgba(245,166,35,0.3); }
+  .slot-team-badge.t2 { background: rgba(232,54,93,0.15); color: var(--accent2); border: 1px solid rgba(232,54,93,0.3); }
+  .slot-team-badge.empty { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+  /* VALIDATION BAR */
+  .validation-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    padding: 14px;
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .vcheck {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .vcheck.ok { color: var(--green); }
+  .vcheck.fail { color: var(--accent2); }
+  .vcheck-icon { font-size: 1rem; }
+
+  /* WINNING TEAM */
+  .win-team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .win-team-option {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    color: var(--muted);
+  }
+  .win-team-option:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .win-team-option.selected-t1 { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.08); box-shadow: 0 0 16px rgba(245,166,35,0.15); }
+  .win-team-option.selected-t2 { border-color: var(--accent2); color: var(--accent2); background: rgba(232,54,93,0.08); box-shadow: 0 0 16px rgba(232,54,93,0.15); }
+  .win-team-option.disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* SUBMIT */
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f5a623, #e8365d);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .submit-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(245,166,35,0.3); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .submit-btn:active:not(:disabled) { transform: translateY(0); }
+
+  /* SUCCESS STATE */
+  #success-panel {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .success-icon { font-size: 4rem; margin-bottom: 16px; animation: pop 0.4s ease; }
+  @keyframes pop { 0%{transform:scale(0)} 80%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  #success-panel h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  #success-panel p { color: var(--muted); margin-bottom: 24px; }
+  .summary-table {
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 16px;
+    text-align: left;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    max-width: 500px;
+    margin: 0 auto 24px;
+  }
+  .summary-table strong { color: var(--accent); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; }
+  .another-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .another-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* HIDDEN */
+  .hidden { display: none !important; }
+
+  /* ALERTS */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .alert-warn { background: rgba(232,54,93,0.1); border: 1px solid rgba(232,54,93,0.3); color: #f87171; }
+  .alert-info { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.25); color: var(--accent); }
+
+  /* SECTION FADE */
+  .fade-in { animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* SCROLLABLE MATCH AREA */
+  .match-scroll { max-height: 320px; overflow-y: auto; padding-right: 4px; }
+  .match-scroll::-webkit-scrollbar { width: 4px; }
+  .match-scroll::-webkit-scrollbar-track { background: transparent; }
+  .match-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div id="user-badge" class="hidden"><span class="dot"></span><span id="user-name-display"></span></div>
+  <div class="logo-mark"><span class="cricket-icon">🏏</span></div>
+  <h1>IPL Fantasy</h1>
+  <p class="subtitle">Select Your Dream XI</p>
+  <div class="divider"></div>
+</header>
+
+<div class="container">
+
+  <!-- UNKNOWN USER -->
+  <div id="unknown-user-panel" class="card" style="text-align:center;padding:40px 20px;">
+    <div style="font-size:2.5rem;margin-bottom:12px;">🔒</div>
+    <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;letter-spacing:2px;margin-bottom:8px;">Access Required</h2>
+    <p style="color:var(--muted);margin-bottom:20px;">This form is accessed via a personal link. Please use the link provided to you.</p>
+    <p style="font-size:0.8rem;color:var(--muted);">Contact your league admin to get your personal link.</p>
+  </div>
+
+  <!-- MAIN FORM -->
+  <div id="main-form" class="hidden">
+
+    <!-- STEP 1: MATCH -->
+    <div class="card active" id="step1">
+      <div class="card-title"><span class="step-num">1</span> Select Today's Match</div>
+      <div class="match-scroll">
+        <div class="match-grid" id="match-grid"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2: PLAYERS -->
+    <div class="card hidden fade-in" id="step2">
+      <div class="card-title"><span class="step-num">2</span> Pick Your 11 Players</div>
+
+      <div class="team-split" id="team-headers"></div>
+
+      <div class="alert alert-info" style="margin-bottom:14px;">
+        🛡️ Pick at least <strong>4 players</strong> from one team. No duplicate players allowed.
+      </div>
+
+      <div class="players-section" id="player-slots"></div>
+
+      <div class="validation-bar" id="validation-bar">
+        <div class="vcheck" id="v-count"><span class="vcheck-icon">⬜</span> 11 players selected</div>
+        <div class="vcheck" id="v-min4"><span class="vcheck-icon">⬜</span> Min 4 from one team</div>
+        <div class="vcheck" id="v-nodupe"><span class="vcheck-icon">⬜</span> No duplicates</div>
+      </div>
+    </div>
+
+    <!-- STEP 3: WINNING TEAM -->
+    <div class="card hidden fade-in" id="step3">
+      <div class="card-title"><span class="step-num">3</span> Predict the Winner</div>
+      <div class="win-team-grid" id="win-team-grid"></div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div id="submit-section" class="hidden fade-in">
+      <div id="form-alert"></div>
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()">⚡ Submit My Fantasy XI</button>
+    </div>
+
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="success-panel">
+    <div class="success-icon">🏆</div>
+    <h2>Team Locked In!</h2>
+    <p>Your Fantasy XI has been submitted successfully.</p>
+    <div class="summary-table" id="summary-content"></div>
+    <button class="another-btn" onclick="resetForAnother()">Submit for Another Match</button>
+  </div>
+
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const SQUADS = {
+  RCB: ["Virat Kohli","Rajat Patidar","Phil Salt","Liam Livingstone","Glenn Maxwell","Tim David","Jitesh Sharma","Krunal Pandya","Swapnil Singh","Suyash Sharma","Yash Dayal","Bhuvneshwar Kumar","Josh Hazlewood","Lockie Ferguson","Mohammed Siraj","Nwelwetsi Rabada","Cameron Green","Romario Shepherd","Jacob Bethell","Rasikh Dar","Abhinandan Singh","Devdutt Padikkal","Manoj Bhandage","Lungi Ngidi"],
+  MI:  ["Rohit Sharma","Suryakumar Yadav","Tilak Varma","Hardik Pandya","Naman Dhir","Ryan Rickelton","Will Jacks","Mitchell Santner","Jasprit Bumrah","Trent Boult","Deepak Chahar","Karn Sharma","Raj Angad Bawa","Mujeeb Ur Rahman","Bevon Jacobs","Arjun Tendulkar","Reece Topley","Krishnan Shrijith","Robin Minz","Vignesh Puthur","Ashwani Kumar","Satyanarayana Raju","Lizaad Williams"],
+  CSK: ["MS Dhoni","Ruturaj Gaikwad","Devon Conway","Shivam Dube","Ravindra Jadeja","Sam Curran","Matheesha Pathirana","Deepak Chahar","Tushar Deshpande","Rachin Ravindra","Shardul Thakur","Mukesh Choudhary","Noor Ahmad","Ajinkya Rahane","Ravichandran Ashwin","Anshul Kamboj","Khaleel Ahmed","Jamie Overton","Kamlesh Nagarkoti","RS Hangargekar","Vijay Shankar","Urvil Patel","Shaik Rasheed","Nathan Ellis"],
+  KKR: ["Ajinkya Rahane","Quinton de Kock","Rahmanullah Gurbaz","Angkrish Raghuvanshi","Rinku Singh","Manish Pandey","Rovman Powell","Ramandeep Singh","Andre Russell","Moeen Ali","Sunil Narine","Venkatesh Iyer","Anukul Roy","Vaibhav Arora","Harshit Rana","Anrich Nortje","Spencer Johnson","Mayank Markande","Chetan Sakariya","Luvnith Sisodia","Shivam Shukla"],
+  DC:  ["Axar Patel","Harry Brook","Faf du Plessis","KL Rahul","Jake Fraser-McGurk","Triston Stubbs","Abishek Porel","Ashutosh Sharma","Karun Nair","Sameer Rizvi","Kuldeep Yadav","Mitchell Starc","Mukesh Kumar","Ishant Sharma","T Natarajan","Mohit Sharma","Darshan Nalkande","Vipraj Nigam","Donovan Ferreira","Tripurana Vijay"],
+  SRH: ["Pat Cummins","Travis Head","Heinrich Klaasen","Ishan Kishan","Abhishek Sharma","Nitish Kumar Reddy","Harshal Patel","Adam Zampa","Raz Janat","Jaydev Unadkat","Brydon Carse","Wiaan Mulder","Rahul Tripathi","Akeal Hosein","Simarjeet Singh","Sachin Baby","Zeeshan Ansari","Atharva Taide","Anmolpreet Singh","Aiden Markram"],
+  RR:  ["Sanju Samson","Jos Buttler","Yashasvi Jaiswal","Riyan Parag","Shimron Hetmyer","Dhruv Jurel","Ravichandran Ashwin","Trent Boult","Sandeep Sharma","Yuzvendra Chahal","Kumar Kartikeya","Kuldeep Sen","Avesh Khan","Shubham Dubey","Vaibhav Suryavanshi","Maheesh Theekshana","Wanindu Hasaranga","Nitish Rana","Tushar Deshpande","FA Allen","Akash Madhwal"],
+  GT:  ["Shubman Gill","Jos Buttler","Sai Sudharsan","Rahul Tewatia","Shahrukh Khan","Rashid Khan","Kagiso Rabada","Mohammed Siraj","Washington Sundar","Nishant Sindhu","Prasidh Krishna","Kumar Kushagra","Gurnoor Brar","Arshad Khan","Kulwant Khejroliya","Gerald Coetzee","Karim Janat","Sai Kishore","Anuj Rawat","Manav Suthar","Mahipal Lomror","Sherfane Rutherford","Jayant Yadav","Ishant Sharma","Dasun Shanaka"],
+  LSG: ["Rishabh Pant","Mitchell Marsh","Aiden Markram","Nicholas Pooran","David Miller","Ravi Bishnoi","Avesh Khan","Akash Deep","Shamar Joseph","Mayank Yadav","Shahbaz Ahmed","Abdul Samad","Matthew Breetzke","Yuvraj Chaudhary","Mohsin Khan","Digvesh Singh","Akash Singh","Arshin Kulkarni","Prince Yadav","Aryan Juyal","Himmat Singh","Manimaran Siddharth","Rajvardhan Hangargekar","Ayush Badoni"],
+  PBKS:["Shreyas Iyer","Priyansh Arya","Prabhsimran Singh","Shashank Singh","Marcus Stoinis","Glenn Maxwell","Sam Curran","Arshdeep Singh","Yuzvendra Chahal","Harshal Patel","Lockie Ferguson","Xavier Bartlett","Nehal Wadhera","Harpreet Brar","Suryansh Shedge","Vishnu Vinod","Azmatullah Omarzai","Kuldeep Sen","Vijaykumar Vyshak","Pyla Avinash","Aaron Hardie","Musheer Khan","Yash Thakur"]
+};
+
+const MATCHES = [
+  {id:"TestMatch1",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-03-07",time:"16:30",status:"Complete"},
+  {id:"TestMatch2",name:"CSK vs MI",team1:"CSK",team2:"MI",date:"2026-03-07",time:"17:30",status:"Pending"},
+  {id:"TestMatch3",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-03-08",time:"06:00",status:"Pending"},
+  {id:"Match1",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-03-31",time:"19:30",status:"Pending"},
+  {id:"Match2",name:"CSK vs MI",team1:"CSK",team2:"MI",date:"2026-04-01",time:"19:30",status:"Pending"},
+  {id:"Match3",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-04-02",time:"19:30",status:"Pending"},
+  {id:"Match4",name:"DC vs SRH",team1:"DC",team2:"SRH",date:"2026-04-03",time:"19:30",status:"Pending"},
+  {id:"Match5",name:"GT vs LSG",team1:"GT",team2:"LSG",date:"2026-04-04",time:"19:30",status:"Pending"},
+  {id:"Match6",name:"MI vs RCB",team1:"MI",team2:"RCB",date:"2026-04-05",time:"15:30",status:"Pending"},
+  {id:"Match7",name:"PBKS vs DC",team1:"PBKS",team2:"DC",date:"2026-04-05",time:"19:30",status:"Pending"},
+  {id:"Match8",name:"KKR vs CSK",team1:"KKR",team2:"CSK",date:"2026-04-06",time:"19:30",status:"Pending"},
+  {id:"Match9",name:"SRH vs GT",team1:"SRH",team2:"GT",date:"2026-04-07",time:"19:30",status:"Pending"},
+  {id:"Match10",name:"LSG vs RR",team1:"LSG",team2:"RR",date:"2026-04-08",time:"19:30",status:"Pending"},
+  {id:"Match11",name:"PBKS vs MI",team1:"PBKS",team2:"MI",date:"2026-04-09",time:"19:30",status:"Pending"},
+  {id:"Match12",name:"DC vs CSK",team1:"DC",team2:"CSK",date:"2026-04-10",time:"19:30",status:"Pending"},
+  {id:"Match13",name:"KKR vs SRH",team1:"KKR",team2:"SRH",date:"2026-04-11",time:"15:30",status:"Pending"},
+  {id:"Match14",name:"GT vs RCB",team1:"GT",team2:"RCB",date:"2026-04-11",time:"19:30",status:"Pending"},
+  {id:"Match15",name:"RR vs PBKS",team1:"RR",team2:"PBKS",date:"2026-04-12",time:"15:30",status:"Pending"},
+  {id:"Match16",name:"MI vs LSG",team1:"MI",team2:"LSG",date:"2026-04-12",time:"19:30",status:"Pending"},
+  {id:"Match17",name:"SRH vs DC",team1:"SRH",team2:"DC",date:"2026-04-13",time:"19:30",status:"Pending"},
+  {id:"Match18",name:"RCB vs KKR",team1:"RCB",team2:"KKR",date:"2026-04-14",time:"19:30",status:"Pending"},
+  {id:"Match19",name:"CSK vs RR",team1:"CSK",team2:"RR",date:"2026-04-15",time:"19:30",status:"Pending"},
+  {id:"Match20",name:"PBKS vs GT",team1:"PBKS",team2:"GT",date:"2026-04-16",time:"19:30",status:"Pending"},
+  {id:"Match21",name:"LSG vs SRH",team1:"LSG",team2:"SRH",date:"2026-04-17",time:"19:30",status:"Pending"},
+  {id:"Match22",name:"MI vs DC",team1:"MI",team2:"DC",date:"2026-04-18",time:"15:30",status:"Pending"},
+  {id:"Match23",name:"RCB vs CSK",team1:"RCB",team2:"CSK",date:"2026-04-18",time:"19:30",status:"Pending"},
+  {id:"Match24",name:"GT vs RR",team1:"GT",team2:"RR",date:"2026-04-19",time:"15:30",status:"Pending"},
+  {id:"Match25",name:"KKR vs PBKS",team1:"KKR",team2:"PBKS",date:"2026-04-19",time:"19:30",status:"Pending"},
+  {id:"Match26",name:"DC vs LSG",team1:"DC",team2:"LSG",date:"2026-04-20",time:"19:30",status:"Pending"},
+  {id:"Match27",name:"CSK vs SRH",team1:"CSK",team2:"SRH",date:"2026-04-21",time:"19:30",status:"Pending"},
+  {id:"Match28",name:"RR vs MI",team1:"RR",team2:"MI",date:"2026-04-22",time:"19:30",status:"Pending"},
+  {id:"Match29",name:"PBKS vs RCB",team1:"PBKS",team2:"RCB",date:"2026-04-23",time:"19:30",status:"Pending"},
+  {id:"Match30",name:"KKR vs GT",team1:"KKR",team2:"GT",date:"2026-04-24",time:"19:30",status:"Pending"},
+];
+
+// ─── URL PARAMS / USER ───────────────────────────────────────────────────────
+
+const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get('user');
+const userName = urlParams.get('name') ? decodeURIComponent(urlParams.get('name')) : null;
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+
+let selectedMatch = null;
+let selectedWinner = null;
+let currentUser = null;
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+
+function init() {
+  if (!userId || !userName) {
+    document.getElementById('unknown-user-panel').classList.remove('hidden');
+    return;
+  }
+  currentUser = { id: userId, name: userName };
+  document.getElementById('unknown-user-panel').classList.add('hidden');
+  document.getElementById('main-form').classList.remove('hidden');
+  document.getElementById('user-badge').classList.remove('hidden');
+  document.getElementById('user-name-display').textContent = '👤 ' + userName;
+  renderMatches();
+}
+
+// ─── RENDER MATCHES ──────────────────────────────────────────────────────────
+
+function renderMatches() {
+  const grid = document.getElementById('match-grid');
+  grid.innerHTML = '';
+  MATCHES.forEach(m => {
+    const isPast = m.status === 'Complete';
+    const d = new Date(m.date);
+    const dateStr = d.toLocaleDateString('en-IN', {day:'numeric',month:'short'});
+    const div = document.createElement('div');
+    div.className = 'match-option' + (isPast ? ' past' : '');
+    div.innerHTML = `
+      <div class="match-status ${isPast?'complete':'pending'}">${isPast?'Done':'Open'}</div>
+      <div class="match-name">${m.name}</div>
+      <div class="match-meta">${dateStr} · ${m.time} IST</div>
+    `;
+    if (!isPast) div.onclick = () => selectMatch(m, div);
+    grid.appendChild(div);
+  });
+}
+
+function selectMatch(match, el) {
+  document.querySelectorAll('.match-option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMatch = match;
+  renderPlayerSlots(match);
+  document.getElementById('step2').classList.remove('hidden');
+  document.getElementById('step2').classList.add('fade-in');
+  document.getElementById('step3').classList.add('hidden');
+  document.getElementById('submit-section').classList.add('hidden');
+  selectedWinner = null;
+  document.getElementById('step2').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ─── RENDER PLAYER SLOTS ─────────────────────────────────────────────────────
+
+function renderPlayerSlots(match) {
+  const t1 = match.team1, t2 = match.team2;
+  const players1 = SQUADS[t1] || [];
+  const players2 = SQUADS[t2] || [];
+
+  // Team headers
+  document.getElementById('team-headers').innerHTML = `
+    <div class="team-col-header t1">${t1}<span class="team-count">${players1.length} players</span></div>
+    <div class="team-col-header t2">${t2}<span class="team-count">${players2.length} players</span></div>
+  `;
+
+  const slots = document.getElementById('player-slots');
+  slots.innerHTML = '';
+  for (let i = 1; i <= 11; i++) {
+    const row = document.createElement('div');
+    row.className = 'slot-row';
+    row.innerHTML = `
+      <div class="slot-num">#${i}</div>
+      <select id="slot-${i}" onchange="onSlotChange()">
+        <option value="">— Select Player —</option>
+        <optgroup label="🟡 ${t1}">
+          ${players1.map(p=>`<option value="${p}|${t1}">${p}</option>`).join('')}
+        </optgroup>
+        <optgroup label="🔴 ${t2}">
+          ${players2.map(p=>`<option value="${p}|${t2}">${p}</option>`).join('')}
+        </optgroup>
+      </select>
+      <span class="slot-team-badge empty" id="badge-${i}">—</span>
+    `;
+    slots.appendChild(row);
+  }
+  updateValidation();
+}
+
+// ─── SLOT CHANGE ─────────────────────────────────────────────────────────────
+
+function onSlotChange() {
+  const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
+  const selections = getSelections();
+
+  // Find duplicates
+  const seen = {}, dupes = new Set();
+  selections.forEach(s => {
+    if (s.player) {
+      if (seen[s.player]) dupes.add(s.player);
+      seen[s.player] = true;
+    }
+  });
+
+  // Update badges & highlight dupes
+  for (let i = 1; i <= 11; i++) {
+    const sel = document.getElementById('slot-' + i);
+    const badge = document.getElementById('badge-' + i);
+    const val = sel.value;
+    if (!val) {
+      badge.textContent = '—';
+      badge.className = 'slot-team-badge empty';
+      sel.style.borderColor = '';
+    } else {
+      const [player, team] = val.split('|');
+      const isT1 = team === t1;
+      badge.textContent = team;
+      badge.className = 'slot-team-badge ' + (isT1 ? 't1' : 't2');
+      sel.style.borderColor = dupes.has(player) ? 'var(--accent2)' : '';
+    }
+  }
+
+  updateValidation();
+}
+
+function getSelections() {
+  const result = [];
+  for (let i = 1; i <= 11; i++) {
+    const val = document.getElementById('slot-' + i).value;
+    if (val) {
+      const [player, team] = val.split('|');
+      result.push({ slot: i, player, team });
+    } else {
+      result.push({ slot: i, player: null, team: null });
+    }
+  }
+  return result;
+}
+
+// ─── VALIDATION ──────────────────────────────────────────────────────────────
+
+function updateValidation() {
+  const selections = getSelections();
+  const filled = selections.filter(s => s.player);
+
+  // Check 11 selected
+  const allFilled = filled.length === 11;
+
+  // Check no dupes
+  const players = filled.map(s => s.player);
+  const noDupes = new Set(players).size === players.length;
+
+  // Check min 4 from one team
+  const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
+  const t1count = filled.filter(s => s.team === t1).length;
+  const t2count = filled.filter(s => s.team === t2).length;
+  const min4 = t1count >= 4 || t2count >= 4;
+
+  setCheck('v-count', allFilled, '11 players selected');
+  setCheck('v-nodupe', noDupes && filled.length > 0, 'No duplicates');
+  setCheck('v-min4', min4 && filled.length > 0, 'Min 4 from one team');
+
+  // Show winner step
+  if (allFilled && noDupes && min4) {
+    renderWinnerStep();
+    document.getElementById('step3').classList.remove('hidden');
+    document.getElementById('step3').classList.add('fade-in');
+  } else {
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('submit-section').classList.add('hidden');
+    selectedWinner = null;
+  }
+}
+
+function setCheck(id, ok, label) {
+  const el = document.getElementById(id);
+  el.className = 'vcheck ' + (ok ? 'ok' : '');
+  el.innerHTML = `<span class="vcheck-icon">${ok ? '✅' : '⬜'}</span> ${label}`;
+}
+
+// ─── WINNER STEP ─────────────────────────────────────────────────────────────
+
+function renderWinnerStep() {
+  const { team1, team2 } = selectedMatch;
+  document.getElementById('win-team-grid').innerHTML = `
+    <div class="win-team-option" id="win-${team1}" onclick="selectWinner('${team1}')">${team1}</div>
+    <div class="win-team-option" id="win-${team2}" onclick="selectWinner('${team2}')">${team2}</div>
+  `;
+}
+
+function selectWinner(team) {
+  selectedWinner = team;
+  const { team1, team2 } = selectedMatch;
+  document.getElementById('win-' + team1).className = 'win-team-option' + (team === team1 ? ' selected-t1' : '');
+  document.getElementById('win-' + team2).className = 'win-team-option' + (team === team2 ? ' selected-t2' : '');
+  document.getElementById('submit-section').classList.remove('hidden');
+  document.getElementById('submit-section').classList.add('fade-in');
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('submit-section').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ─── SUBMIT ──────────────────────────────────────────────────────────────────
+
+function submitForm() {
+  const selections = getSelections();
+  const players = selections.map(s => s.player);
+  const alertEl = document.getElementById('form-alert');
+  alertEl.innerHTML = '';
+
+  if (!selectedMatch || !selectedWinner || players.some(p => !p)) {
+    alertEl.innerHTML = '<div class="alert alert-warn">⚠️ Please complete all selections before submitting.</div>';
+    return;
+  }
+
+  // Build submission object
+  const submission = {
+    user_id: currentUser.id,
+    user_name: currentUser.name,
+    match_id: selectedMatch.id,
+    match: selectedMatch.name,
+    players: players,
+    selected_team: selectedWinner,
+    submitted_at: new Date().toISOString()
+  };
+
+  console.log('SUBMISSION:', JSON.stringify(submission, null, 2));
+
+  // Show success
+  const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
+  const t1players = selections.filter(s=>s.team===t1).map(s=>s.player);
+  const t2players = selections.filter(s=>s.team===t2).map(s=>s.player);
+
+  document.getElementById('summary-content').innerHTML = `
+    <strong>USER</strong><br>${currentUser.name}<br><br>
+    <strong>MATCH</strong><br>${selectedMatch.name} · ${selectedMatch.date}<br><br>
+    <strong>${t1} (${t1players.length})</strong><br>${t1players.join(', ')}<br><br>
+    <strong>${t2} (${t2players.length})</strong><br>${t2players.join(', ')}<br><br>
+    <strong>PREDICTED WINNER</strong><br>${selectedWinner}
+  `;
+
+  document.getElementById('main-form').classList.add('hidden');
+  document.getElementById('success-panel').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetForAnother() {
+  selectedMatch = null;
+  selectedWinner = null;
+  document.getElementById('success-panel').style.display = 'none';
+  document.getElementById('main-form').classList.remove('hidden');
+  document.getElementById('step2').classList.add('hidden');
+  document.getElementById('step3').classList.add('hidden');
+  document.getElementById('submit-section').classList.add('hidden');
+  document.querySelectorAll('.match-option').forEach(e=>e.classList.remove('selected'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ─── START ───────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
