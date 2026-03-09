@@ -418,14 +418,14 @@
       <div class="team-split" id="team-headers"></div>
 
       <div class="alert alert-info" style="margin-bottom:14px;">
-        🛡️ Pick at least <strong>4 players</strong> from one team. No duplicate players allowed.
+        🛡️ Pick at least <strong>4 players</strong> from <strong>each</strong> team (max 7 from one team). No duplicate players allowed.
       </div>
 
       <div class="players-section" id="player-slots"></div>
 
       <div class="validation-bar" id="validation-bar">
         <div class="vcheck" id="v-count"><span class="vcheck-icon">⬜</span> 11 players selected</div>
-        <div class="vcheck" id="v-min4"><span class="vcheck-icon">⬜</span> Min 4 from one team</div>
+        <div class="vcheck" id="v-min4"><span class="vcheck-icon">⬜</span> Min 4 from each team</div>
         <div class="vcheck" id="v-nodupe"><span class="vcheck-icon">⬜</span> No duplicates</div>
       </div>
     </div>
@@ -667,15 +667,15 @@ function updateValidation() {
   const players = filled.map(s => s.player);
   const noDupes = new Set(players).size === players.length;
 
-  // Check min 4 from one team
+  // Check min 4 from EACH team (max 7 from either)
   const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
   const t1count = filled.filter(s => s.team === t1).length;
   const t2count = filled.filter(s => s.team === t2).length;
-  const min4 = t1count >= 4 || t2count >= 4;
+  const min4 = t1count >= 4 && t2count >= 4;
 
   setCheck('v-count', allFilled, '11 players selected');
   setCheck('v-nodupe', noDupes && filled.length > 0, 'No duplicates');
-  setCheck('v-min4', min4 && filled.length > 0, 'Min 4 from one team');
+  setCheck('v-min4', min4 && filled.length > 0, `Min 4 from each team (${t1}: ${t1count}, ${t2}: ${t2count})`);
 
   // Show winner step
   if (allFilled && noDupes && min4) {
@@ -740,7 +740,38 @@ function submitForm() {
     submitted_at: new Date().toISOString()
   };
 
-  console.log('SUBMISSION:', JSON.stringify(submission, null, 2));
+// Map each user ID to their own Google Sheet's Web App URL
+const USER_SHEET_URLS = {
+  'u01': 'https://script.google.com/macros/s/AKfycbw_WcMdH_ml1pI24WTJP93b_nx8eRbKHy0MD3oW5QfifmLG5GDD5E0RXSr39TKDYMYC/exec',
+  'u02': 'https://script.google.com/macros/s/USER2_SCRIPT_ID/exec',
+  'u03': 'https://script.google.com/macros/s/USER3_SCRIPT_ID/exec',
+  // add one line per user...
+};
+
+const WEB_APP_URL = USER_SHEET_URLS[currentUser.id];
+if (!WEB_APP_URL) {
+  alert('No sheet configured for this user. Contact your admin.');
+  return;
+}
+
+document.getElementById('submit-btn').disabled = true;
+document.getElementById('submit-btn').textContent = 'Submitting...';
+
+fetch(WEB_APP_URL, {
+  method: 'POST',
+  mode: 'no-cors',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(submission)
+})
+.then(() => {
+  // Show success panel (already in the code below)
+})
+.catch(err => {
+  alert('Submission failed. Please try again.');
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('submit-btn').textContent = '⚡ Submit My Fantasy XI';
+});
+
 
   // Show success
   const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
