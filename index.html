@@ -538,6 +538,14 @@
   .match-scroll::-webkit-scrollbar { width: 4px; }
   .match-scroll::-webkit-scrollbar-track { background: transparent; }
   .match-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-8px); }
+    40%      { transform: translateX(8px); }
+    60%      { transform: translateX(-5px); }
+    80%      { transform: translateX(5px); }
+  }
+  .shake { animation: shake 0.45s ease; }
 </style>
 </head>
 <body>
@@ -552,18 +560,46 @@
 
 <div class="container">
 
-  <!-- UNKNOWN USER -->
-  <div id="unknown-user-panel" class="card" style="text-align:center;padding:40px 20px;">
-    <div style="font-size:2.5rem;margin-bottom:12px;">🔒</div>
-    <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;letter-spacing:2px;margin-bottom:8px;">Access Required</h2>
-    <p style="color:var(--muted);margin-bottom:20px;">This form is accessed via a personal link. Please use the link provided to you.</p>
-    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px;">Contact your league admin to get your personal link.</p>
-    <!-- Debug info — helps diagnose URL param issues -->
-    <div id="debug-info" style="margin-top:16px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:0.75rem;font-family:monospace;color:#7a8ba0;text-align:left;"></div>
-    <p style="font-size:0.72rem;color:var(--muted);margin-top:12px;">
-      Your link should look like:<br>
-      <span style="color:var(--accent);word-break:break-all;" id="example-link"></span>
-    </p>
+  <!-- LOGIN PANEL -->
+  <div id="login-panel" class="hidden">
+    <div class="card" id="login-card" style="max-width:400px;margin:0 auto;padding:36px 28px;text-align:center;">
+      <div style="font-size:2.2rem;margin-bottom:10px;">🏏</div>
+      <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:4px;color:var(--accent)">SIGN IN</h2>
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:28px;">Enter your name and PIN to access your Fantasy XI</p>
+
+      <div style="text-align:left;margin-bottom:14px;">
+        <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px;">Your Name</label>
+        <input id="login-name" type="text" placeholder="e.g. Rahul" autocomplete="name" autocapitalize="words"
+          onkeydown="if(event.key==='Enter') document.getElementById('login-pin').focus()"
+          style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);
+                 border-radius:8px;color:var(--text);padding:12px 14px;font-family:'Barlow',sans-serif;
+                 font-size:1rem;transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+      </div>
+
+      <div style="text-align:left;margin-bottom:20px;">
+        <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px;">Your PIN</label>
+        <input id="login-pin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"
+          onkeydown="if(event.key==='Enter') doLogin()"
+          style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);
+                 border-radius:8px;color:var(--text);padding:12px 14px;font-family:'Barlow',sans-serif;
+                 font-size:1.2rem;letter-spacing:6px;text-align:center;transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+      </div>
+
+      <div id="login-error" style="display:none;background:rgba(232,54,93,0.12);border:1px solid rgba(232,54,93,0.3);
+           border-radius:8px;padding:10px 14px;color:#F87171;font-size:0.82rem;margin-bottom:16px;text-align:left;"></div>
+
+      <button onclick="doLogin()"
+        style="width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;
+               border-radius:8px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;
+               font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity 0.15s;"
+        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+        ENTER MY FANTASY XI →
+      </button>
+
+      <p style="color:var(--muted);font-size:0.75rem;margin-top:20px;">Forgot your PIN? Contact your league admin.</p>
+    </div>
   </div>
 
   <!-- MAIN FORM -->
@@ -696,62 +732,105 @@ const MATCHES = [
   {id:"Match30",name:"KKR vs GT",team1:"KKR",team2:"GT",date:"2026-04-24",time:"19:30",status:"Pending"},
 ];
 
-// ─── URL PARAMS / USER ───────────────────────────────────────────────────────
-
-// ─── URL PARAMS — robust for GitHub Pages subfolders ────────────────────────
-// GitHub Pages sometimes strips ?query params when serving from a subfolder.
-// Solution: read from both ?search and #hash so either link format works.
-// Supported link formats:
-//   https://yoursite.github.io/selection/?user=u01&name=Rahul   (standard)
-//   https://yoursite.github.io/selection/#user=u01&name=Rahul   (hash fallback)
-function getParam(key) {
-  // 1. Try standard query string: ?user=u01&name=Rahul
-  const qs = new URLSearchParams(window.location.search);
-  if (qs.get(key)) return decodeURIComponent(qs.get(key));
-  // 2. Try hash string: #user=u01&name=Rahul
-  const hash = window.location.hash.replace(/^#/, '');
-  const hs = new URLSearchParams(hash);
-  if (hs.get(key)) return decodeURIComponent(hs.get(key));
-  // 3. Regex fallback on full URL (catches edge cases)
-  const m = window.location.href.match(new RegExp('[?&#]' + key + '=([^&#]*)'));
-  return m ? decodeURIComponent(m[1]) : null;
-}
-
-const userId   = getParam('user');
-const userName = getParam('name');
+// ─── USER PIN MAP ─────────────────────────────────────────────────────────────
+// Format: "Name": { id:"uXX", pin:"NNNN" }
+// Name must be typed EXACTLY as shown here (case-sensitive)
+// PIN is a 4-digit number you share privately with each person
+// To add a user: add a new line, tell them their name + PIN
+const USER_PINS = {
+  "Rahul":  { id:"u01", pin:"1234" },
+  "Priya":  { id:"u02", pin:"2345" },
+  "Amit":   { id:"u03", pin:"3456" },
+  "Sneha":  { id:"u04", pin:"4567" },
+  "Vikram": { id:"u05", pin:"5678" },
+  "Deepa":  { id:"u06", pin:"6789" },
+  "Rohit":  { id:"u07", pin:"7890" },
+  "Kavya":  { id:"u08", pin:"8901" },
+  // Add more: "Name": { id:"u09", pin:"NNNN" },
+};
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
 
-let selectedMatch = null;
+let selectedMatch  = null;
 let selectedWinner = null;
-let currentUser = null;
+let currentUser    = null;
+let loginAttempts  = 0;
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 
 function init() {
-  if (!userId || !userName) {
-    document.getElementById('unknown-user-panel').classList.remove('hidden');
-    // Show debug info so user/admin can diagnose the URL issue
-    const debugEl = document.getElementById('debug-info');
-    if (debugEl) {
-      debugEl.innerHTML =
-        '<b style="color:#F5A623">URL Debug Info:</b><br>' +
-        'Full URL: ' + window.location.href + '<br>' +
-        'Search: "' + window.location.search + '"<br>' +
-        'Hash: "' + window.location.hash + '"<br>' +
-        'Detected user: ' + (userId || '<span style="color:#E8365D">NOT FOUND</span>') + '<br>' +
-        'Detected name: ' + (userName || '<span style="color:#E8365D">NOT FOUND</span>');
+  // Always show the login screen first
+  document.getElementById('login-panel').classList.remove('hidden');
+  document.getElementById('main-form').classList.add('hidden');
+
+  // Pre-fill name if passed in URL (?name=Rahul) as a convenience shortcut
+  const qs = new URLSearchParams(window.location.search);
+  const urlName = qs.get('name') || new URLSearchParams(window.location.hash.replace(/^#/,'')).get('name');
+  if (urlName) {
+    const nameInput = document.getElementById('login-name');
+    if (nameInput) {
+      nameInput.value = urlName;
+      document.getElementById('login-pin').focus();
     }
-    const exLink = document.getElementById('example-link');
-    if (exLink) exLink.textContent = window.location.origin + window.location.pathname + '?user=u01&name=YourName';
+  }
+}
+
+// ─── LOGIN ───────────────────────────────────────────────────────────────────
+
+function doLogin() {
+  const nameRaw = (document.getElementById('login-name').value || '').trim();
+  const pin     = (document.getElementById('login-pin').value  || '').trim();
+  const errEl   = document.getElementById('login-error');
+
+  errEl.style.display = 'none';
+
+  if (!nameRaw || !pin) {
+    showLoginError('Please enter both your name and PIN.');
     return;
   }
-  currentUser = { id: userId, name: userName };
-  document.getElementById('unknown-user-panel').classList.add('hidden');
-  document.getElementById('main-form').classList.remove('hidden');
-  document.getElementById('user-badge').classList.remove('hidden');
-  document.getElementById('user-name-display').textContent = '👤 ' + userName;
-  renderMatches();
+
+  // Find the user — try exact match first, then case-insensitive
+  let user = null;
+  let matchedName = null;
+  if (USER_PINS[nameRaw]) {
+    matchedName = nameRaw;
+  } else {
+    // Case-insensitive search
+    const lower = nameRaw.toLowerCase();
+    matchedName = Object.keys(USER_PINS).find(k => k.toLowerCase() === lower) || null;
+  }
+
+  if (matchedName && USER_PINS[matchedName].pin === pin) {
+    // ✅ Correct — let them in
+    loginAttempts = 0;
+    currentUser = { id: USER_PINS[matchedName].id, name: matchedName };
+    document.getElementById('login-panel').classList.add('hidden');
+    document.getElementById('main-form').classList.remove('hidden');
+    document.getElementById('user-badge').classList.remove('hidden');
+    document.getElementById('user-name-display').textContent = '👤 ' + matchedName;
+    renderMatches();
+  } else {
+    // ❌ Wrong — show error, track attempts
+    loginAttempts++;
+    if (!matchedName) {
+      showLoginError('Name not recognised. Check spelling — it must match exactly.');
+    } else {
+      showLoginError('Wrong PIN. Please try again.' + (loginAttempts >= 3 ? ' Contact your admin if you\'ve forgotten your PIN.' : ''));
+    }
+    // Shake animation on the card
+    const card = document.getElementById('login-card');
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 500);
+    // Clear PIN field only
+    document.getElementById('login-pin').value = '';
+    document.getElementById('login-pin').focus();
+  }
+}
+
+function showLoginError(msg) {
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = msg;
+  errEl.style.display = 'block';
 }
 
 // ─── RENDER MATCHES ──────────────────────────────────────────────────────────
