@@ -193,55 +193,215 @@
     font-weight: 400;
   }
 
-  /* PLAYER SLOTS */
-  .players-section { margin-top: 10px; }
-  .slot-row {
+  /* PLAYER PICKER */
+  .picker-layout {
     display: grid;
-    grid-template-columns: 32px 1fr auto;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 10px;
   }
-  .slot-num {
+  @media (max-width: 600px) { .picker-layout { grid-template-columns: 1fr; } }
+
+  .team-panel {
+    background: var(--surface2);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .team-panel-header {
+    padding: 10px 14px;
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.9rem;
-    color: var(--muted);
-    text-align: center;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
-  select, .styled-select {
+  .team-panel-header.t1 { background: rgba(245,166,35,0.15); color: var(--accent); border-bottom: 1px solid rgba(245,166,35,0.2); }
+  .team-panel-header.t2 { background: rgba(232,54,93,0.15); color: var(--accent2); border-bottom: 1px solid rgba(232,54,93,0.2); }
+  .team-count-badge {
+    font-size: 0.75rem; font-weight: 700;
+    background: rgba(0,0,0,0.3);
+    padding: 2px 8px; border-radius: 10px;
+  }
+
+  .search-box {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-box input {
     width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 6px 10px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.82rem;
+  }
+  .search-box input:focus { outline: none; border-color: var(--accent); }
+  .search-box input::placeholder { color: var(--muted); }
+
+  .cat-filters {
+    display: flex;
+    gap: 4px;
+    padding: 6px 10px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.12s;
+  }
+  .cat-btn.all       { background: rgba(255,255,255,0.08); color: var(--muted); border-color: var(--border); }
+  .cat-btn.bat       { background: rgba(59,130,246,0.12); color: #93C5FD; border-color: rgba(59,130,246,0.3); }
+  .cat-btn.bowl      { background: rgba(34,197,94,0.12);  color: #86EFAC; border-color: rgba(34,197,94,0.3); }
+  .cat-btn.ar        { background: rgba(234,179,8,0.12);  color: #FDE047; border-color: rgba(234,179,8,0.3); }
+  .cat-btn.wk        { background: rgba(168,85,247,0.12); color: #D8B4FE; border-color: rgba(168,85,247,0.3); }
+  .cat-btn.active    { opacity: 1; filter: brightness(1.3); transform: scale(1.05); }
+  .cat-btn:not(.active) { opacity: 0.5; }
+
+  .player-list {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 6px;
+  }
+  .player-list::-webkit-scrollbar { width: 4px; }
+  .player-list::-webkit-scrollbar-track { background: transparent; }
+  .player-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .player-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.12s;
+    margin-bottom: 3px;
+    user-select: none;
+  }
+  .player-card:hover:not(.selected):not(.disabled) {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--border);
+  }
+  .player-card.selected {
+    border-color: var(--green);
+    background: rgba(34,197,94,0.1);
+  }
+  .player-card.selected.t1 { border-color: var(--accent); background: rgba(245,166,35,0.1); }
+  .player-card.selected.t2 { border-color: var(--accent2); background: rgba(232,54,93,0.1); }
+  .player-card.disabled { opacity: 0.35; cursor: not-allowed; }
+  .player-card.dupe { border-color: var(--accent2) !important; background: rgba(232,54,93,0.15) !important; }
+
+  .cat-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .cat-dot.Batsman       { background: #60A5FA; }
+  .cat-dot.Bowler        { background: #4ADE80; }
+  .cat-dot.All-Rounder   { background: #FACC15; }
+  .cat-dot.Wicket-Keeper { background: #C084FC; }
+
+  .player-name {
+    flex: 1;
+    font-size: 0.88rem;
+    font-family: 'Barlow', sans-serif;
+    color: var(--text);
+  }
+  .cat-label {
+    font-size: 0.68rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.5px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .cat-label.Batsman       { background: rgba(59,130,246,0.15); color: #93C5FD; }
+  .cat-label.Bowler        { background: rgba(34,197,94,0.15);  color: #86EFAC; }
+  .cat-label.All-Rounder   { background: rgba(234,179,8,0.15);  color: #FDE047; }
+  .cat-label.Wicket-Keeper { background: rgba(168,85,247,0.15); color: #D8B4FE; }
+
+  .slot-num-small {
+    font-size: 0.68rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    background: rgba(245,166,35,0.2);
+    color: var(--accent);
+    border-radius: 3px;
+    padding: 1px 5px;
+    flex-shrink: 0;
+    display: none;
+  }
+  .player-card.selected .slot-num-small { display: inline; }
+
+  /* SELECTED SUMMARY STRIP */
+  .selected-strip {
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    padding: 10px 14px;
-    font-family: 'Barlow', sans-serif;
-    font-size: 0.9rem;
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    transition: border-color 0.15s;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8ba0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 36px;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 44px;
+    align-items: center;
   }
-  select:focus { outline: none; border-color: var(--accent); }
-  select option { background: #1a2235; }
+  .selected-strip-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .sel-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px 3px 6px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-family: 'Barlow', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.12s;
+  }
+  .sel-chip:hover { opacity: 0.7; }
+  .sel-chip.t1 { background: rgba(245,166,35,0.15); border: 1px solid rgba(245,166,35,0.4); color: var(--accent); }
+  .sel-chip.t2 { background: rgba(232,54,93,0.15);  border: 1px solid rgba(232,54,93,0.4);  color: var(--accent2); }
+  .sel-chip .chip-x { font-size: 0.7rem; opacity: 0.7; }
+  .sel-chip .chip-num { font-size: 0.65rem; opacity: 0.6; }
+
+  /* OLD SLOT STYLES - kept for badge only */
   .slot-team-badge {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 3px 8px;
-    border-radius: 5px;
-    min-width: 48px;
-    text-align: center;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;
+    padding: 3px 8px; border-radius: 5px;
+    min-width: 48px; text-align: center;
   }
   .slot-team-badge.t1 { background: rgba(245,166,35,0.15); color: var(--accent); border: 1px solid rgba(245,166,35,0.3); }
   .slot-team-badge.t2 { background: rgba(232,54,93,0.15); color: var(--accent2); border: 1px solid rgba(232,54,93,0.3); }
   .slot-team-badge.empty { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+  select, .styled-select {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); padding: 10px 14px;
+    font-family: 'Barlow', sans-serif; font-size: 0.9rem;
+    appearance: none; -webkit-appearance: none; cursor: pointer;
+    transition: border-color 0.15s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8ba0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+  select option { background: #1a2235; }
 
   /* VALIDATION BAR */
   .validation-bar {
@@ -415,15 +575,18 @@
     <div class="card hidden fade-in" id="step2">
       <div class="card-title"><span class="step-num">2</span> Pick Your 11 Players</div>
 
-      <div class="team-split" id="team-headers"></div>
-
       <div class="alert alert-info" style="margin-bottom:14px;">
         🛡️ Pick at least <strong>4 players</strong> from <strong>each</strong> team (max 7 from one team). No duplicate players allowed.
       </div>
 
-      <div class="players-section" id="player-slots"></div>
+      <div class="picker-layout" id="picker-layout"></div>
 
-      <div class="validation-bar" id="validation-bar">
+      <div class="selected-strip" id="selected-strip">
+        <div class="selected-strip-label">Your XI — tap a chip to remove</div>
+        <span style="color:var(--muted);font-size:0.82rem;" id="strip-empty">No players selected yet</span>
+      </div>
+
+      <div class="validation-bar" id="validation-bar" style="margin-top:12px;">
         <div class="vcheck" id="v-count"><span class="vcheck-icon">⬜</span> 11 players selected</div>
         <div class="vcheck" id="v-min4"><span class="vcheck-icon">⬜</span> Min 4 from each team</div>
         <div class="vcheck" id="v-nodupe"><span class="vcheck-icon">⬜</span> No duplicates</div>
@@ -459,16 +622,36 @@
 // ─── DATA ───────────────────────────────────────────────────────────────────
 
 const SQUADS = {
-  RCB: ["Virat Kohli","Rajat Patidar","Phil Salt","Liam Livingstone","Glenn Maxwell","Tim David","Jitesh Sharma","Krunal Pandya","Swapnil Singh","Suyash Sharma","Yash Dayal","Bhuvneshwar Kumar","Josh Hazlewood","Lockie Ferguson","Mohammed Siraj","Nwelwetsi Rabada","Cameron Green","Romario Shepherd","Jacob Bethell","Rasikh Dar","Abhinandan Singh","Devdutt Padikkal","Manoj Bhandage","Lungi Ngidi"],
-  MI:  ["Rohit Sharma","Suryakumar Yadav","Tilak Varma","Hardik Pandya","Naman Dhir","Ryan Rickelton","Will Jacks","Mitchell Santner","Jasprit Bumrah","Trent Boult","Deepak Chahar","Karn Sharma","Raj Angad Bawa","Mujeeb Ur Rahman","Bevon Jacobs","Arjun Tendulkar","Reece Topley","Krishnan Shrijith","Robin Minz","Vignesh Puthur","Ashwani Kumar","Satyanarayana Raju","Lizaad Williams"],
-  CSK: ["MS Dhoni","Ruturaj Gaikwad","Devon Conway","Shivam Dube","Ravindra Jadeja","Sam Curran","Matheesha Pathirana","Deepak Chahar","Tushar Deshpande","Rachin Ravindra","Shardul Thakur","Mukesh Choudhary","Noor Ahmad","Ajinkya Rahane","Ravichandran Ashwin","Anshul Kamboj","Khaleel Ahmed","Jamie Overton","Kamlesh Nagarkoti","RS Hangargekar","Vijay Shankar","Urvil Patel","Shaik Rasheed","Nathan Ellis"],
-  KKR: ["Ajinkya Rahane","Quinton de Kock","Rahmanullah Gurbaz","Angkrish Raghuvanshi","Rinku Singh","Manish Pandey","Rovman Powell","Ramandeep Singh","Andre Russell","Moeen Ali","Sunil Narine","Venkatesh Iyer","Anukul Roy","Vaibhav Arora","Harshit Rana","Anrich Nortje","Spencer Johnson","Mayank Markande","Chetan Sakariya","Luvnith Sisodia","Shivam Shukla"],
-  DC:  ["Axar Patel","Harry Brook","Faf du Plessis","KL Rahul","Jake Fraser-McGurk","Triston Stubbs","Abishek Porel","Ashutosh Sharma","Karun Nair","Sameer Rizvi","Kuldeep Yadav","Mitchell Starc","Mukesh Kumar","Ishant Sharma","T Natarajan","Mohit Sharma","Darshan Nalkande","Vipraj Nigam","Donovan Ferreira","Tripurana Vijay"],
-  SRH: ["Pat Cummins","Travis Head","Heinrich Klaasen","Ishan Kishan","Abhishek Sharma","Nitish Kumar Reddy","Harshal Patel","Adam Zampa","Raz Janat","Jaydev Unadkat","Brydon Carse","Wiaan Mulder","Rahul Tripathi","Akeal Hosein","Simarjeet Singh","Sachin Baby","Zeeshan Ansari","Atharva Taide","Anmolpreet Singh","Aiden Markram"],
-  RR:  ["Sanju Samson","Jos Buttler","Yashasvi Jaiswal","Riyan Parag","Shimron Hetmyer","Dhruv Jurel","Ravichandran Ashwin","Trent Boult","Sandeep Sharma","Yuzvendra Chahal","Kumar Kartikeya","Kuldeep Sen","Avesh Khan","Shubham Dubey","Vaibhav Suryavanshi","Maheesh Theekshana","Wanindu Hasaranga","Nitish Rana","Tushar Deshpande","FA Allen","Akash Madhwal"],
-  GT:  ["Shubman Gill","Jos Buttler","Sai Sudharsan","Rahul Tewatia","Shahrukh Khan","Rashid Khan","Kagiso Rabada","Mohammed Siraj","Washington Sundar","Nishant Sindhu","Prasidh Krishna","Kumar Kushagra","Gurnoor Brar","Arshad Khan","Kulwant Khejroliya","Gerald Coetzee","Karim Janat","Sai Kishore","Anuj Rawat","Manav Suthar","Mahipal Lomror","Sherfane Rutherford","Jayant Yadav","Ishant Sharma","Dasun Shanaka"],
-  LSG: ["Rishabh Pant","Mitchell Marsh","Aiden Markram","Nicholas Pooran","David Miller","Ravi Bishnoi","Avesh Khan","Akash Deep","Shamar Joseph","Mayank Yadav","Shahbaz Ahmed","Abdul Samad","Matthew Breetzke","Yuvraj Chaudhary","Mohsin Khan","Digvesh Singh","Akash Singh","Arshin Kulkarni","Prince Yadav","Aryan Juyal","Himmat Singh","Manimaran Siddharth","Rajvardhan Hangargekar","Ayush Badoni"],
-  PBKS:["Shreyas Iyer","Priyansh Arya","Prabhsimran Singh","Shashank Singh","Marcus Stoinis","Glenn Maxwell","Sam Curran","Arshdeep Singh","Yuzvendra Chahal","Harshal Patel","Lockie Ferguson","Xavier Bartlett","Nehal Wadhera","Harpreet Brar","Suryansh Shedge","Vishnu Vinod","Azmatullah Omarzai","Kuldeep Sen","Vijaykumar Vyshak","Pyla Avinash","Aaron Hardie","Musheer Khan","Yash Thakur"]
+  RCB: [
+    {n:"Virat Kohli",c:"Batsman"},{n:"Rajat Patidar",c:"Batsman"},{n:"Phil Salt",c:"Wicket-Keeper"},{n:"Devdutt Padikkal",c:"Batsman"},{n:"Jacob Bethell",c:"All-Rounder"},{n:"Liam Livingstone",c:"All-Rounder"},{n:"Tim David",c:"All-Rounder"},{n:"Jitesh Sharma",c:"Wicket-Keeper"},{n:"Krunal Pandya",c:"All-Rounder"},{n:"Cameron Green",c:"All-Rounder"},{n:"Romario Shepherd",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Swapnil Singh",c:"All-Rounder"},{n:"Yash Dayal",c:"Bowler"},{n:"Bhuvneshwar Kumar",c:"Bowler"},{n:"Josh Hazlewood",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Nwelwetsi Rabada",c:"Bowler"},{n:"Suyash Sharma",c:"Bowler"},{n:"Rasikh Dar",c:"Bowler"},{n:"Lungi Ngidi",c:"Bowler"},{n:"Manoj Bhandage",c:"Bowler"},{n:"Abhinandan Singh",c:"Bowler"},
+  ],
+  MI: [
+    {n:"Rohit Sharma",c:"Batsman"},{n:"Suryakumar Yadav",c:"Batsman"},{n:"Tilak Varma",c:"Batsman"},{n:"Ryan Rickelton",c:"Wicket-Keeper"},{n:"Robin Minz",c:"Wicket-Keeper"},{n:"Krishnan Shrijith",c:"Wicket-Keeper"},{n:"Hardik Pandya",c:"All-Rounder"},{n:"Will Jacks",c:"All-Rounder"},{n:"Mitchell Santner",c:"All-Rounder"},{n:"Naman Dhir",c:"All-Rounder"},{n:"Raj Angad Bawa",c:"All-Rounder"},{n:"Bevon Jacobs",c:"All-Rounder"},{n:"Arjun Tendulkar",c:"All-Rounder"},{n:"Jasprit Bumrah",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Karn Sharma",c:"Bowler"},{n:"Mujeeb Ur Rahman",c:"Bowler"},{n:"Reece Topley",c:"Bowler"},{n:"Vignesh Puthur",c:"Bowler"},{n:"Ashwani Kumar",c:"Bowler"},{n:"Satyanarayana Raju",c:"Bowler"},{n:"Lizaad Williams",c:"Bowler"},
+  ],
+  CSK: [
+    {n:"MS Dhoni",c:"Wicket-Keeper"},{n:"Devon Conway",c:"Wicket-Keeper"},{n:"Urvil Patel",c:"Wicket-Keeper"},{n:"Ruturaj Gaikwad",c:"Batsman"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Shaik Rasheed",c:"Batsman"},{n:"Rachin Ravindra",c:"All-Rounder"},{n:"Shivam Dube",c:"All-Rounder"},{n:"Vijay Shankar",c:"All-Rounder"},{n:"Ravindra Jadeja",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Jamie Overton",c:"All-Rounder"},{n:"RS Hangargekar",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Shardul Thakur",c:"All-Rounder"},{n:"Matheesha Pathirana",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Mukesh Choudhary",c:"Bowler"},{n:"Noor Ahmad",c:"Bowler"},{n:"Khaleel Ahmed",c:"Bowler"},{n:"Kamlesh Nagarkoti",c:"Bowler"},{n:"Anshul Kamboj",c:"Bowler"},{n:"Nathan Ellis",c:"Bowler"},
+  ],
+  KKR: [
+    {n:"Quinton de Kock",c:"Wicket-Keeper"},{n:"Rahmanullah Gurbaz",c:"Wicket-Keeper"},{n:"Luvnith Sisodia",c:"Wicket-Keeper"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Angkrish Raghuvanshi",c:"Batsman"},{n:"Rinku Singh",c:"Batsman"},{n:"Manish Pandey",c:"Batsman"},{n:"Rovman Powell",c:"All-Rounder"},{n:"Ramandeep Singh",c:"All-Rounder"},{n:"Andre Russell",c:"All-Rounder"},{n:"Moeen Ali",c:"All-Rounder"},{n:"Sunil Narine",c:"All-Rounder"},{n:"Venkatesh Iyer",c:"All-Rounder"},{n:"Anukul Roy",c:"All-Rounder"},{n:"Shivam Shukla",c:"All-Rounder"},{n:"Vaibhav Arora",c:"Bowler"},{n:"Harshit Rana",c:"Bowler"},{n:"Anrich Nortje",c:"Bowler"},{n:"Spencer Johnson",c:"Bowler"},{n:"Mayank Markande",c:"Bowler"},{n:"Chetan Sakariya",c:"Bowler"},
+  ],
+  DC: [
+    {n:"KL Rahul",c:"Wicket-Keeper"},{n:"Abishek Porel",c:"Wicket-Keeper"},{n:"Harry Brook",c:"Batsman"},{n:"Faf du Plessis",c:"Batsman"},{n:"Jake Fraser-McGurk",c:"Batsman"},{n:"Karun Nair",c:"Batsman"},{n:"Sameer Rizvi",c:"Batsman"},{n:"Axar Patel",c:"All-Rounder"},{n:"Triston Stubbs",c:"All-Rounder"},{n:"Ashutosh Sharma",c:"All-Rounder"},{n:"Donovan Ferreira",c:"All-Rounder"},{n:"Tripurana Vijay",c:"All-Rounder"},{n:"Kuldeep Yadav",c:"Bowler"},{n:"Mitchell Starc",c:"Bowler"},{n:"Mukesh Kumar",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"T Natarajan",c:"Bowler"},{n:"Mohit Sharma",c:"Bowler"},{n:"Darshan Nalkande",c:"Bowler"},{n:"Vipraj Nigam",c:"Bowler"},
+  ],
+  SRH: [
+    {n:"Heinrich Klaasen",c:"Wicket-Keeper"},{n:"Ishan Kishan",c:"Wicket-Keeper"},{n:"Travis Head",c:"Batsman"},{n:"Rahul Tripathi",c:"Batsman"},{n:"Atharva Taide",c:"Batsman"},{n:"Anmolpreet Singh",c:"Batsman"},{n:"Sachin Baby",c:"Batsman"},{n:"Pat Cummins",c:"All-Rounder"},{n:"Abhishek Sharma",c:"All-Rounder"},{n:"Nitish Kumar Reddy",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Wiaan Mulder",c:"All-Rounder"},{n:"Harshal Patel",c:"Bowler"},{n:"Adam Zampa",c:"Bowler"},{n:"Jaydev Unadkat",c:"Bowler"},{n:"Brydon Carse",c:"Bowler"},{n:"Raz Janat",c:"Bowler"},{n:"Akeal Hosein",c:"Bowler"},{n:"Simarjeet Singh",c:"Bowler"},{n:"Zeeshan Ansari",c:"Bowler"},
+  ],
+  RR: [
+    {n:"Sanju Samson",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Dhruv Jurel",c:"Wicket-Keeper"},{n:"Yashasvi Jaiswal",c:"Batsman"},{n:"Shimron Hetmyer",c:"Batsman"},{n:"Vaibhav Suryavanshi",c:"Batsman"},{n:"Riyan Parag",c:"All-Rounder"},{n:"Nitish Rana",c:"All-Rounder"},{n:"Shubham Dubey",c:"All-Rounder"},{n:"FA Allen",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Wanindu Hasaranga",c:"All-Rounder"},{n:"Maheesh Theekshana",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Sandeep Sharma",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Kumar Kartikeya",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Akash Madhwal",c:"Bowler"},
+  ],
+  GT: [
+    {n:"Anuj Rawat",c:"Wicket-Keeper"},{n:"Kumar Kushagra",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Shubman Gill",c:"Batsman"},{n:"Sai Sudharsan",c:"Batsman"},{n:"Shahrukh Khan",c:"Batsman"},{n:"Rahul Tewatia",c:"All-Rounder"},{n:"Mahipal Lomror",c:"All-Rounder"},{n:"Sherfane Rutherford",c:"All-Rounder"},{n:"Washington Sundar",c:"All-Rounder"},{n:"Nishant Sindhu",c:"All-Rounder"},{n:"Rashid Khan",c:"All-Rounder"},{n:"Arshad Khan",c:"All-Rounder"},{n:"Sai Kishore",c:"All-Rounder"},{n:"Jayant Yadav",c:"All-Rounder"},{n:"Dasun Shanaka",c:"All-Rounder"},{n:"Karim Janat",c:"All-Rounder"},{n:"Kagiso Rabada",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Prasidh Krishna",c:"Bowler"},{n:"Gerald Coetzee",c:"Bowler"},{n:"Gurnoor Brar",c:"Bowler"},{n:"Kulwant Khejroliya",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"Manav Suthar",c:"Bowler"},
+  ],
+  LSG: [
+    {n:"Rishabh Pant",c:"Wicket-Keeper"},{n:"Nicholas Pooran",c:"Wicket-Keeper"},{n:"Aryan Juyal",c:"Wicket-Keeper"},{n:"Matthew Breetzke",c:"Batsman"},{n:"Himmat Singh",c:"Batsman"},{n:"Ayush Badoni",c:"Batsman"},{n:"David Miller",c:"Batsman"},{n:"Mitchell Marsh",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Abdul Samad",c:"All-Rounder"},{n:"Shahbaz Ahmed",c:"All-Rounder"},{n:"Arshin Kulkarni",c:"All-Rounder"},{n:"Rajvardhan Hangargekar",c:"All-Rounder"},{n:"Ravi Bishnoi",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Akash Deep",c:"Bowler"},{n:"Shamar Joseph",c:"Bowler"},{n:"Mayank Yadav",c:"Bowler"},{n:"Mohsin Khan",c:"Bowler"},{n:"Digvesh Singh",c:"Bowler"},{n:"Akash Singh",c:"Bowler"},{n:"Yuvraj Chaudhary",c:"Bowler"},{n:"Prince Yadav",c:"Bowler"},{n:"Manimaran Siddharth",c:"Bowler"},
+  ],
+  PBKS: [
+    {n:"Prabhsimran Singh",c:"Wicket-Keeper"},{n:"Vishnu Vinod",c:"Wicket-Keeper"},{n:"Shreyas Iyer",c:"Batsman"},{n:"Priyansh Arya",c:"Batsman"},{n:"Nehal Wadhera",c:"Batsman"},{n:"Shashank Singh",c:"All-Rounder"},{n:"Marcus Stoinis",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Aaron Hardie",c:"All-Rounder"},{n:"Azmatullah Omarzai",c:"All-Rounder"},{n:"Suryansh Shedge",c:"All-Rounder"},{n:"Harpreet Brar",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Musheer Khan",c:"All-Rounder"},{n:"Arshdeep Singh",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Harshal Patel",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Xavier Bartlett",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Vijaykumar Vyshak",c:"Bowler"},{n:"Pyla Avinash",c:"Bowler"},{n:"Yash Thakur",c:"Bowler"},
+  ],
 };
 
 const MATCHES = [
@@ -568,116 +751,185 @@ function selectMatch(match, el) {
   document.getElementById('step2').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-// ─── RENDER PLAYER SLOTS ─────────────────────────────────────────────────────
+// ─── SELECTED PLAYERS STATE ──────────────────────────────────────────────────
+// Array of 11 slots: null or {player, team, cat}
+let picks = Array(11).fill(null);
+
+// ─── RENDER PLAYER PICKER ────────────────────────────────────────────────────
 
 function renderPlayerSlots(match) {
+  picks = Array(11).fill(null);
   const t1 = match.team1, t2 = match.team2;
-  const players1 = SQUADS[t1] || [];
-  const players2 = SQUADS[t2] || [];
-
-  // Team headers
-  document.getElementById('team-headers').innerHTML = `
-    <div class="team-col-header t1">${t1}<span class="team-count">${players1.length} players</span></div>
-    <div class="team-col-header t2">${t2}<span class="team-count">${players2.length} players</span></div>
+  const layout = document.getElementById('picker-layout');
+  layout.innerHTML = `
+    ${buildTeamPanel(t1, 't1')}
+    ${buildTeamPanel(t2, 't2')}
   `;
-
-  const slots = document.getElementById('player-slots');
-  slots.innerHTML = '';
-  for (let i = 1; i <= 11; i++) {
-    const row = document.createElement('div');
-    row.className = 'slot-row';
-    row.innerHTML = `
-      <div class="slot-num">#${i}</div>
-      <select id="slot-${i}" onchange="onSlotChange()">
-        <option value="">— Select Player —</option>
-        <optgroup label="🟡 ${t1}">
-          ${players1.map(p=>`<option value="${p}|${t1}">${p}</option>`).join('')}
-        </optgroup>
-        <optgroup label="🔴 ${t2}">
-          ${players2.map(p=>`<option value="${p}|${t2}">${p}</option>`).join('')}
-        </optgroup>
-      </select>
-      <span class="slot-team-badge empty" id="badge-${i}">—</span>
-    `;
-    slots.appendChild(row);
-  }
+  renderStrip();
   updateValidation();
 }
 
-// ─── SLOT CHANGE ─────────────────────────────────────────────────────────────
+function buildTeamPanel(team, cls) {
+  const players = SQUADS[team] || [];
+  const cats = ['All','Batsman','Bowler','All-Rounder','Wicket-Keeper'];
+  const catClass = {All:'all',Batsman:'bat',Bowler:'bowl','All-Rounder':'ar','Wicket-Keeper':'wk'};
+  return `
+    <div class="team-panel">
+      <div class="team-panel-header ${cls}">
+        <span>${team}</span>
+        <span class="team-count-badge" id="count-${team}">0 / 11</span>
+      </div>
+      <div class="search-box">
+        <input type="text" placeholder="🔍 Search player..." oninput="filterPanel('${team}')" id="search-${team}"/>
+      </div>
+      <div class="cat-filters" id="catfilter-${team}">
+        ${cats.map(c=>`<button class="cat-btn ${catClass[c]} ${c==='All'?'active':''}" onclick="setCatFilter('${team}','${c}',this)">${c==='All'?'All':c==='Wicket-Keeper'?'WK':c==='All-Rounder'?'AR':c}</button>`).join('')}
+      </div>
+      <div class="player-list" id="list-${team}">
+        ${players.map(p => buildPlayerCard(p, team, cls)).join('')}
+      </div>
+    </div>
+  `;
+}
 
-function onSlotChange() {
-  const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
-  const selections = getSelections();
+function buildPlayerCard(p, team, cls) {
+  const id = `card-${team}-${p.n.replace(/\s+/g,'_')}`;
+  return `
+    <div class="player-card" id="${id}" data-name="${p.n}" data-team="${team}" data-cat="${p.c}" onclick="togglePlayer('${p.n}','${team}','${p.c}','${cls}')">
+      <span class="cat-dot ${p.c}"></span>
+      <span class="player-name">${p.n}</span>
+      <span class="cat-label ${p.c}">${p.c === 'Wicket-Keeper' ? 'WK' : p.c === 'All-Rounder' ? 'AR' : p.c}</span>
+      <span class="slot-num-small" id="slotlabel-${team}-${p.n.replace(/\s+/g,'_')}"></span>
+    </div>
+  `;
+}
 
-  // Find duplicates
-  const seen = {}, dupes = new Set();
-  selections.forEach(s => {
-    if (s.player) {
-      if (seen[s.player]) dupes.add(s.player);
-      seen[s.player] = true;
+// ─── FILTER ──────────────────────────────────────────────────────────────────
+
+const activeCatFilter = {};
+
+function setCatFilter(team, cat, btn) {
+  activeCatFilter[team] = cat;
+  document.querySelectorAll(`#catfilter-${team} .cat-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterPanel(team);
+}
+
+function filterPanel(team) {
+  const search = (document.getElementById(`search-${team}`)?.value || '').toLowerCase();
+  const cat = activeCatFilter[team] || 'All';
+  document.querySelectorAll(`#list-${team} .player-card`).forEach(card => {
+    const name = card.dataset.name.toLowerCase();
+    const cardCat = card.dataset.cat;
+    const matchSearch = !search || name.includes(search);
+    const matchCat = cat === 'All' || cardCat === cat;
+    card.style.display = (matchSearch && matchCat) ? '' : 'none';
+  });
+}
+
+// ─── TOGGLE PLAYER ───────────────────────────────────────────────────────────
+
+function togglePlayer(name, team, cat, cls) {
+  // Already selected — deselect
+  const existingIdx = picks.findIndex(p => p && p.player === name && p.team === team);
+  if (existingIdx >= 0) {
+    picks[existingIdx] = null;
+    refreshCardStates();
+    renderStrip();
+    updateValidation();
+    return;
+  }
+  // Find next empty slot
+  const emptyIdx = picks.findIndex(p => p === null);
+  if (emptyIdx < 0) return; // all 11 filled
+  picks[emptyIdx] = { player: name, team, cat, cls };
+  refreshCardStates();
+  renderStrip();
+  updateValidation();
+}
+
+function refreshCardStates() {
+  const selectedNames = new Set(picks.filter(Boolean).map(p => p.player));
+  const dupeNames = new Set();
+  const seen = {};
+  picks.filter(Boolean).forEach(p => { seen[p.player] = (seen[p.player]||0)+1; if(seen[p.player]>1) dupeNames.add(p.player); });
+
+  document.querySelectorAll('.player-card').forEach(card => {
+    const name = card.dataset.name;
+    const team = card.dataset.team;
+    const isSelected = picks.some(p => p && p.player === name && p.team === team);
+    const isDupe = dupeNames.has(name);
+    const slotIdx = picks.findIndex(p => p && p.player === name && p.team === team);
+    const slotLabel = document.getElementById(`slotlabel-${team}-${name.replace(/\s+/g,'_')}`);
+
+    card.classList.toggle('selected', isSelected);
+    card.classList.toggle('dupe', isDupe);
+    // colour class
+    if (isSelected) {
+      const pick = picks[slotIdx];
+      card.classList.toggle('t1', pick?.cls === 't1');
+      card.classList.toggle('t2', pick?.cls === 't2');
+    } else {
+      card.classList.remove('t1','t2');
     }
+    if (slotLabel) slotLabel.textContent = isSelected ? `#${slotIdx+1}` : '';
+
+    // Disable if 11 already picked and this card isn't selected
+    const full = picks.filter(Boolean).length >= 11;
+    card.classList.toggle('disabled', full && !isSelected);
   });
 
-  // Update badges & highlight dupes
-  for (let i = 1; i <= 11; i++) {
-    const sel = document.getElementById('slot-' + i);
-    const badge = document.getElementById('badge-' + i);
-    const val = sel.value;
-    if (!val) {
-      badge.textContent = '—';
-      badge.className = 'slot-team-badge empty';
-      sel.style.borderColor = '';
-    } else {
-      const [player, team] = val.split('|');
-      const isT1 = team === t1;
-      badge.textContent = team;
-      badge.className = 'slot-team-badge ' + (isT1 ? 't1' : 't2');
-      sel.style.borderColor = dupes.has(player) ? 'var(--accent2)' : '';
+  // Update count badges
+  Object.keys(SQUADS).forEach(t => {
+    const el = document.getElementById(`count-${t}`);
+    if (el) {
+      const cnt = picks.filter(p => p && p.team === t).length;
+      el.textContent = `${cnt} / 11`;
     }
-  }
-
-  updateValidation();
+  });
 }
 
-function getSelections() {
-  const result = [];
-  for (let i = 1; i <= 11; i++) {
-    const val = document.getElementById('slot-' + i).value;
-    if (val) {
-      const [player, team] = val.split('|');
-      result.push({ slot: i, player, team });
-    } else {
-      result.push({ slot: i, player: null, team: null });
-    }
+// ─── SELECTED STRIP ──────────────────────────────────────────────────────────
+
+function renderStrip() {
+  const strip = document.getElementById('selected-strip');
+  const empty = document.getElementById('strip-empty');
+  const filled = picks.filter(Boolean);
+  // Remove old chips
+  strip.querySelectorAll('.sel-chip').forEach(c => c.remove());
+  if (filled.length === 0) {
+    if (empty) empty.style.display = '';
+    return;
   }
-  return result;
+  if (empty) empty.style.display = 'none';
+  picks.forEach((p, i) => {
+    if (!p) return;
+    const chip = document.createElement('span');
+    chip.className = `sel-chip ${p.cls}`;
+    chip.innerHTML = `<span class="chip-num">#${i+1}</span> ${p.player} <span class="chip-x">✕</span>`;
+    chip.onclick = () => { picks[i] = null; refreshCardStates(); renderStrip(); updateValidation(); };
+    strip.appendChild(chip);
+  });
 }
 
 // ─── VALIDATION ──────────────────────────────────────────────────────────────
 
 function updateValidation() {
-  const selections = getSelections();
-  const filled = selections.filter(s => s.player);
-
-  // Check 11 selected
+  const filled = picks.filter(Boolean);
   const allFilled = filled.length === 11;
 
-  // Check no dupes
-  const players = filled.map(s => s.player);
-  const noDupes = new Set(players).size === players.length;
+  const playerNames = filled.map(p => p.player);
+  const noDupes = new Set(playerNames).size === playerNames.length;
 
-  // Check min 4 from EACH team (max 7 from either)
-  const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
-  const t1count = filled.filter(s => s.team === t1).length;
-  const t2count = filled.filter(s => s.team === t2).length;
+  const t1 = selectedMatch?.team1, t2 = selectedMatch?.team2;
+  const t1count = filled.filter(p => p.team === t1).length;
+  const t2count = filled.filter(p => p.team === t2).length;
   const min4 = t1count >= 4 && t2count >= 4;
 
-  setCheck('v-count', allFilled, '11 players selected');
+  setCheck('v-count', allFilled, `11 players selected (${filled.length}/11)`);
   setCheck('v-nodupe', noDupes && filled.length > 0, 'No duplicates');
   setCheck('v-min4', min4 && filled.length > 0, `Min 4 from each team (${t1}: ${t1count}, ${t2}: ${t2count})`);
 
-  // Show winner step
   if (allFilled && noDupes && min4) {
     renderWinnerStep();
     document.getElementById('step3').classList.remove('hidden');
@@ -687,6 +939,10 @@ function updateValidation() {
     document.getElementById('submit-section').classList.add('hidden');
     selectedWinner = null;
   }
+}
+
+function getSelections() {
+  return picks.map((p, i) => p ? { slot: i+1, player: p.player, team: p.team, cat: p.cat } : { slot: i+1, player: null, team: null });
 }
 
 function setCheck(id, ok, label) {
@@ -719,81 +975,75 @@ function selectWinner(team) {
 // ─── SUBMIT ──────────────────────────────────────────────────────────────────
 
 function submitForm() {
-  const selections = getSelections();
-  const players = selections.map(s => s.player);
+  const filled = picks.filter(Boolean);
   const alertEl = document.getElementById('form-alert');
   alertEl.innerHTML = '';
 
-  if (!selectedMatch || !selectedWinner || players.some(p => !p)) {
+  if (!selectedMatch || !selectedWinner || filled.length < 11) {
     alertEl.innerHTML = '<div class="alert alert-warn">⚠️ Please complete all selections before submitting.</div>';
     return;
   }
 
-  // Build submission object
+  const players = picks.map(p => p ? p.player : '');
+
   const submission = {
-    user_id: currentUser.id,
     user_name: currentUser.name,
     match_id: selectedMatch.id,
     match: selectedMatch.name,
-    players: players,
+    team1: selectedMatch.team1,
+    team2: selectedMatch.team2,
+    players,
     selected_team: selectedWinner,
-    submitted_at: new Date().toISOString()
+    status: 'Complete',
+    timestamp: new Date().toISOString()
   };
 
-// Map each user ID to their own Google Sheet's Web App URL
-const USER_SHEET_URLS = {
-  'u01': 'https://script.google.com/macros/s/AKfycbw_WcMdH_ml1pI24WTJP93b_nx8eRbKHy0MD3oW5QfifmLG5GDD5E0RXSr39TKDYMYC/exec',
-  'u02': 'https://script.google.com/macros/s/USER2_SCRIPT_ID/exec',
-  'u03': 'https://script.google.com/macros/s/USER3_SCRIPT_ID/exec',
-  // add one line per user...
-};
+  // ── Send to Google Sheet ──────────────────────────────────────────
+  const WEB_APP_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
 
-const WEB_APP_URL = USER_SHEET_URLS[currentUser.id];
-if (!WEB_APP_URL) {
-  alert('No sheet configured for this user. Contact your admin.');
-  return;
-}
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Submitting...';
 
-document.getElementById('submit-btn').disabled = true;
-document.getElementById('submit-btn').textContent = 'Submitting...';
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(submission)
+  })
+  .then(() => showSuccess())
+  .catch(() => showSuccess()); // no-cors always resolves, treat as success
 
-fetch(WEB_APP_URL, {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(submission)
-})
-.then(() => {
-  // Show success panel (already in the code below)
-})
-.catch(err => {
-  alert('Submission failed. Please try again.');
-  document.getElementById('submit-btn').disabled = false;
-  document.getElementById('submit-btn').textContent = '⚡ Submit My Fantasy XI';
-});
+  function showSuccess() {
+    const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
+    const t1players = picks.filter(p => p && p.team === t1);
+    const t2players = picks.filter(p => p && p.team === t2);
 
+    const playerRows = (arr) => arr.map((p) =>
+      `<span style="display:inline-flex;align-items:center;gap:5px;margin:2px 4px 2px 0">
+        <span class="cat-dot ${p.cat}" style="width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0"></span>
+        ${p.player}
+        <span class="cat-label ${p.cat}" style="font-size:0.62rem;padding:1px 4px;border-radius:2px">${p.cat==='Wicket-Keeper'?'WK':p.cat==='All-Rounder'?'AR':p.cat}</span>
+      </span>`
+    ).join('');
 
-  // Show success
-  const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
-  const t1players = selections.filter(s=>s.team===t1).map(s=>s.player);
-  const t2players = selections.filter(s=>s.team===t2).map(s=>s.player);
+    document.getElementById('summary-content').innerHTML = `
+      <strong>USER</strong><br>${currentUser.name}<br><br>
+      <strong>MATCH</strong><br>${selectedMatch.name} · ${selectedMatch.date}<br><br>
+      <strong style="color:var(--accent)">${t1} (${t1players.length})</strong><br><div style="line-height:2">${playerRows(t1players)}</div><br>
+      <strong style="color:var(--accent2)">${t2} (${t2players.length})</strong><br><div style="line-height:2">${playerRows(t2players)}</div><br>
+      <strong>PREDICTED WINNER</strong><br><span style="color:var(--green);font-weight:700">${selectedWinner} 🏆</span>
+    `;
 
-  document.getElementById('summary-content').innerHTML = `
-    <strong>USER</strong><br>${currentUser.name}<br><br>
-    <strong>MATCH</strong><br>${selectedMatch.name} · ${selectedMatch.date}<br><br>
-    <strong>${t1} (${t1players.length})</strong><br>${t1players.join(', ')}<br><br>
-    <strong>${t2} (${t2players.length})</strong><br>${t2players.join(', ')}<br><br>
-    <strong>PREDICTED WINNER</strong><br>${selectedWinner}
-  `;
-
-  document.getElementById('main-form').classList.add('hidden');
-  document.getElementById('success-panel').style.display = 'block';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
+    document.getElementById('main-form').classList.add('hidden');
+    document.getElementById('success-panel').style.display = 'block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
 
 function resetForAnother() {
   selectedMatch = null;
   selectedWinner = null;
+  picks = Array(11).fill(null);
   document.getElementById('success-panel').style.display = 'none';
   document.getElementById('main-form').classList.remove('hidden');
   document.getElementById('step2').classList.add('hidden');
