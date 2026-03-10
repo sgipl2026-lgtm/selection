@@ -557,7 +557,13 @@
     <div style="font-size:2.5rem;margin-bottom:12px;">🔒</div>
     <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.6rem;letter-spacing:2px;margin-bottom:8px;">Access Required</h2>
     <p style="color:var(--muted);margin-bottom:20px;">This form is accessed via a personal link. Please use the link provided to you.</p>
-    <p style="font-size:0.8rem;color:var(--muted);">Contact your league admin to get your personal link.</p>
+    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px;">Contact your league admin to get your personal link.</p>
+    <!-- Debug info — helps diagnose URL param issues -->
+    <div id="debug-info" style="margin-top:16px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:0.75rem;font-family:monospace;color:#7a8ba0;text-align:left;"></div>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:12px;">
+      Your link should look like:<br>
+      <span style="color:var(--accent);word-break:break-all;" id="example-link"></span>
+    </p>
   </div>
 
   <!-- MAIN FORM -->
@@ -692,9 +698,27 @@ const MATCHES = [
 
 // ─── URL PARAMS / USER ───────────────────────────────────────────────────────
 
-const urlParams = new URLSearchParams(window.location.search);
-const userId = urlParams.get('user');
-const userName = urlParams.get('name') ? decodeURIComponent(urlParams.get('name')) : null;
+// ─── URL PARAMS — robust for GitHub Pages subfolders ────────────────────────
+// GitHub Pages sometimes strips ?query params when serving from a subfolder.
+// Solution: read from both ?search and #hash so either link format works.
+// Supported link formats:
+//   https://yoursite.github.io/selection/?user=u01&name=Rahul   (standard)
+//   https://yoursite.github.io/selection/#user=u01&name=Rahul   (hash fallback)
+function getParam(key) {
+  // 1. Try standard query string: ?user=u01&name=Rahul
+  const qs = new URLSearchParams(window.location.search);
+  if (qs.get(key)) return decodeURIComponent(qs.get(key));
+  // 2. Try hash string: #user=u01&name=Rahul
+  const hash = window.location.hash.replace(/^#/, '');
+  const hs = new URLSearchParams(hash);
+  if (hs.get(key)) return decodeURIComponent(hs.get(key));
+  // 3. Regex fallback on full URL (catches edge cases)
+  const m = window.location.href.match(new RegExp('[?&#]' + key + '=([^&#]*)'));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+const userId   = getParam('user');
+const userName = getParam('name');
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
 
@@ -707,6 +731,19 @@ let currentUser = null;
 function init() {
   if (!userId || !userName) {
     document.getElementById('unknown-user-panel').classList.remove('hidden');
+    // Show debug info so user/admin can diagnose the URL issue
+    const debugEl = document.getElementById('debug-info');
+    if (debugEl) {
+      debugEl.innerHTML =
+        '<b style="color:#F5A623">URL Debug Info:</b><br>' +
+        'Full URL: ' + window.location.href + '<br>' +
+        'Search: "' + window.location.search + '"<br>' +
+        'Hash: "' + window.location.hash + '"<br>' +
+        'Detected user: ' + (userId || '<span style="color:#E8365D">NOT FOUND</span>') + '<br>' +
+        'Detected name: ' + (userName || '<span style="color:#E8365D">NOT FOUND</span>');
+    }
+    const exLink = document.getElementById('example-link');
+    if (exLink) exLink.textContent = window.location.origin + window.location.pathname + '?user=u01&name=YourName';
     return;
   }
   currentUser = { id: userId, name: userName };
