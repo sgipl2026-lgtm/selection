@@ -190,6 +190,10 @@
       {
         "n": "Lizaad Williams",
         "c": "Bowler"
+      },
+      {
+        "n": "Rohit Surve",
+        "c": "All-Rounder"
       }
     ],
     "CSK": [
@@ -1259,6 +1263,12 @@
       "name": "Rohit5",
       "pin": "9999",
       "email": "test@gmail.com"
+    },
+    {
+      "id": "U20260006",
+      "name": "Mayuri",
+      "pin": "0616",
+      "email": "mayuriashelke@gmail.com"
     }
   ]
 }
