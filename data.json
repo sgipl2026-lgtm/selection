@@ -945,9 +945,18 @@
       "name": "RR vs KKR",
       "team1": "RR",
       "team2": "KKR",
-      "date": "2026-03-08",
+      "date": "2026-03-13",
       "time": "06:00",
-      "status": "Complete"
+      "status": "Pending"
+    },
+    {
+      "id": "Test1",
+      "name": "PBKS vs LSG",
+      "team1": "PBKS",
+      "team2": "LSG",
+      "date": "2026-03-13",
+      "time": "19:30",
+      "status": "Pending"
     },
     {
       "id": "Match1",
