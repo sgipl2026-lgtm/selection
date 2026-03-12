@@ -938,7 +938,7 @@
       "team2": "MI",
       "date": "2026-03-07",
       "time": "17:30",
-      "status": "Pending"
+      "status": "Complete"
     },
     {
       "id": "TestMatch3",
@@ -947,7 +947,7 @@
       "team2": "KKR",
       "date": "2026-03-08",
       "time": "06:00",
-      "status": "Pending"
+      "status": "Complete"
     },
     {
       "id": "Match1",
