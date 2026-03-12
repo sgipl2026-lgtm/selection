@@ -1,0 +1,50 @@
+name: Auto-Update Match Fixtures
+
+on:
+  schedule:
+    - cron: "0 13 * * *"   # 18:30 IST — afternoon matches (15:30 start)
+    - cron: "0 18 * * *"   # 23:30 IST — evening matches (19:30 start)
+
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual run (optional)"
+        required: false
+        default: "Manual trigger from admin panel"
+
+jobs:
+  update-fixtures:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install openpyxl
+
+      - name: Update match statuses, regenerate HTML and xlsx
+        run: python scripts/update_matches.py
+
+      - name: Commit changes (if any)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add index.html data.json user_list.xlsx
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            TIMESTAMP=$(TZ='Asia/Kolkata' date '+%Y-%m-%d %H:%M IST')
+            git commit -m "chore: auto-update fixtures & users [${TIMESTAMP}]"
+            git push
+            echo "Changes pushed."
+          fi
