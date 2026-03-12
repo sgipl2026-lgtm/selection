@@ -663,43 +663,26 @@
 <script>
 // ─── DATA ───────────────────────────────────────────────────────────────────
 
+// @@BEGIN_SQUADS@@
 const SQUADS = {
-  RCB: [
-    {n:"Virat Kohli",c:"Batsman"},{n:"Rajat Patidar",c:"Batsman"},{n:"Phil Salt",c:"Wicket-Keeper"},{n:"Devdutt Padikkal",c:"Batsman"},{n:"Jacob Bethell",c:"All-Rounder"},{n:"Liam Livingstone",c:"All-Rounder"},{n:"Tim David",c:"All-Rounder"},{n:"Jitesh Sharma",c:"Wicket-Keeper"},{n:"Krunal Pandya",c:"All-Rounder"},{n:"Cameron Green",c:"All-Rounder"},{n:"Romario Shepherd",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Swapnil Singh",c:"All-Rounder"},{n:"Yash Dayal",c:"Bowler"},{n:"Bhuvneshwar Kumar",c:"Bowler"},{n:"Josh Hazlewood",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Nwelwetsi Rabada",c:"Bowler"},{n:"Suyash Sharma",c:"Bowler"},{n:"Rasikh Dar",c:"Bowler"},{n:"Lungi Ngidi",c:"Bowler"},{n:"Manoj Bhandage",c:"Bowler"},{n:"Abhinandan Singh",c:"Bowler"},
-  ],
-  MI: [
-    {n:"Rohit Sharma",c:"Batsman"},{n:"Suryakumar Yadav",c:"Batsman"},{n:"Tilak Varma",c:"Batsman"},{n:"Ryan Rickelton",c:"Wicket-Keeper"},{n:"Robin Minz",c:"Wicket-Keeper"},{n:"Krishnan Shrijith",c:"Wicket-Keeper"},{n:"Hardik Pandya",c:"All-Rounder"},{n:"Will Jacks",c:"All-Rounder"},{n:"Mitchell Santner",c:"All-Rounder"},{n:"Naman Dhir",c:"All-Rounder"},{n:"Raj Angad Bawa",c:"All-Rounder"},{n:"Bevon Jacobs",c:"All-Rounder"},{n:"Arjun Tendulkar",c:"All-Rounder"},{n:"Jasprit Bumrah",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Karn Sharma",c:"Bowler"},{n:"Mujeeb Ur Rahman",c:"Bowler"},{n:"Reece Topley",c:"Bowler"},{n:"Vignesh Puthur",c:"Bowler"},{n:"Ashwani Kumar",c:"Bowler"},{n:"Satyanarayana Raju",c:"Bowler"},{n:"Lizaad Williams",c:"Bowler"},
-  ],
-  CSK: [
-    {n:"MS Dhoni",c:"Wicket-Keeper"},{n:"Devon Conway",c:"Wicket-Keeper"},{n:"Urvil Patel",c:"Wicket-Keeper"},{n:"Ruturaj Gaikwad",c:"Batsman"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Shaik Rasheed",c:"Batsman"},{n:"Rachin Ravindra",c:"All-Rounder"},{n:"Shivam Dube",c:"All-Rounder"},{n:"Vijay Shankar",c:"All-Rounder"},{n:"Ravindra Jadeja",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Jamie Overton",c:"All-Rounder"},{n:"RS Hangargekar",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Shardul Thakur",c:"All-Rounder"},{n:"Matheesha Pathirana",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Mukesh Choudhary",c:"Bowler"},{n:"Noor Ahmad",c:"Bowler"},{n:"Khaleel Ahmed",c:"Bowler"},{n:"Kamlesh Nagarkoti",c:"Bowler"},{n:"Anshul Kamboj",c:"Bowler"},{n:"Nathan Ellis",c:"Bowler"},
-  ],
-  KKR: [
-    {n:"Quinton de Kock",c:"Wicket-Keeper"},{n:"Rahmanullah Gurbaz",c:"Wicket-Keeper"},{n:"Luvnith Sisodia",c:"Wicket-Keeper"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Angkrish Raghuvanshi",c:"Batsman"},{n:"Rinku Singh",c:"Batsman"},{n:"Manish Pandey",c:"Batsman"},{n:"Rovman Powell",c:"All-Rounder"},{n:"Ramandeep Singh",c:"All-Rounder"},{n:"Andre Russell",c:"All-Rounder"},{n:"Moeen Ali",c:"All-Rounder"},{n:"Sunil Narine",c:"All-Rounder"},{n:"Venkatesh Iyer",c:"All-Rounder"},{n:"Anukul Roy",c:"All-Rounder"},{n:"Shivam Shukla",c:"All-Rounder"},{n:"Vaibhav Arora",c:"Bowler"},{n:"Harshit Rana",c:"Bowler"},{n:"Anrich Nortje",c:"Bowler"},{n:"Spencer Johnson",c:"Bowler"},{n:"Mayank Markande",c:"Bowler"},{n:"Chetan Sakariya",c:"Bowler"},
-  ],
-  DC: [
-    {n:"KL Rahul",c:"Wicket-Keeper"},{n:"Abishek Porel",c:"Wicket-Keeper"},{n:"Harry Brook",c:"Batsman"},{n:"Faf du Plessis",c:"Batsman"},{n:"Jake Fraser-McGurk",c:"Batsman"},{n:"Karun Nair",c:"Batsman"},{n:"Sameer Rizvi",c:"Batsman"},{n:"Axar Patel",c:"All-Rounder"},{n:"Triston Stubbs",c:"All-Rounder"},{n:"Ashutosh Sharma",c:"All-Rounder"},{n:"Donovan Ferreira",c:"All-Rounder"},{n:"Tripurana Vijay",c:"All-Rounder"},{n:"Kuldeep Yadav",c:"Bowler"},{n:"Mitchell Starc",c:"Bowler"},{n:"Mukesh Kumar",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"T Natarajan",c:"Bowler"},{n:"Mohit Sharma",c:"Bowler"},{n:"Darshan Nalkande",c:"Bowler"},{n:"Vipraj Nigam",c:"Bowler"},
-  ],
-  SRH: [
-    {n:"Heinrich Klaasen",c:"Wicket-Keeper"},{n:"Ishan Kishan",c:"Wicket-Keeper"},{n:"Travis Head",c:"Batsman"},{n:"Rahul Tripathi",c:"Batsman"},{n:"Atharva Taide",c:"Batsman"},{n:"Anmolpreet Singh",c:"Batsman"},{n:"Sachin Baby",c:"Batsman"},{n:"Pat Cummins",c:"All-Rounder"},{n:"Abhishek Sharma",c:"All-Rounder"},{n:"Nitish Kumar Reddy",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Wiaan Mulder",c:"All-Rounder"},{n:"Harshal Patel",c:"Bowler"},{n:"Adam Zampa",c:"Bowler"},{n:"Jaydev Unadkat",c:"Bowler"},{n:"Brydon Carse",c:"Bowler"},{n:"Raz Janat",c:"Bowler"},{n:"Akeal Hosein",c:"Bowler"},{n:"Simarjeet Singh",c:"Bowler"},{n:"Zeeshan Ansari",c:"Bowler"},
-  ],
-  RR: [
-    {n:"Sanju Samson",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Dhruv Jurel",c:"Wicket-Keeper"},{n:"Yashasvi Jaiswal",c:"Batsman"},{n:"Shimron Hetmyer",c:"Batsman"},{n:"Vaibhav Suryavanshi",c:"Batsman"},{n:"Riyan Parag",c:"All-Rounder"},{n:"Nitish Rana",c:"All-Rounder"},{n:"Shubham Dubey",c:"All-Rounder"},{n:"FA Allen",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Wanindu Hasaranga",c:"All-Rounder"},{n:"Maheesh Theekshana",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Sandeep Sharma",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Kumar Kartikeya",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Akash Madhwal",c:"Bowler"},
-  ],
-  GT: [
-    {n:"Anuj Rawat",c:"Wicket-Keeper"},{n:"Kumar Kushagra",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Shubman Gill",c:"Batsman"},{n:"Sai Sudharsan",c:"Batsman"},{n:"Shahrukh Khan",c:"Batsman"},{n:"Rahul Tewatia",c:"All-Rounder"},{n:"Mahipal Lomror",c:"All-Rounder"},{n:"Sherfane Rutherford",c:"All-Rounder"},{n:"Washington Sundar",c:"All-Rounder"},{n:"Nishant Sindhu",c:"All-Rounder"},{n:"Rashid Khan",c:"All-Rounder"},{n:"Arshad Khan",c:"All-Rounder"},{n:"Sai Kishore",c:"All-Rounder"},{n:"Jayant Yadav",c:"All-Rounder"},{n:"Dasun Shanaka",c:"All-Rounder"},{n:"Karim Janat",c:"All-Rounder"},{n:"Kagiso Rabada",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Prasidh Krishna",c:"Bowler"},{n:"Gerald Coetzee",c:"Bowler"},{n:"Gurnoor Brar",c:"Bowler"},{n:"Kulwant Khejroliya",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"Manav Suthar",c:"Bowler"},
-  ],
-  LSG: [
-    {n:"Rishabh Pant",c:"Wicket-Keeper"},{n:"Nicholas Pooran",c:"Wicket-Keeper"},{n:"Aryan Juyal",c:"Wicket-Keeper"},{n:"Matthew Breetzke",c:"Batsman"},{n:"Himmat Singh",c:"Batsman"},{n:"Ayush Badoni",c:"Batsman"},{n:"David Miller",c:"Batsman"},{n:"Mitchell Marsh",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Abdul Samad",c:"All-Rounder"},{n:"Shahbaz Ahmed",c:"All-Rounder"},{n:"Arshin Kulkarni",c:"All-Rounder"},{n:"Rajvardhan Hangargekar",c:"All-Rounder"},{n:"Ravi Bishnoi",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Akash Deep",c:"Bowler"},{n:"Shamar Joseph",c:"Bowler"},{n:"Mayank Yadav",c:"Bowler"},{n:"Mohsin Khan",c:"Bowler"},{n:"Digvesh Singh",c:"Bowler"},{n:"Akash Singh",c:"Bowler"},{n:"Yuvraj Chaudhary",c:"Bowler"},{n:"Prince Yadav",c:"Bowler"},{n:"Manimaran Siddharth",c:"Bowler"},
-  ],
-  PBKS: [
-    {n:"Prabhsimran Singh",c:"Wicket-Keeper"},{n:"Vishnu Vinod",c:"Wicket-Keeper"},{n:"Shreyas Iyer",c:"Batsman"},{n:"Priyansh Arya",c:"Batsman"},{n:"Nehal Wadhera",c:"Batsman"},{n:"Shashank Singh",c:"All-Rounder"},{n:"Marcus Stoinis",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Aaron Hardie",c:"All-Rounder"},{n:"Azmatullah Omarzai",c:"All-Rounder"},{n:"Suryansh Shedge",c:"All-Rounder"},{n:"Harpreet Brar",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Musheer Khan",c:"All-Rounder"},{n:"Arshdeep Singh",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Harshal Patel",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Xavier Bartlett",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Vijaykumar Vyshak",c:"Bowler"},{n:"Pyla Avinash",c:"Bowler"},{n:"Yash Thakur",c:"Bowler"},
-  ],
+  RCB: [{n:"Virat Kohli",c:"Batsman"},{n:"Rajat Patidar",c:"Batsman"},{n:"Phil Salt",c:"Wicket-Keeper"},{n:"Devdutt Padikkal",c:"Batsman"},{n:"Jacob Bethell",c:"All-Rounder"},{n:"Liam Livingstone",c:"All-Rounder"},{n:"Tim David",c:"All-Rounder"},{n:"Jitesh Sharma",c:"Wicket-Keeper"},{n:"Krunal Pandya",c:"All-Rounder"},{n:"Cameron Green",c:"All-Rounder"},{n:"Romario Shepherd",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Swapnil Singh",c:"All-Rounder"},{n:"Yash Dayal",c:"Bowler"},{n:"Bhuvneshwar Kumar",c:"Bowler"},{n:"Josh Hazlewood",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Nwelwetsi Rabada",c:"Bowler"},{n:"Suyash Sharma",c:"Bowler"},{n:"Rasikh Dar",c:"Bowler"},{n:"Lungi Ngidi",c:"Bowler"},{n:"Manoj Bhandage",c:"Bowler"},{n:"Abhinandan Singh",c:"Bowler"}],
+  MI: [{n:"Rohit Sharma",c:"Batsman"},{n:"Suryakumar Yadav",c:"Batsman"},{n:"Tilak Varma",c:"Batsman"},{n:"Ryan Rickelton",c:"Wicket-Keeper"},{n:"Robin Minz",c:"Wicket-Keeper"},{n:"Krishnan Shrijith",c:"Wicket-Keeper"},{n:"Hardik Pandya",c:"All-Rounder"},{n:"Will Jacks",c:"All-Rounder"},{n:"Mitchell Santner",c:"All-Rounder"},{n:"Naman Dhir",c:"All-Rounder"},{n:"Raj Angad Bawa",c:"All-Rounder"},{n:"Bevon Jacobs",c:"All-Rounder"},{n:"Arjun Tendulkar",c:"All-Rounder"},{n:"Jasprit Bumrah",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Karn Sharma",c:"Bowler"},{n:"Mujeeb Ur Rahman",c:"Bowler"},{n:"Reece Topley",c:"Bowler"},{n:"Vignesh Puthur",c:"Bowler"},{n:"Ashwani Kumar",c:"Bowler"},{n:"Satyanarayana Raju",c:"Bowler"},{n:"Lizaad Williams",c:"Bowler"}],
+  CSK: [{n:"MS Dhoni",c:"Wicket-Keeper"},{n:"Devon Conway",c:"Wicket-Keeper"},{n:"Urvil Patel",c:"Wicket-Keeper"},{n:"Ruturaj Gaikwad",c:"Batsman"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Shaik Rasheed",c:"Batsman"},{n:"Rachin Ravindra",c:"All-Rounder"},{n:"Shivam Dube",c:"All-Rounder"},{n:"Vijay Shankar",c:"All-Rounder"},{n:"Ravindra Jadeja",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Jamie Overton",c:"All-Rounder"},{n:"RS Hangargekar",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Shardul Thakur",c:"All-Rounder"},{n:"Matheesha Pathirana",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Mukesh Choudhary",c:"Bowler"},{n:"Noor Ahmad",c:"Bowler"},{n:"Khaleel Ahmed",c:"Bowler"},{n:"Kamlesh Nagarkoti",c:"Bowler"},{n:"Anshul Kamboj",c:"Bowler"},{n:"Nathan Ellis",c:"Bowler"}],
+  KKR: [{n:"Quinton de Kock",c:"Wicket-Keeper"},{n:"Rahmanullah Gurbaz",c:"Wicket-Keeper"},{n:"Luvnith Sisodia",c:"Wicket-Keeper"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Angkrish Raghuvanshi",c:"Batsman"},{n:"Rinku Singh",c:"Batsman"},{n:"Manish Pandey",c:"Batsman"},{n:"Rovman Powell",c:"All-Rounder"},{n:"Ramandeep Singh",c:"All-Rounder"},{n:"Andre Russell",c:"All-Rounder"},{n:"Moeen Ali",c:"All-Rounder"},{n:"Sunil Narine",c:"All-Rounder"},{n:"Venkatesh Iyer",c:"All-Rounder"},{n:"Anukul Roy",c:"All-Rounder"},{n:"Shivam Shukla",c:"All-Rounder"},{n:"Vaibhav Arora",c:"Bowler"},{n:"Harshit Rana",c:"Bowler"},{n:"Anrich Nortje",c:"Bowler"},{n:"Spencer Johnson",c:"Bowler"},{n:"Mayank Markande",c:"Bowler"},{n:"Chetan Sakariya",c:"Bowler"}],
+  DC: [{n:"KL Rahul",c:"Wicket-Keeper"},{n:"Abishek Porel",c:"Wicket-Keeper"},{n:"Harry Brook",c:"Batsman"},{n:"Faf du Plessis",c:"Batsman"},{n:"Jake Fraser-McGurk",c:"Batsman"},{n:"Karun Nair",c:"Batsman"},{n:"Sameer Rizvi",c:"Batsman"},{n:"Axar Patel",c:"All-Rounder"},{n:"Triston Stubbs",c:"All-Rounder"},{n:"Ashutosh Sharma",c:"All-Rounder"},{n:"Donovan Ferreira",c:"All-Rounder"},{n:"Tripurana Vijay",c:"All-Rounder"},{n:"Kuldeep Yadav",c:"Bowler"},{n:"Mitchell Starc",c:"Bowler"},{n:"Mukesh Kumar",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"T Natarajan",c:"Bowler"},{n:"Mohit Sharma",c:"Bowler"},{n:"Darshan Nalkande",c:"Bowler"},{n:"Vipraj Nigam",c:"Bowler"}],
+  SRH: [{n:"Heinrich Klaasen",c:"Wicket-Keeper"},{n:"Ishan Kishan",c:"Wicket-Keeper"},{n:"Travis Head",c:"Batsman"},{n:"Rahul Tripathi",c:"Batsman"},{n:"Atharva Taide",c:"Batsman"},{n:"Anmolpreet Singh",c:"Batsman"},{n:"Sachin Baby",c:"Batsman"},{n:"Pat Cummins",c:"All-Rounder"},{n:"Abhishek Sharma",c:"All-Rounder"},{n:"Nitish Kumar Reddy",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Wiaan Mulder",c:"All-Rounder"},{n:"Harshal Patel",c:"Bowler"},{n:"Adam Zampa",c:"Bowler"},{n:"Jaydev Unadkat",c:"Bowler"},{n:"Brydon Carse",c:"Bowler"},{n:"Raz Janat",c:"Bowler"},{n:"Akeal Hosein",c:"Bowler"},{n:"Simarjeet Singh",c:"Bowler"},{n:"Zeeshan Ansari",c:"Bowler"}],
+  RR: [{n:"Sanju Samson",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Dhruv Jurel",c:"Wicket-Keeper"},{n:"Yashasvi Jaiswal",c:"Batsman"},{n:"Shimron Hetmyer",c:"Batsman"},{n:"Vaibhav Suryavanshi",c:"Batsman"},{n:"Riyan Parag",c:"All-Rounder"},{n:"Nitish Rana",c:"All-Rounder"},{n:"Shubham Dubey",c:"All-Rounder"},{n:"FA Allen",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Wanindu Hasaranga",c:"All-Rounder"},{n:"Maheesh Theekshana",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Sandeep Sharma",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Kumar Kartikeya",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Akash Madhwal",c:"Bowler"}],
+  GT: [{n:"Anuj Rawat",c:"Wicket-Keeper"},{n:"Kumar Kushagra",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Shubman Gill",c:"Batsman"},{n:"Sai Sudharsan",c:"Batsman"},{n:"Shahrukh Khan",c:"Batsman"},{n:"Rahul Tewatia",c:"All-Rounder"},{n:"Mahipal Lomror",c:"All-Rounder"},{n:"Sherfane Rutherford",c:"All-Rounder"},{n:"Washington Sundar",c:"All-Rounder"},{n:"Nishant Sindhu",c:"All-Rounder"},{n:"Rashid Khan",c:"All-Rounder"},{n:"Arshad Khan",c:"All-Rounder"},{n:"Sai Kishore",c:"All-Rounder"},{n:"Jayant Yadav",c:"All-Rounder"},{n:"Dasun Shanaka",c:"All-Rounder"},{n:"Karim Janat",c:"All-Rounder"},{n:"Kagiso Rabada",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Prasidh Krishna",c:"Bowler"},{n:"Gerald Coetzee",c:"Bowler"},{n:"Gurnoor Brar",c:"Bowler"},{n:"Kulwant Khejroliya",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"Manav Suthar",c:"Bowler"}],
+  LSG: [{n:"Rishabh Pant",c:"Wicket-Keeper"},{n:"Nicholas Pooran",c:"Wicket-Keeper"},{n:"Aryan Juyal",c:"Wicket-Keeper"},{n:"Matthew Breetzke",c:"Batsman"},{n:"Himmat Singh",c:"Batsman"},{n:"Ayush Badoni",c:"Batsman"},{n:"David Miller",c:"Batsman"},{n:"Mitchell Marsh",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Abdul Samad",c:"All-Rounder"},{n:"Shahbaz Ahmed",c:"All-Rounder"},{n:"Arshin Kulkarni",c:"All-Rounder"},{n:"Rajvardhan Hangargekar",c:"All-Rounder"},{n:"Ravi Bishnoi",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Akash Deep",c:"Bowler"},{n:"Shamar Joseph",c:"Bowler"},{n:"Mayank Yadav",c:"Bowler"},{n:"Mohsin Khan",c:"Bowler"},{n:"Digvesh Singh",c:"Bowler"},{n:"Akash Singh",c:"Bowler"},{n:"Yuvraj Chaudhary",c:"Bowler"},{n:"Prince Yadav",c:"Bowler"},{n:"Manimaran Siddharth",c:"Bowler"}],
+  PBKS: [{n:"Prabhsimran Singh",c:"Wicket-Keeper"},{n:"Vishnu Vinod",c:"Wicket-Keeper"},{n:"Shreyas Iyer",c:"Batsman"},{n:"Priyansh Arya",c:"Batsman"},{n:"Nehal Wadhera",c:"Batsman"},{n:"Shashank Singh",c:"All-Rounder"},{n:"Marcus Stoinis",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Aaron Hardie",c:"All-Rounder"},{n:"Azmatullah Omarzai",c:"All-Rounder"},{n:"Suryansh Shedge",c:"All-Rounder"},{n:"Harpreet Brar",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Musheer Khan",c:"All-Rounder"},{n:"Arshdeep Singh",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Harshal Patel",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Xavier Bartlett",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Vijaykumar Vyshak",c:"Bowler"},{n:"Pyla Avinash",c:"Bowler"},{n:"Yash Thakur",c:"Bowler"}],
 };
+// @@END_SQUADS@@
 
+// @@BEGIN_MATCHES@@
 const MATCHES = [
   {id:"TestMatch1",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-03-07",time:"16:30",status:"Complete"},
-  {id:"TestMatch2",name:"CSK vs MI",team1:"CSK",team2:"MI",date:"2026-03-07",time:"17:30",status:"Pending"},
-  {id:"TestMatch3",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-03-08",time:"06:00",status:"Pending"},
+  {id:"TestMatch2",name:"CSK vs MI",team1:"CSK",team2:"MI",date:"2026-03-07",time:"17:30",status:"Complete"},
+  {id:"TestMatch3",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-03-08",time:"06:00",status:"Complete"},
   {id:"Match1",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-03-31",time:"19:30",status:"Pending"},
   {id:"Match2",name:"CSK vs MI",team1:"CSK",team2:"MI",date:"2026-04-01",time:"19:30",status:"Pending"},
   {id:"Match3",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-04-02",time:"19:30",status:"Pending"},
@@ -729,25 +712,20 @@ const MATCHES = [
   {id:"Match27",name:"CSK vs SRH",team1:"CSK",team2:"SRH",date:"2026-04-21",time:"19:30",status:"Pending"},
   {id:"Match28",name:"RR vs MI",team1:"RR",team2:"MI",date:"2026-04-22",time:"19:30",status:"Pending"},
   {id:"Match29",name:"PBKS vs RCB",team1:"PBKS",team2:"RCB",date:"2026-04-23",time:"19:30",status:"Pending"},
-  {id:"Match30",name:"KKR vs GT",team1:"KKR",team2:"GT",date:"2026-04-24",time:"19:30",status:"Pending"},
+  {id:"Match30",name:"KKR vs GT",team1:"KKR",team2:"GT",date:"2026-04-24",time:"19:30",status:"Pending"}
 ];
+// @@END_MATCHES@@
 
-// ─── USER PIN MAP ─────────────────────────────────────────────────────────────
-// Format: "Name": { id:"uXX", pin:"NNNN" }
-// Name must be typed EXACTLY as shown here (case-sensitive)
-// PIN is a 4-digit number you share privately with each person
-// To add a user: add a new line, tell them their name + PIN
+// @@BEGIN_USERS@@
+// Format: "Name": { id:"UXXXXXXXX", pin:"NNNN", email:"..." }
 const USER_PINS = {
-  "Rahul": { id:"u01", pin:"1234" },
-  "Priya": { id:"u02", pin:"2345" },
-  "Amit": { id:"u03", pin:"3456" },
-  "Sneha": { id:"u04", pin:"4567" },
-  "Vikram": { id:"u05", pin:"5678" },
-  "Deepa": { id:"u06", pin:"6789" },
-  "Rohit": { id:"U20260001", pin:"7890" },
-  "Kavya": { id:"u08", pin:"8901" },
-  // Add more: "Name": { id:"u09", pin:"NNNN" },
+  "Rohit": { id:"U20260001", pin:"7890", email:"learn2earn06@gmail.com" },
+  "Rahul": { id:"U20260002", pin:"1234", email:"rohit.surve@outlook.com" },
+  "Priya": { id:"U20260003", pin:"2345", email:"rohitmsurve2024@gmail.com" },
+  "Amit": { id:"U20260004", pin:"3456", email:"ashokvshelke61@gmail.com" },
+  "Rohit5": { id:"U20260005", pin:"9999", email:"test@gmail.com" },
 };
+// @@END_USERS@@
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
 

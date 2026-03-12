@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IPL Fantasy — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0a0e1a; --surface: #111827; --surface2: #1a2235; --border: #1e2d45;
+  --accent: #f5a623; --accent2: #e8365d; --green: #22c55e;
+  --text: #e8eaf0; --muted: #7a8ba0; --blue: #3b82f6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+header { text-align: center; padding: 32px 20px 16px; border-bottom: 1px solid var(--border); }
+header h1 { font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 700; letter-spacing: 4px;
+  background: linear-gradient(135deg,#f5a623,#e8365d); -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent; background-clip:text; }
+header p { color: var(--muted); font-size: 0.85rem; letter-spacing: 2px; margin-top: 4px; }
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; }
+.tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn {
+  padding: 10px 22px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; transition: all 0.15s;
+}
+.tab-btn.active { background: rgba(245,166,35,0.12); border-color: var(--accent); color: var(--accent); }
+.tab-btn:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 24px; margin-bottom: 20px;
+}
+.card-title {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title .icon { font-size: 1rem; }
+
+/* ── Forms ───────────────────────────────────────────────────────────────── */
+.form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 140px; }
+label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+input[type=text], input[type=date], input[type=time], input[type=password], select, textarea {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 7px;
+  color: var(--text); padding: 9px 12px; font-family: 'Barlow', sans-serif; font-size: 0.88rem;
+  transition: border-color 0.15s; width: 100%;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+select option { background: #1a2235; }
+input::placeholder { color: var(--muted); }
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.btn {
+  padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 0.88rem; letter-spacing: 1.5px;
+  text-transform: uppercase; transition: all 0.15s; white-space: nowrap;
+}
+.btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-weight: 700; }
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-danger  { background: rgba(232,54,93,0.15); border: 1px solid rgba(232,54,93,0.4); color: var(--accent2); }
+.btn-danger:hover  { background: rgba(232,54,93,0.25); }
+.btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-green { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.4); color: var(--green); }
+.btn-green:hover { background: rgba(34,197,94,0.25); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
+
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table th {
+  background: var(--surface2); padding: 10px 12px; text-align: left;
+  font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1.5px; font-size: 0.75rem;
+  color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 10px 12px; border-bottom: 1px solid rgba(30,45,69,0.5); vertical-align: middle; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table tr:last-child td { border-bottom: none; }
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 0.68rem; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px;
+}
+.badge-pending  { background: rgba(34,197,94,0.12);  color: var(--green);   border: 1px solid rgba(34,197,94,0.3);  }
+.badge-complete { background: rgba(122,139,160,0.12); color: var(--muted);   border: 1px solid rgba(122,139,160,0.3); }
+.badge-bat  { background: rgba(59,130,246,0.12);  color: #93C5FD; }
+.badge-bowl { background: rgba(34,197,94,0.12);   color: #86EFAC; }
+.badge-ar   { background: rgba(234,179,8,0.12);   color: #FDE047; }
+.badge-wk   { background: rgba(168,85,247,0.12);  color: #D8B4FE; }
+
+/* ── Alert / toast ───────────────────────────────────────────────────────── */
+.alert { padding: 11px 15px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.alert-success { background: rgba(34,197,94,0.1);  border: 1px solid rgba(34,197,94,0.3);  color: var(--green); }
+.alert-warn    { background: rgba(232,54,93,0.1);  border: 1px solid rgba(232,54,93,0.3);  color: #f87171; }
+.alert-info    { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.25); color: var(--accent); }
+#toast { position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 260px; display: none; }
+
+/* ── GitHub config box ───────────────────────────────────────────────────── */
+.config-box {
+  background: rgba(245,166,35,0.05); border: 1px solid rgba(245,166,35,0.2);
+  border-radius: 10px; padding: 18px; margin-bottom: 20px;
+}
+.config-box summary { cursor: pointer; font-family: 'Barlow Condensed', sans-serif; color: var(--accent); letter-spacing: 1px; font-size: 0.9rem; }
+.config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+@media (max-width: 600px) { .config-grid { grid-template-columns: 1fr; } }
+
+/* ── Player pill list ────────────────────────────────────────────────────── */
+.player-pill-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.player-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px 4px 8px; border-radius: 20px; font-size: 0.8rem;
+  background: var(--surface2); border: 1px solid var(--border);
+}
+.player-pill .pill-x { cursor: pointer; opacity: 0.5; font-size: 0.7rem; }
+.player-pill .pill-x:hover { opacity: 1; color: var(--accent2); }
+.team-section { margin-bottom: 24px; }
+.team-label { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; letter-spacing: 2px; font-weight: 700; margin-bottom: 6px; }
+
+/* ── Misc ─────────────────────────────────────────────────────────────────── */
+.loading { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; }
+.spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.search-input { max-width: 260px; }
+#login-overlay {
+  position: fixed; inset: 0; background: var(--bg); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 36px; text-align: center; max-width: 380px; width: 100%; }
+.login-box h2 { font-family: 'Rajdhani', sans-serif; font-size: 1.8rem; letter-spacing: 3px; color: var(--accent); margin-bottom: 6px; }
+.login-box p { color: var(--muted); font-size: 0.82rem; margin-bottom: 24px; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.shake { animation: shake 0.45s ease; }
+</style>
+</head>
+<body>
+
+<!-- ── Admin login overlay ────────────────────────────────────────────────── -->
+<div id="login-overlay">
+  <div class="login-box" id="login-box">
+    <div style="font-size:2rem;margin-bottom:12px">🔐</div>
+    <h2>ADMIN LOGIN</h2>
+    <p>Enter your admin password to continue</p>
+    <div style="text-align:left;margin-bottom:16px">
+      <label>Admin Password</label>
+      <input type="password" id="admin-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminLogin()"
+        style="margin-top:6px;letter-spacing:4px;text-align:center"/>
+    </div>
+    <div id="login-err" style="display:none" class="alert alert-warn">Incorrect password.</div>
+    <button class="btn btn-primary" style="width:100%" onclick="checkAdminLogin()">ENTER ADMIN PANEL →</button>
+    <p style="margin-top:16px;color:var(--muted);font-size:0.75rem">
+      Default password: <code style="color:var(--accent)">admin123</code><br>
+      Change it in the <code>ADMIN_PASSWORD</code> constant below.
+    </p>
+  </div>
+</div>
+
+<!-- ── Toast notification ─────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<header>
+  <h1>🏏 IPL FANTASY ADMIN</h1>
+  <p>SQUAD · FIXTURES · AUTOMATION</p>
+</header>
+
+<div class="container">
+
+  <!-- ── GitHub Config ───────────────────────────────────────────────────── -->
+  <details class="config-box" id="config-details">
+    <summary>⚙️ GitHub Configuration — click to expand &amp; set your repo details</summary>
+    <div class="config-grid">
+      <div class="form-group">
+        <label>GitHub Owner (username or org)</label>
+        <input type="text" id="cfg-owner" placeholder="e.g. your-username"/>
+      </div>
+      <div class="form-group">
+        <label>Repository Name</label>
+        <input type="text" id="cfg-repo" placeholder="e.g. ipl-fantasy"/>
+      </div>
+      <div class="form-group">
+        <label>Branch</label>
+        <input type="text" id="cfg-branch" placeholder="main"/>
+      </div>
+      <div class="form-group">
+        <label>Personal Access Token (PAT)</label>
+        <input type="password" id="cfg-token" placeholder="ghp_xxxxxxxxxxxx"/>
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="saveConfig()">💾 Save Config</button>
+      <button class="btn btn-secondary" onclick="loadDataFromGitHub()">🔄 Load data.json from GitHub</button>
+      <button class="btn btn-green" onclick="triggerWorkflow()">▶️ Trigger GitHub Workflow Now</button>
+    </div>
+    <div id="cfg-status" style="margin-top:12px"></div>
+    <div style="margin-top:12px;padding:12px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;font-size:0.78rem;color:#93C5FD">
+      <strong>Setup:</strong> Create a GitHub PAT at Settings → Developer settings → Personal access tokens → Tokens (classic).
+      Required scopes: <code>repo</code> (full) + <code>workflow</code>. The token stays in your browser session only — never sent anywhere except GitHub's API.
+    </div>
+  </details>
+
+  <!-- ── Tabs ───────────────────────────────────────────────────────────── -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('fixtures')">📅 Fixtures</button>
+    <button class="tab-btn" onclick="switchTab('squads')">👥 Squads</button>
+    <button class="tab-btn" onclick="switchTab('users')">🔑 Users</button>
+    <button class="tab-btn" onclick="switchTab('sync')">☁️ Sync to GitHub</button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       TAB 1 — FIXTURES
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-fixtures">
+
+    <!-- Add / Edit form -->
+    <div class="card">
+      <div class="card-title"><span class="icon">➕</span> Add / Edit Match</div>
+      <div class="form-row">
+        <div class="form-group" style="max-width:120px">
+          <label>Match ID</label>
+          <input type="text" id="f-id" placeholder="Match31"/>
+        </div>
+        <div class="form-group">
+          <label>Team 1</label>
+          <select id="f-team1">
+            <option value="">— select —</option>
+            <option>RCB</option><option>MI</option><option>CSK</option><option>KKR</option>
+            <option>DC</option><option>SRH</option><option>RR</option><option>GT</option>
+            <option>LSG</option><option>PBKS</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Team 2</label>
+          <select id="f-team2">
+            <option value="">— select —</option>
+            <option>RCB</option><option>MI</option><option>CSK</option><option>KKR</option>
+            <option>DC</option><option>SRH</option><option>RR</option><option>GT</option>
+            <option>LSG</option><option>PBKS</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Date (YYYY-MM-DD)</label>
+          <input type="date" id="f-date"/>
+        </div>
+        <div class="form-group" style="max-width:120px">
+          <label>Time (IST)</label>
+          <input type="time" id="f-time" value="19:30"/>
+        </div>
+        <div class="form-group" style="max-width:130px">
+          <label>Status</label>
+          <select id="f-status">
+            <option value="Pending">Pending</option>
+            <option value="Complete">Complete</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="addOrUpdateMatch()">💾 Save Match</button>
+        <button class="btn btn-secondary" onclick="clearMatchForm()">✕ Clear</button>
+      </div>
+      <div id="fixture-form-msg" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="flex-between">
+        <div class="card-title" style="margin-bottom:0"><span class="icon">📋</span> All Fixtures (<span id="match-count">0</span>)</div>
+        <button class="btn btn-danger" onclick="clearAllMatches()" style="font-size:0.78rem;padding:7px 14px">🗑️ Clear All</button>
+      </div>
+      <div style="overflow-x:auto;margin-top:16px">
+        <table class="data-table" id="fixture-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Match</th><th>Date</th><th>Time (IST)</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="fixture-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       TAB 2 — SQUADS
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-squads">
+
+    <!-- Add player form -->
+    <div class="card">
+      <div class="card-title"><span class="icon">➕</span> Add Player to Squad</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Team</label>
+          <select id="s-team">
+            <option value="">— select team —</option>
+            <option>RCB</option><option>MI</option><option>CSK</option><option>KKR</option>
+            <option>DC</option><option>SRH</option><option>RR</option><option>GT</option>
+            <option>LSG</option><option>PBKS</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Player Name</label>
+          <input type="text" id="s-name" placeholder="e.g. Virat Kohli"/>
+        </div>
+        <div class="form-group" style="max-width:160px">
+          <label>Category</label>
+          <select id="s-cat">
+            <option value="Batsman">Batsman</option>
+            <option value="Bowler">Bowler</option>
+            <option value="All-Rounder">All-Rounder</option>
+            <option value="Wicket-Keeper">Wicket-Keeper</option>
+          </select>
+        </div>
+        <div class="form-group" style="align-self:flex-end;max-width:140px">
+          <button class="btn btn-primary" onclick="addPlayer()" style="width:100%">+ Add Player</button>
+        </div>
+      </div>
+      <div id="squad-form-msg" style="margin-top:8px"></div>
+    </div>
+
+    <!-- Squad display -->
+    <div class="card">
+      <div class="flex-between">
+        <div class="card-title" style="margin-bottom:0"><span class="icon">👥</span> Squad Roster</div>
+        <div class="form-group search-input" style="margin:0">
+          <input type="text" id="squad-search" placeholder="🔍 Search player..." oninput="renderSquads()"/>
+        </div>
+      </div>
+      <div id="squad-roster" style="margin-top:16px"></div>
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════════
+       TAB 3 — USERS
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-users">
+
+    <!-- Add / Edit user form -->
+    <div class="card">
+      <div class="card-title"><span class="icon">➕</span> Add / Edit User</div>
+      <div class="form-row">
+        <div class="form-group" style="max-width:160px">
+          <label>User ID</label>
+          <input type="text" id="u-id" placeholder="U20260006" style="font-family:monospace"/>
+        </div>
+        <div class="form-group">
+          <label>Display Name (login name)</label>
+          <input type="text" id="u-name" placeholder="e.g. Sneha"/>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="text" id="u-email" placeholder="user@example.com"/>
+        </div>
+        <div class="form-group" style="max-width:130px">
+          <label>PIN (4–6 digits)</label>
+          <input type="text" id="u-pin" placeholder="1234" maxlength="6" style="letter-spacing:4px;text-align:center;font-family:monospace"/>
+        </div>
+        <div class="form-group" style="align-self:flex-end;max-width:160px">
+          <button class="btn btn-primary" onclick="addOrUpdateUser()" style="width:100%">💾 Save User</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onclick="clearUserForm()">✕ Clear</button>
+        <button class="btn btn-secondary" onclick="autoGenerateId()" style="font-size:0.78rem">🔢 Auto-generate ID</button>
+      </div>
+      <div id="user-form-msg" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Users table -->
+    <div class="card">
+      <div class="flex-between">
+        <div class="card-title" style="margin-bottom:0"><span class="icon">🔑</span> All Users (<span id="user-count">0</span>)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input type="text" id="user-search" placeholder="🔍 Search..." oninput="renderUsers()"
+            style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;
+                   color:var(--text);padding:7px 12px;font-size:0.85rem;max-width:200px"/>
+          <button class="btn btn-green" onclick="downloadXlsx()" style="font-size:0.78rem;padding:7px 14px">📥 Download XLSX</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;margin-top:16px">
+        <table class="data-table" id="user-table">
+          <thead>
+            <tr>
+              <th>User ID</th><th>Name</th><th>Email</th><th>PIN</th><th>App URL</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="user-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Info box -->
+    <div class="card" style="background:rgba(59,130,246,0.05);border-color:rgba(59,130,246,0.2)">
+      <div class="card-title" style="color:#93C5FD"><span class="icon">ℹ️</span> How Users Work</div>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.8">
+        • <strong style="color:var(--text)">Name</strong> is the login display name — users type it exactly on the login screen (case-insensitive).<br>
+        • <strong style="color:var(--text)">PIN</strong> is the private 4–6 digit code each user types to authenticate.<br>
+        • <strong style="color:var(--text)">Email</strong> is for your reference only (to send credentials) — not used in the app.<br>
+        • After saving changes, go to <strong style="color:var(--accent)">Sync to GitHub</strong> → Push data.json → Trigger Workflow.<br>
+        • The workflow automatically regenerates <code>index.html</code> and <code>user_list.xlsx</code> in your repo.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       TAB 4 — SYNC
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-sync">
+
+    <div class="card">
+      <div class="card-title"><span class="icon">☁️</span> Push Changes to GitHub</div>
+      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px;line-height:1.7">
+        This will update <code>data.json</code> in your GitHub repository, then trigger the
+        <code>update-fixtures.yml</code> workflow which regenerates <code>index.html</code> and
+        <code>user_list.xlsx</code> automatically. Make sure your GitHub config is saved above first.
+      </p>
+      <div id="sync-status" style="margin-bottom:16px"></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="syncToGitHub()" id="sync-btn">☁️ Push data.json to GitHub</button>
+        <button class="btn btn-green"   onclick="triggerWorkflow()" id="trigger-btn">▶️ Trigger Workflow (regenerate HTML)</button>
+        <button class="btn btn-secondary" onclick="exportJSON()">⬇️ Download data.json Locally</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📋</span> Current data.json Preview</div>
+      <textarea id="json-preview" readonly style="width:100%;height:320px;font-family:monospace;font-size:0.78rem;resize:vertical"></textarea>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📥</span> Import data.json</div>
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:14px">Paste a <code>data.json</code> below to import it into the editor.</p>
+      <textarea id="json-import" style="width:100%;height:160px;font-family:monospace;font-size:0.78rem;resize:vertical" placeholder='{"squads":{...},"matches":[...]}'></textarea>
+      <button class="btn btn-secondary" style="margin-top:10px" onclick="importJSON()">📥 Import JSON</button>
+      <div id="import-msg" style="margin-top:8px"></div>
+    </div>
+
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+// CONFIG & AUTH
+// ════════════════════════════════════════════════════════════════════════════
+
+// Change this password before deploying!
+const ADMIN_PASSWORD = "admin123";
+
+function checkAdminLogin() {
+  const pw = document.getElementById('admin-pw').value;
+  if (pw === ADMIN_PASSWORD) {
+    document.getElementById('login-overlay').style.display = 'none';
+    loadLocalState();
+    renderAll();
+  } else {
+    const err = document.getElementById('login-err');
+    err.style.display = 'flex';
+    const box = document.getElementById('login-box');
+    box.classList.remove('shake');
+    void box.offsetWidth;
+    box.classList.add('shake');
+    document.getElementById('admin-pw').value = '';
+  }
+}
+document.getElementById('admin-pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAdminLogin();
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// STATE — lives in memory only (no localStorage)
+// ════════════════════════════════════════════════════════════════════════════
+
+let state = {
+  squads: {},
+  matches: []
+};
+
+// GitHub config — session-only memory
+let ghConfig = { owner: '', repo: '', branch: 'main', token: '' };
+
+// ════════════════════════════════════════════════════════════════════════════
+// PERSIST CONFIG (session memory only)
+// ════════════════════════════════════════════════════════════════════════════
+
+function saveConfig() {
+  ghConfig.owner  = document.getElementById('cfg-owner').value.trim();
+  ghConfig.repo   = document.getElementById('cfg-repo').value.trim();
+  ghConfig.branch = document.getElementById('cfg-branch').value.trim() || 'main';
+  ghConfig.token  = document.getElementById('cfg-token').value.trim();
+  if (!ghConfig.owner || !ghConfig.repo || !ghConfig.token) {
+    setStatus('cfg-status', '⚠️ Please fill Owner, Repo, and Token.', 'warn');
+    return;
+  }
+  setStatus('cfg-status', '✅ Config saved for this session.', 'success');
+}
+
+function loadLocalState() {
+  state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════════════════════════════════════════
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    const tabs = ['fixtures','squads','users','sync'];
+    b.classList.toggle('active', tabs[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'sync') updateJSONPreview();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// FIXTURES
+// ════════════════════════════════════════════════════════════════════════════
+
+function renderFixtures() {
+  const tbody = document.getElementById('fixture-tbody');
+  tbody.innerHTML = '';
+  document.getElementById('match-count').textContent = state.matches.length;
+
+  state.matches.forEach((m, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-family:monospace;font-size:0.78rem;color:var(--muted)">${m.id}</td>
+      <td><strong>${m.name}</strong></td>
+      <td>${m.date}</td>
+      <td>${m.time} IST</td>
+      <td><span class="badge badge-${m.status === 'Complete' ? 'complete' : 'pending'}">${m.status}</span></td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-secondary" style="padding:5px 10px;font-size:0.72rem" onclick="editMatch(${idx})">✏️ Edit</button>
+        <button class="btn btn-danger"    style="padding:5px 10px;font-size:0.72rem" onclick="deleteMatch(${idx})">🗑️</button>
+        <button class="btn btn-secondary" style="padding:5px 10px;font-size:0.72rem" onclick="toggleStatus(${idx})">${m.status === 'Complete' ? '↩️ Reopen' : '✅ Complete'}</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function addOrUpdateMatch() {
+  const id     = document.getElementById('f-id').value.trim();
+  const t1     = document.getElementById('f-team1').value;
+  const t2     = document.getElementById('f-team2').value;
+  const date   = document.getElementById('f-date').value;
+  const time   = document.getElementById('f-time').value;
+  const status = document.getElementById('f-status').value;
+
+  if (!id || !t1 || !t2 || !date || !time) {
+    setStatus('fixture-form-msg', '⚠️ Please fill in all fields.', 'warn'); return;
+  }
+  if (t1 === t2) {
+    setStatus('fixture-form-msg', '⚠️ Team 1 and Team 2 must be different.', 'warn'); return;
+  }
+
+  const name = `${t1} vs ${t2}`;
+  const existing = state.matches.findIndex(m => m.id === id);
+
+  if (existing >= 0) {
+    state.matches[existing] = { id, name, team1:t1, team2:t2, date, time, status };
+    setStatus('fixture-form-msg', `✅ Match "${name}" updated.`, 'success');
+  } else {
+    state.matches.push({ id, name, team1:t1, team2:t2, date, time, status });
+    setStatus('fixture-form-msg', `✅ Match "${name}" added.`, 'success');
+  }
+
+  // Sort by date then time
+  state.matches.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+  clearMatchForm();
+  renderFixtures();
+}
+
+function editMatch(idx) {
+  const m = state.matches[idx];
+  document.getElementById('f-id').value     = m.id;
+  document.getElementById('f-team1').value  = m.team1;
+  document.getElementById('f-team2').value  = m.team2;
+  document.getElementById('f-date').value   = m.date;
+  document.getElementById('f-time').value   = m.time;
+  document.getElementById('f-status').value = m.status;
+  document.getElementById('f-id').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteMatch(idx) {
+  const m = state.matches[idx];
+  if (!confirm(`Delete match "${m.name}" on ${m.date}?`)) return;
+  state.matches.splice(idx, 1);
+  renderFixtures();
+  showToast(`Deleted: ${m.name}`, 'warn');
+}
+
+function toggleStatus(idx) {
+  const m = state.matches[idx];
+  m.status = m.status === 'Complete' ? 'Pending' : 'Complete';
+  renderFixtures();
+  showToast(`${m.name} → ${m.status}`, 'success');
+}
+
+function clearMatchForm() {
+  ['f-id','f-team1','f-team2','f-date','f-time'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = id === 'f-time' ? '19:30' : '';
+  });
+  document.getElementById('f-status').value = 'Pending';
+  document.getElementById('fixture-form-msg').innerHTML = '';
+}
+
+function clearAllMatches() {
+  if (!confirm('Clear ALL matches? This cannot be undone.')) return;
+  state.matches = [];
+  renderFixtures();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// SQUADS
+// ════════════════════════════════════════════════════════════════════════════
+
+function addPlayer() {
+  const team = document.getElementById('s-team').value;
+  const name = document.getElementById('s-name').value.trim();
+  const cat  = document.getElementById('s-cat').value;
+
+  if (!team || !name) {
+    setStatus('squad-form-msg', '⚠️ Select a team and enter a player name.', 'warn'); return;
+  }
+  if (!state.squads[team]) state.squads[team] = [];
+
+  const exists = state.squads[team].some(p => p.n.toLowerCase() === name.toLowerCase());
+  if (exists) {
+    setStatus('squad-form-msg', `⚠️ ${name} is already in ${team}'s squad.`, 'warn'); return;
+  }
+
+  state.squads[team].push({ n: name, c: cat });
+  document.getElementById('s-name').value = '';
+  setStatus('squad-form-msg', `✅ ${name} added to ${team}.`, 'success');
+  renderSquads();
+}
+
+function removePlayer(team, playerName) {
+  if (!confirm(`Remove ${playerName} from ${team}?`)) return;
+  state.squads[team] = state.squads[team].filter(p => p.n !== playerName);
+  renderSquads();
+  showToast(`Removed ${playerName} from ${team}`, 'warn');
+}
+
+function renderSquads() {
+  const search = (document.getElementById('squad-search')?.value || '').toLowerCase();
+  const roster = document.getElementById('squad-roster');
+  roster.innerHTML = '';
+
+  const TEAM_COLORS = {
+    RCB:'#e8365d', MI:'#1a3a6b', CSK:'#f5a623', KKR:'#9b59b6',
+    DC:'#1e90ff', SRH:'#e67e22', RR:'#e74c3c', GT:'#2ecc71', LSG:'#3498db', PBKS:'#e74c3c'
+  };
+
+  const CAT_CLASS = {
+    'Batsman':'bat', 'Bowler':'bowl', 'All-Rounder':'ar', 'Wicket-Keeper':'wk'
+  };
+  const CAT_SHORT = {
+    'Batsman':'BAT', 'Bowler':'BOWL', 'All-Rounder':'AR', 'Wicket-Keeper':'WK'
+  };
+
+  Object.entries(state.squads).forEach(([team, players]) => {
+    const filtered = search
+      ? players.filter(p => p.n.toLowerCase().includes(search) || p.c.toLowerCase().includes(search))
+      : players;
+    if (filtered.length === 0 && search) return;
+
+    const color = TEAM_COLORS[team] || 'var(--accent)';
+    const div = document.createElement('div');
+    div.className = 'team-section';
+    div.innerHTML = `
+      <div class="team-label" style="color:${color}">${team}
+        <span style="color:var(--muted);font-size:0.78rem;font-weight:400">${filtered.length} / ${players.length} players</span>
+      </div>
+      <div class="player-pill-wrap" id="pills-${team}"></div>
+    `;
+    roster.appendChild(div);
+
+    const pillWrap = div.querySelector(`#pills-${team}`);
+    filtered.forEach(p => {
+      const pill = document.createElement('span');
+      pill.className = 'player-pill';
+      pill.innerHTML = `
+        <span class="badge badge-${CAT_CLASS[p.c] || 'bat'}" style="font-size:0.62rem">${CAT_SHORT[p.c] || p.c}</span>
+        ${p.n}
+        <span class="pill-x" onclick="removePlayer('${team}','${p.n.replace(/'/g,"\\'")}')">✕</span>
+      `;
+      pillWrap.appendChild(pill);
+    });
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// SYNC / GITHUB
+// ════════════════════════════════════════════════════════════════════════════
+
+function updateJSONPreview() {
+  document.getElementById('json-preview').value = JSON.stringify(state, null, 2);
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'data.json';
+  a.click();
+  showToast('data.json downloaded!', 'success');
+}
+
+function importJSON() {
+  const raw = document.getElementById('json-import').value.trim();
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed.squads || !parsed.matches) throw new Error('Missing squads or matches keys.');
+    if (!parsed.users) parsed.users = [];
+    state = parsed;
+    renderAll();
+    setStatus('import-msg', '✅ JSON imported successfully.', 'success');
+  } catch(e) {
+    setStatus('import-msg', `⚠️ Invalid JSON: ${e.message}`, 'warn');
+  }
+}
+
+async function loadDataFromGitHub() {
+  if (!checkConfig()) return;
+  const { owner, repo, branch, token } = ghConfig;
+  setStatus('cfg-status', '<div class="loading"><div class="spinner"></div> Loading data.json from GitHub...</div>', 'info');
+
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/data.json?ref=${branch}`,
+      { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } }
+    );
+    if (!res.ok) throw new Error(`HTTP ${res.status} — ${(await res.json()).message}`);
+    const json = await res.json();
+    const content = atob(json.content.replace(/\n/g, ''));
+    state = JSON.parse(content);
+    renderAll();
+    setStatus('cfg-status', '✅ data.json loaded from GitHub!', 'success');
+    showToast('Data loaded from GitHub', 'success');
+  } catch(e) {
+    setStatus('cfg-status', `⚠️ Failed: ${e.message}`, 'warn');
+  }
+}
+
+async function syncToGitHub() {
+  if (!checkConfig()) return;
+  const { owner, repo, branch, token } = ghConfig;
+  const btn = document.getElementById('sync-btn');
+  btn.disabled = true;
+  setStatus('sync-status', '<div class="loading"><div class="spinner"></div> Fetching current SHA...</div>', 'info');
+
+  try {
+    // 1. Get current SHA of data.json
+    const getRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/data.json?ref=${branch}`,
+      { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } }
+    );
+    let sha = null;
+    if (getRes.ok) {
+      sha = (await getRes.json()).sha;
+    } else if (getRes.status !== 404) {
+      throw new Error(`HTTP ${getRes.status}`);
+    }
+
+    // 2. Push updated data.json
+    setStatus('sync-status', '<div class="loading"><div class="spinner"></div> Pushing data.json...</div>', 'info');
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+    const body = {
+      message: `chore: admin panel update — ${new Date().toISOString()}`,
+      content,
+      branch,
+      ...(sha ? { sha } : {})
+    };
+
+    const putRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/data.json`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      }
+    );
+    if (!putRes.ok) throw new Error(`Push failed: HTTP ${putRes.status} — ${(await putRes.json()).message}`);
+
+    setStatus('sync-status', '✅ data.json pushed to GitHub! Now trigger the workflow to regenerate index.html.', 'success');
+    showToast('data.json pushed successfully!', 'success');
+  } catch(e) {
+    setStatus('sync-status', `⚠️ Error: ${e.message}`, 'warn');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function triggerWorkflow() {
+  if (!checkConfig()) return;
+  const { owner, repo, branch, token } = ghConfig;
+  const btn = document.getElementById('trigger-btn');
+  if (btn) btn.disabled = true;
+  setStatus('sync-status', '<div class="loading"><div class="spinner"></div> Triggering GitHub Actions workflow...</div>', 'info');
+
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/actions/workflows/update-fixtures.yml/dispatches`,
+      {
+        method: 'POST',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ref: branch, inputs: { reason: 'Admin panel manual trigger' } })
+      }
+    );
+    if (res.status === 204) {
+      setStatus('sync-status', '✅ Workflow triggered! Check GitHub Actions tab for progress. index.html will update in ~30 seconds.', 'success');
+      showToast('Workflow triggered!', 'success');
+    } else {
+      const err = await res.json();
+      throw new Error(`HTTP ${res.status} — ${err.message}`);
+    }
+  } catch(e) {
+    setStatus('sync-status', `⚠️ Error: ${e.message}`, 'warn');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function checkConfig() {
+  if (!ghConfig.owner || !ghConfig.repo || !ghConfig.token) {
+    showToast('⚠️ Set your GitHub config first!', 'warn');
+    document.getElementById('config-details').open = true;
+    return false;
+  }
+  return true;
+}
+
+
+// ════════════════════════════════════════════════════════════════════════════
+// USERS
+// ════════════════════════════════════════════════════════════════════════════
+
+const APP_URL = "https://sgipl2026-lgtm.github.io/selection/";
+
+function nextUserId() {
+  if (!state.users || state.users.length === 0) return "U20260001";
+  const nums = state.users
+    .map(u => parseInt((u.id || "").replace(/[^0-9]/g, ""), 10))
+    .filter(n => !isNaN(n));
+  const next = Math.max(...nums) + 1;
+  return "U" + String(next).padStart(8, "0");
+}
+
+function autoGenerateId() {
+  document.getElementById('u-id').value = nextUserId();
+}
+
+function addOrUpdateUser() {
+  const id    = document.getElementById('u-id').value.trim();
+  const name  = document.getElementById('u-name').value.trim();
+  const email = document.getElementById('u-email').value.trim();
+  const pin   = document.getElementById('u-pin').value.trim();
+
+  if (!id || !name || !pin) {
+    setStatus('user-form-msg', '⚠️ User ID, Name and PIN are all required.', 'warn'); return;
+  }
+  if (!/^\d{4,6}$/.test(pin)) {
+    setStatus('user-form-msg', '⚠️ PIN must be 4–6 digits.', 'warn'); return;
+  }
+
+  if (!state.users) state.users = [];
+
+  // Check duplicate name (excluding current edit target by ID)
+  const dupName = state.users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.id !== id);
+  if (dupName) {
+    setStatus('user-form-msg', `⚠️ Name "${name}" is already taken by ${dupName.id}.`, 'warn'); return;
+  }
+
+  const existing = state.users.findIndex(u => u.id === id);
+  if (existing >= 0) {
+    state.users[existing] = { id, name, pin, email };
+    setStatus('user-form-msg', `✅ User "${name}" updated.`, 'success');
+  } else {
+    state.users.push({ id, name, pin, email });
+    setStatus('user-form-msg', `✅ User "${name}" added.`, 'success');
+  }
+
+  state.users.sort((a, b) => a.id.localeCompare(b.id));
+  clearUserForm();
+  renderUsers();
+}
+
+function editUser(idx) {
+  const u = state.users[idx];
+  document.getElementById('u-id').value    = u.id;
+  document.getElementById('u-name').value  = u.name;
+  document.getElementById('u-email').value = u.email || '';
+  document.getElementById('u-pin').value   = u.pin;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteUser(idx) {
+  const u = state.users[idx];
+  if (!confirm(`Delete user "${u.name}" (${u.id})? They will no longer be able to log in.`)) return;
+  state.users.splice(idx, 1);
+  renderUsers();
+  showToast(`Deleted user: ${u.name}`, 'warn');
+}
+
+function resetPin(idx) {
+  const u = state.users[idx];
+  const newPin = prompt(`Enter new PIN for "${u.name}" (4–6 digits):`, u.pin);
+  if (!newPin) return;
+  if (!/^\d{4,6}$/.test(newPin.trim())) {
+    showToast('⚠️ PIN must be 4–6 digits', 'warn'); return;
+  }
+  state.users[idx].pin = newPin.trim();
+  renderUsers();
+  showToast(`PIN updated for ${u.name}`, 'success');
+}
+
+function clearUserForm() {
+  ['u-id','u-name','u-email','u-pin'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('user-form-msg').innerHTML = '';
+}
+
+function renderUsers() {
+  const search = (document.getElementById('user-search')?.value || '').toLowerCase();
+  const tbody = document.getElementById('user-tbody');
+  const users = state.users || [];
+  tbody.innerHTML = '';
+  document.getElementById('user-count').textContent = users.length;
+
+  const filtered = search
+    ? users.filter(u =>
+        u.name.toLowerCase().includes(search) ||
+        (u.email || '').toLowerCase().includes(search) ||
+        u.id.toLowerCase().includes(search))
+    : users;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">
+      ${users.length === 0 ? 'No users yet — add one above.' : 'No users match your search.'}</td></tr>`;
+    return;
+  }
+
+  filtered.forEach((u, fi) => {
+    const idx = users.indexOf(u);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-family:monospace;font-size:0.8rem;color:var(--muted)">${u.id}</td>
+      <td><strong>${u.name}</strong></td>
+      <td style="font-size:0.82rem;color:var(--muted)">${u.email || '<em>—</em>'}</td>
+      <td>
+        <span style="font-family:monospace;background:rgba(0,0,0,0.3);padding:3px 8px;border-radius:4px;
+          font-size:0.85rem;letter-spacing:2px" id="pin-display-${idx}">••••</span>
+        <button onclick="togglePin(${idx})" style="background:none;border:none;cursor:pointer;
+          color:var(--muted);font-size:0.75rem;margin-left:4px" title="Show/hide PIN">👁</button>
+      </td>
+      <td style="font-size:0.75rem;color:var(--muted)">
+        <a href="${APP_URL}" target="_blank" style="color:var(--blue);text-decoration:none">${APP_URL}</a>
+      </td>
+      <td style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-secondary" style="padding:5px 9px;font-size:0.72rem" onclick="editUser(${idx})">✏️ Edit</button>
+        <button class="btn btn-secondary" style="padding:5px 9px;font-size:0.72rem" onclick="resetPin(${idx})">🔑 PIN</button>
+        <button class="btn btn-danger"    style="padding:5px 9px;font-size:0.72rem" onclick="deleteUser(${idx})">🗑️</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function togglePin(idx) {
+  const el = document.getElementById(`pin-display-${idx}`);
+  if (!el) return;
+  const u = state.users[idx];
+  el.textContent = el.textContent.includes('•') ? u.pin : '••••';
+}
+
+function downloadXlsx() {
+  // Build a minimal CSV-based approach that works in-browser
+  // For a real xlsx, the workflow generates user_list.xlsx on GitHub
+  const users = state.users || [];
+  const rows = [
+    ['User ID', 'User Name', 'User Email ID', 'User PIN', 'User URL'],
+    ...users.map(u => [u.id, u.name, u.email || '', u.pin, APP_URL])
+  ];
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'\"')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'user_list.csv';
+  a.click();
+  showToast('Downloaded user_list.csv (XLSX is auto-generated by GitHub workflow)', 'info');
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════════════════════
+
+function renderAll() {
+  renderFixtures();
+  renderSquads();
+  renderUsers();
+  updateJSONPreview();
+}
+
+function setStatus(id, html, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = `<div class="alert alert-${type}">${html}</div>`;
+}
+
+let toastTimer;
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<div class="alert alert-${type}" style="box-shadow:0 4px 20px rgba(0,0,0,0.4)">${msg}</div>`;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// DEFAULT DATA (bundled from data.json at build time)
+// — The Python script will replace this block too if you add a marker —
+// ════════════════════════════════════════════════════════════════════════════
+
+const DEFAULT_DATA = {
+  "squads": {
+    "RCB": [{"n":"Virat Kohli","c":"Batsman"},{"n":"Rajat Patidar","c":"Batsman"},{"n":"Phil Salt","c":"Wicket-Keeper"},{"n":"Devdutt Padikkal","c":"Batsman"},{"n":"Jacob Bethell","c":"All-Rounder"},{"n":"Liam Livingstone","c":"All-Rounder"},{"n":"Tim David","c":"All-Rounder"},{"n":"Jitesh Sharma","c":"Wicket-Keeper"},{"n":"Krunal Pandya","c":"All-Rounder"},{"n":"Cameron Green","c":"All-Rounder"},{"n":"Romario Shepherd","c":"All-Rounder"},{"n":"Glenn Maxwell","c":"All-Rounder"},{"n":"Swapnil Singh","c":"All-Rounder"},{"n":"Yash Dayal","c":"Bowler"},{"n":"Bhuvneshwar Kumar","c":"Bowler"},{"n":"Josh Hazlewood","c":"Bowler"},{"n":"Lockie Ferguson","c":"Bowler"},{"n":"Mohammed Siraj","c":"Bowler"},{"n":"Nwelwetsi Rabada","c":"Bowler"},{"n":"Suyash Sharma","c":"Bowler"},{"n":"Rasikh Dar","c":"Bowler"},{"n":"Lungi Ngidi","c":"Bowler"},{"n":"Manoj Bhandage","c":"Bowler"},{"n":"Abhinandan Singh","c":"Bowler"}],
+    "MI": [{"n":"Rohit Sharma","c":"Batsman"},{"n":"Suryakumar Yadav","c":"Batsman"},{"n":"Tilak Varma","c":"Batsman"},{"n":"Ryan Rickelton","c":"Wicket-Keeper"},{"n":"Robin Minz","c":"Wicket-Keeper"},{"n":"Krishnan Shrijith","c":"Wicket-Keeper"},{"n":"Hardik Pandya","c":"All-Rounder"},{"n":"Will Jacks","c":"All-Rounder"},{"n":"Mitchell Santner","c":"All-Rounder"},{"n":"Naman Dhir","c":"All-Rounder"},{"n":"Raj Angad Bawa","c":"All-Rounder"},{"n":"Bevon Jacobs","c":"All-Rounder"},{"n":"Arjun Tendulkar","c":"All-Rounder"},{"n":"Jasprit Bumrah","c":"Bowler"},{"n":"Trent Boult","c":"Bowler"},{"n":"Deepak Chahar","c":"Bowler"},{"n":"Karn Sharma","c":"Bowler"},{"n":"Mujeeb Ur Rahman","c":"Bowler"},{"n":"Reece Topley","c":"Bowler"},{"n":"Vignesh Puthur","c":"Bowler"},{"n":"Ashwani Kumar","c":"Bowler"},{"n":"Satyanarayana Raju","c":"Bowler"},{"n":"Lizaad Williams","c":"Bowler"}],
+    "CSK": [{"n":"MS Dhoni","c":"Wicket-Keeper"},{"n":"Devon Conway","c":"Wicket-Keeper"},{"n":"Urvil Patel","c":"Wicket-Keeper"},{"n":"Ruturaj Gaikwad","c":"Batsman"},{"n":"Ajinkya Rahane","c":"Batsman"},{"n":"Shaik Rasheed","c":"Batsman"},{"n":"Rachin Ravindra","c":"All-Rounder"},{"n":"Shivam Dube","c":"All-Rounder"},{"n":"Vijay Shankar","c":"All-Rounder"},{"n":"Ravindra Jadeja","c":"All-Rounder"},{"n":"Sam Curran","c":"All-Rounder"},{"n":"Jamie Overton","c":"All-Rounder"},{"n":"RS Hangargekar","c":"All-Rounder"},{"n":"Ravichandran Ashwin","c":"All-Rounder"},{"n":"Shardul Thakur","c":"All-Rounder"},{"n":"Matheesha Pathirana","c":"Bowler"},{"n":"Deepak Chahar","c":"Bowler"},{"n":"Tushar Deshpande","c":"Bowler"},{"n":"Mukesh Choudhary","c":"Bowler"},{"n":"Noor Ahmad","c":"Bowler"},{"n":"Khaleel Ahmed","c":"Bowler"},{"n":"Kamlesh Nagarkoti","c":"Bowler"},{"n":"Anshul Kamboj","c":"Bowler"},{"n":"Nathan Ellis","c":"Bowler"}],
+    "KKR": [{"n":"Quinton de Kock","c":"Wicket-Keeper"},{"n":"Rahmanullah Gurbaz","c":"Wicket-Keeper"},{"n":"Luvnith Sisodia","c":"Wicket-Keeper"},{"n":"Ajinkya Rahane","c":"Batsman"},{"n":"Angkrish Raghuvanshi","c":"Batsman"},{"n":"Rinku Singh","c":"Batsman"},{"n":"Manish Pandey","c":"Batsman"},{"n":"Rovman Powell","c":"All-Rounder"},{"n":"Ramandeep Singh","c":"All-Rounder"},{"n":"Andre Russell","c":"All-Rounder"},{"n":"Moeen Ali","c":"All-Rounder"},{"n":"Sunil Narine","c":"All-Rounder"},{"n":"Venkatesh Iyer","c":"All-Rounder"},{"n":"Anukul Roy","c":"All-Rounder"},{"n":"Shivam Shukla","c":"All-Rounder"},{"n":"Vaibhav Arora","c":"Bowler"},{"n":"Harshit Rana","c":"Bowler"},{"n":"Anrich Nortje","c":"Bowler"},{"n":"Spencer Johnson","c":"Bowler"},{"n":"Mayank Markande","c":"Bowler"},{"n":"Chetan Sakariya","c":"Bowler"}],
+    "DC": [{"n":"KL Rahul","c":"Wicket-Keeper"},{"n":"Abishek Porel","c":"Wicket-Keeper"},{"n":"Harry Brook","c":"Batsman"},{"n":"Faf du Plessis","c":"Batsman"},{"n":"Jake Fraser-McGurk","c":"Batsman"},{"n":"Karun Nair","c":"Batsman"},{"n":"Sameer Rizvi","c":"Batsman"},{"n":"Axar Patel","c":"All-Rounder"},{"n":"Triston Stubbs","c":"All-Rounder"},{"n":"Ashutosh Sharma","c":"All-Rounder"},{"n":"Donovan Ferreira","c":"All-Rounder"},{"n":"Tripurana Vijay","c":"All-Rounder"},{"n":"Kuldeep Yadav","c":"Bowler"},{"n":"Mitchell Starc","c":"Bowler"},{"n":"Mukesh Kumar","c":"Bowler"},{"n":"Ishant Sharma","c":"Bowler"},{"n":"T Natarajan","c":"Bowler"},{"n":"Mohit Sharma","c":"Bowler"},{"n":"Darshan Nalkande","c":"Bowler"},{"n":"Vipraj Nigam","c":"Bowler"}],
+    "SRH": [{"n":"Heinrich Klaasen","c":"Wicket-Keeper"},{"n":"Ishan Kishan","c":"Wicket-Keeper"},{"n":"Travis Head","c":"Batsman"},{"n":"Rahul Tripathi","c":"Batsman"},{"n":"Atharva Taide","c":"Batsman"},{"n":"Anmolpreet Singh","c":"Batsman"},{"n":"Sachin Baby","c":"Batsman"},{"n":"Pat Cummins","c":"All-Rounder"},{"n":"Abhishek Sharma","c":"All-Rounder"},{"n":"Nitish Kumar Reddy","c":"All-Rounder"},{"n":"Aiden Markram","c":"All-Rounder"},{"n":"Wiaan Mulder","c":"All-Rounder"},{"n":"Harshal Patel","c":"Bowler"},{"n":"Adam Zampa","c":"Bowler"},{"n":"Jaydev Unadkat","c":"Bowler"},{"n":"Brydon Carse","c":"Bowler"},{"n":"Raz Janat","c":"Bowler"},{"n":"Akeal Hosein","c":"Bowler"},{"n":"Simarjeet Singh","c":"Bowler"},{"n":"Zeeshan Ansari","c":"Bowler"}],
+    "RR": [{"n":"Sanju Samson","c":"Wicket-Keeper"},{"n":"Jos Buttler","c":"Wicket-Keeper"},{"n":"Dhruv Jurel","c":"Wicket-Keeper"},{"n":"Yashasvi Jaiswal","c":"Batsman"},{"n":"Shimron Hetmyer","c":"Batsman"},{"n":"Vaibhav Suryavanshi","c":"Batsman"},{"n":"Riyan Parag","c":"All-Rounder"},{"n":"Nitish Rana","c":"All-Rounder"},{"n":"Shubham Dubey","c":"All-Rounder"},{"n":"FA Allen","c":"All-Rounder"},{"n":"Ravichandran Ashwin","c":"All-Rounder"},{"n":"Wanindu Hasaranga","c":"All-Rounder"},{"n":"Maheesh Theekshana","c":"Bowler"},{"n":"Trent Boult","c":"Bowler"},{"n":"Sandeep Sharma","c":"Bowler"},{"n":"Yuzvendra Chahal","c":"Bowler"},{"n":"Kumar Kartikeya","c":"Bowler"},{"n":"Kuldeep Sen","c":"Bowler"},{"n":"Avesh Khan","c":"Bowler"},{"n":"Tushar Deshpande","c":"Bowler"},{"n":"Akash Madhwal","c":"Bowler"}],
+    "GT": [{"n":"Anuj Rawat","c":"Wicket-Keeper"},{"n":"Kumar Kushagra","c":"Wicket-Keeper"},{"n":"Jos Buttler","c":"Wicket-Keeper"},{"n":"Shubman Gill","c":"Batsman"},{"n":"Sai Sudharsan","c":"Batsman"},{"n":"Shahrukh Khan","c":"Batsman"},{"n":"Rahul Tewatia","c":"All-Rounder"},{"n":"Mahipal Lomror","c":"All-Rounder"},{"n":"Sherfane Rutherford","c":"All-Rounder"},{"n":"Washington Sundar","c":"All-Rounder"},{"n":"Nishant Sindhu","c":"All-Rounder"},{"n":"Rashid Khan","c":"All-Rounder"},{"n":"Arshad Khan","c":"All-Rounder"},{"n":"Sai Kishore","c":"All-Rounder"},{"n":"Jayant Yadav","c":"All-Rounder"},{"n":"Dasun Shanaka","c":"All-Rounder"},{"n":"Karim Janat","c":"All-Rounder"},{"n":"Kagiso Rabada","c":"Bowler"},{"n":"Mohammed Siraj","c":"Bowler"},{"n":"Prasidh Krishna","c":"Bowler"},{"n":"Gerald Coetzee","c":"Bowler"},{"n":"Gurnoor Brar","c":"Bowler"},{"n":"Kulwant Khejroliya","c":"Bowler"},{"n":"Ishant Sharma","c":"Bowler"},{"n":"Manav Suthar","c":"Bowler"}],
+    "LSG": [{"n":"Rishabh Pant","c":"Wicket-Keeper"},{"n":"Nicholas Pooran","c":"Wicket-Keeper"},{"n":"Aryan Juyal","c":"Wicket-Keeper"},{"n":"Matthew Breetzke","c":"Batsman"},{"n":"Himmat Singh","c":"Batsman"},{"n":"Ayush Badoni","c":"Batsman"},{"n":"David Miller","c":"Batsman"},{"n":"Mitchell Marsh","c":"All-Rounder"},{"n":"Aiden Markram","c":"All-Rounder"},{"n":"Abdul Samad","c":"All-Rounder"},{"n":"Shahbaz Ahmed","c":"All-Rounder"},{"n":"Arshin Kulkarni","c":"All-Rounder"},{"n":"Rajvardhan Hangargekar","c":"All-Rounder"},{"n":"Ravi Bishnoi","c":"Bowler"},{"n":"Avesh Khan","c":"Bowler"},{"n":"Akash Deep","c":"Bowler"},{"n":"Shamar Joseph","c":"Bowler"},{"n":"Mayank Yadav","c":"Bowler"},{"n":"Mohsin Khan","c":"Bowler"},{"n":"Digvesh Singh","c":"Bowler"},{"n":"Akash Singh","c":"Bowler"},{"n":"Yuvraj Chaudhary","c":"Bowler"},{"n":"Prince Yadav","c":"Bowler"},{"n":"Manimaran Siddharth","c":"Bowler"}],
+    "PBKS": [{"n":"Prabhsimran Singh","c":"Wicket-Keeper"},{"n":"Vishnu Vinod","c":"Wicket-Keeper"},{"n":"Shreyas Iyer","c":"Batsman"},{"n":"Priyansh Arya","c":"Batsman"},{"n":"Nehal Wadhera","c":"Batsman"},{"n":"Shashank Singh","c":"All-Rounder"},{"n":"Marcus Stoinis","c":"All-Rounder"},{"n":"Glenn Maxwell","c":"All-Rounder"},{"n":"Aaron Hardie","c":"All-Rounder"},{"n":"Azmatullah Omarzai","c":"All-Rounder"},{"n":"Suryansh Shedge","c":"All-Rounder"},{"n":"Harpreet Brar","c":"All-Rounder"},{"n":"Sam Curran","c":"All-Rounder"},{"n":"Musheer Khan","c":"All-Rounder"},{"n":"Arshdeep Singh","c":"Bowler"},{"n":"Yuzvendra Chahal","c":"Bowler"},{"n":"Harshal Patel","c":"Bowler"},{"n":"Lockie Ferguson","c":"Bowler"},{"n":"Xavier Bartlett","c":"Bowler"},{"n":"Kuldeep Sen","c":"Bowler"},{"n":"Vijaykumar Vyshak","c":"Bowler"},{"n":"Pyla Avinash","c":"Bowler"},{"n":"Yash Thakur","c":"Bowler"}]
+  },
+  "matches": [
+    {"id":"TestMatch1","name":"RCB vs PBKS","team1":"RCB","team2":"PBKS","date":"2026-03-07","time":"16:30","status":"Complete"},
+    {"id":"TestMatch2","name":"CSK vs MI","team1":"CSK","team2":"MI","date":"2026-03-07","time":"17:30","status":"Pending"},
+    {"id":"TestMatch3","name":"RR vs KKR","team1":"RR","team2":"KKR","date":"2026-03-08","time":"06:00","status":"Pending"},
+    {"id":"Match1","name":"RCB vs PBKS","team1":"RCB","team2":"PBKS","date":"2026-03-31","time":"19:30","status":"Pending"},
+    {"id":"Match2","name":"CSK vs MI","team1":"CSK","team2":"MI","date":"2026-04-01","time":"19:30","status":"Pending"},
+    {"id":"Match3","name":"RR vs KKR","team1":"RR","team2":"KKR","date":"2026-04-02","time":"19:30","status":"Pending"},
+    {"id":"Match4","name":"DC vs SRH","team1":"DC","team2":"SRH","date":"2026-04-03","time":"19:30","status":"Pending"},
+    {"id":"Match5","name":"GT vs LSG","team1":"GT","team2":"LSG","date":"2026-04-04","time":"19:30","status":"Pending"},
+    {"id":"Match6","name":"MI vs RCB","team1":"MI","team2":"RCB","date":"2026-04-05","time":"15:30","status":"Pending"},
+    {"id":"Match7","name":"PBKS vs DC","team1":"PBKS","team2":"DC","date":"2026-04-05","time":"19:30","status":"Pending"},
+    {"id":"Match8","name":"KKR vs CSK","team1":"KKR","team2":"CSK","date":"2026-04-06","time":"19:30","status":"Pending"},
+    {"id":"Match9","name":"SRH vs GT","team1":"SRH","team2":"GT","date":"2026-04-07","time":"19:30","status":"Pending"},
+    {"id":"Match10","name":"LSG vs RR","team1":"LSG","team2":"RR","date":"2026-04-08","time":"19:30","status":"Pending"},
+    {"id":"Match11","name":"PBKS vs MI","team1":"PBKS","team2":"MI","date":"2026-04-09","time":"19:30","status":"Pending"},
+    {"id":"Match12","name":"DC vs CSK","team1":"DC","team2":"CSK","date":"2026-04-10","time":"19:30","status":"Pending"},
+    {"id":"Match13","name":"KKR vs SRH","team1":"KKR","team2":"SRH","date":"2026-04-11","time":"15:30","status":"Pending"},
+    {"id":"Match14","name":"GT vs RCB","team1":"GT","team2":"RCB","date":"2026-04-11","time":"19:30","status":"Pending"},
+    {"id":"Match15","name":"RR vs PBKS","team1":"RR","team2":"PBKS","date":"2026-04-12","time":"15:30","status":"Pending"},
+    {"id":"Match16","name":"MI vs LSG","team1":"MI","team2":"LSG","date":"2026-04-12","time":"19:30","status":"Pending"},
+    {"id":"Match17","name":"SRH vs DC","team1":"SRH","team2":"DC","date":"2026-04-13","time":"19:30","status":"Pending"},
+    {"id":"Match18","name":"RCB vs KKR","team1":"RCB","team2":"KKR","date":"2026-04-14","time":"19:30","status":"Pending"},
+    {"id":"Match19","name":"CSK vs RR","team1":"CSK","team2":"RR","date":"2026-04-15","time":"19:30","status":"Pending"},
+    {"id":"Match20","name":"PBKS vs GT","team1":"PBKS","team2":"GT","date":"2026-04-16","time":"19:30","status":"Pending"},
+    {"id":"Match21","name":"LSG vs SRH","team1":"LSG","team2":"SRH","date":"2026-04-17","time":"19:30","status":"Pending"},
+    {"id":"Match22","name":"MI vs DC","team1":"MI","team2":"DC","date":"2026-04-18","time":"15:30","status":"Pending"},
+    {"id":"Match23","name":"RCB vs CSK","team1":"RCB","team2":"CSK","date":"2026-04-18","time":"19:30","status":"Pending"},
+    {"id":"Match24","name":"GT vs RR","team1":"GT","team2":"RR","date":"2026-04-19","time":"15:30","status":"Pending"},
+    {"id":"Match25","name":"KKR vs PBKS","team1":"KKR","team2":"PBKS","date":"2026-04-19","time":"19:30","status":"Pending"},
+    {"id":"Match26","name":"DC vs LSG","team1":"DC","team2":"LSG","date":"2026-04-20","time":"19:30","status":"Pending"},
+    {"id":"Match27","name":"CSK vs SRH","team1":"CSK","team2":"SRH","date":"2026-04-21","time":"19:30","status":"Pending"},
+    {"id":"Match28","name":"RR vs MI","team1":"RR","team2":"MI","date":"2026-04-22","time":"19:30","status":"Pending"},
+    {"id":"Match29","name":"PBKS vs RCB","team1":"PBKS","team2":"RCB","date":"2026-04-23","time":"19:30","status":"Pending"},
+    {"id":"Match30","name":"KKR vs GT","team1":"KKR","team2":"GT","date":"2026-04-24","time":"19:30","status":"Pending"}
+  ],
+  "users": [
+    {"id":"U20260001","name":"Rohit", "pin":"7890","email":"learn2earn06@gmail.com"},
+    {"id":"U20260002","name":"Rahul", "pin":"1234","email":"rohit.surve@outlook.com"},
+    {"id":"U20260003","name":"Priya", "pin":"2345","email":"rohitmsurve2024@gmail.com"},
+    {"id":"U20260004","name":"Amit",  "pin":"3456","email":"ashokvshelke61@gmail.com"},
+    {"id":"U20260005","name":"Rohit5","pin":"9999","email":"test@gmail.com"}
+  ]
+};
+</script>
+</body>
+</html>
