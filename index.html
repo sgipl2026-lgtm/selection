@@ -538,6 +538,43 @@
   .match-scroll::-webkit-scrollbar { width: 4px; }
   .match-scroll::-webkit-scrollbar-track { background: transparent; }
   .match-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* REGISTER MODAL */
+  #register-overlay {
+    display:none; position:fixed; inset:0; background:rgba(10,14,26,0.92);
+    z-index:200; align-items:center; justify-content:center;
+  }
+  #register-overlay.open { display:flex; }
+  .register-box {
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    padding:36px 28px; max-width:400px; width:100%; text-align:center;
+    animation:fadeUp 0.25s ease;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+  .register-box h2 { font-family:'Rajdhani',sans-serif; font-size:1.6rem; letter-spacing:3px; color:var(--accent); margin-bottom:4px; }
+  .register-box p  { color:var(--muted); font-size:0.82rem; margin-bottom:24px; }
+  .reg-input {
+    width:100%; box-sizing:border-box; background:var(--surface2); border:1px solid var(--border);
+    border-radius:8px; color:var(--text); padding:12px 14px; font-family:'Barlow',sans-serif;
+    font-size:0.95rem; transition:border-color 0.15s; margin-bottom:14px;
+  }
+  .reg-input:focus { outline:none; border-color:var(--accent); }
+  .reg-input::placeholder { color:var(--muted); }
+  .reg-btn {
+    width:100%; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#000;
+    border:none; border-radius:8px; padding:13px; font-family:'Barlow Condensed',sans-serif;
+    font-size:1rem; font-weight:700; letter-spacing:2px; cursor:pointer; transition:opacity 0.15s;
+    margin-bottom:10px;
+  }
+  .reg-btn:hover { opacity:0.88; }
+  .reg-btn:disabled { opacity:0.4; cursor:not-allowed; }
+  .reg-secondary {
+    background:none; border:none; color:var(--muted); font-size:0.82rem; cursor:pointer;
+    text-decoration:underline;
+  }
+  .reg-secondary:hover { color:var(--text); }
+  #reg-status { margin-top:12px; font-size:0.85rem; }
+
   @keyframes shake {
     0%,100% { transform: translateX(0); }
     20%      { transform: translateX(-8px); }
@@ -598,7 +635,47 @@
         ENTER MY FANTASY XI →
       </button>
 
-      <p style="color:var(--muted);font-size:0.75rem;margin-top:20px;">Forgot your PIN? Contact your league admin.</p>
+      <p style="color:var(--muted);font-size:0.75rem;margin-top:20px;">
+        Forgot your PIN? Contact your league admin.
+      </p>
+      <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px">
+        <p style="color:var(--muted);font-size:0.8rem;margin-bottom:10px">New to the league?</p>
+        <button onclick="openRegister()"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);
+                 border-radius:8px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;
+                 letter-spacing:2px;cursor:pointer;transition:all 0.15s;"
+          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          📝 REQUEST ACCESS
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- REGISTER MODAL OVERLAY -->
+  <div id="register-overlay">
+    <div class="register-box">
+      <div style="font-size:2rem;margin-bottom:10px">📝</div>
+      <h2>JOIN THE LEAGUE</h2>
+      <p>Request access to IPL Fantasy XI. Your admin will review and send your PIN.</p>
+
+      <div id="reg-form-wrap">
+        <input class="reg-input" id="reg-name"  type="text"  placeholder="Your Name (e.g. Sneha)" autocapitalize="words"/>
+        <input class="reg-input" id="reg-email" type="email" placeholder="Your Email Address"/>
+        <input class="reg-input" id="reg-phone" type="tel"   placeholder="WhatsApp Number (optional, e.g. +6591234567)"/>
+        <button class="reg-btn" id="reg-submit-btn" onclick="submitRegistration()">REQUEST ACCESS →</button>
+        <div id="reg-status"></div>
+      </div>
+
+      <div id="reg-success-wrap" style="display:none">
+        <div style="font-size:2.5rem;margin-bottom:12px">✅</div>
+        <p style="color:var(--green);font-size:0.95rem;margin-bottom:4px"><strong>Request sent!</strong></p>
+        <p style="color:var(--muted);font-size:0.82rem">Your admin has been notified. You'll receive your PIN via email once approved.</p>
+      </div>
+
+      <div style="margin-top:20px">
+        <button class="reg-secondary" onclick="closeRegister()">← Back to Sign In</button>
+      </div>
     </div>
   </div>
 
@@ -683,26 +760,26 @@ const MATCHES = [
   {id:"TestMatch1",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-03-07",time:"16:30",status:"Complete"},
   {id:"TestMatch2",name:"CSK vs MI",team1:"CSK",team2:"MI",date:"2026-03-07",time:"17:30",status:"Complete"},
   {id:"TestMatch3",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-03-08",time:"06:00",status:"Complete"},
-  {id:"Match1",name:"RCB vs SRH",team1:"RCB",team2:"SRH",date:"2026-03-28",time:"19:30",status:"Pending"},
-  {id:"Match2",name:"MI vs KKR",team1:"MI",team2:"KKR",date:"2026-03-29",time:"19:30",status:"Pending"},
-  {id:"Match3",name:"RR vs CSK",team1:"RR",team2:"CSK",date:"2026-03-30",time:"19:30",status:"Pending"},
-  {id:"Match4",name:"PBKS vs GT",team1:"PBKS",team2:"GT",date:"2026-03-31",time:"19:30",status:"Pending"},
-  {id:"Match5",name:"LSG vs DC",team1:"LSG",team2:"DC",date:"2026-04-01",time:"19:30",status:"Pending"},
-  {id:"Match6",name:"KKR vs SRH",team1:"KKR",team2:"SRH",date:"2026-04-02",time:"19:30",status:"Pending"},
-  {id:"Match7",name:"CSK vs PBKS",team1:"CSK",team2:"PBKS",date:"2026-04-03",time:"19:30",status:"Pending"},
-  {id:"Match8",name:"DC vs MI",team1:"DC",team2:"MI",date:"2026-04-04",time:"15:30",status:"Pending"},
-  {id:"Match9",name:"GT vs RR",team1:"GT",team2:"RR",date:"2026-04-04",time:"19:30",status:"Pending"},
-  {id:"Match10",name:"SRH vs LSG",team1:"SRH",team2:"LSG",date:"2026-04-05",time:"15:30",status:"Pending"},
-  {id:"Match11",name:"RCB vs CSK",team1:"RCB",team2:"CSK",date:"2026-04-05",time:"19:30",status:"Pending"},
-  {id:"Match12",name:"KKR vs PBKS",team1:"KKR",team2:"PBKS",date:"2026-04-06",time:"19:30",status:"Pending"},
-  {id:"Match13",name:"RR vs MI",team1:"RR",team2:"MI",date:"2026-04-07",time:"19:30",status:"Pending"},
-  {id:"Match14",name:"DC vs GT",team1:"DC",team2:"GT",date:"2026-04-08",time:"19:30",status:"Pending"},
-  {id:"Match15",name:"KKR vs LSG",team1:"KKR",team2:"LSG",date:"2026-04-09",time:"19:30",status:"Pending"},
-  {id:"Match16",name:"RR vs RCB",team1:"RR",team2:"RCB",date:"2026-04-10",time:"19:30",status:"Pending"},
-  {id:"Match17",name:"PBKS vs SRH",team1:"PBKS",team2:"SRH",date:"2026-04-11",time:"15:30",status:"Pending"},
-  {id:"Match18",name:"CSK vs DC",team1:"CSK",team2:"DC",date:"2026-04-11",time:"19:30",status:"Pending"},
-  {id:"Match19",name:"LSG vs GT",team1:"LSG",team2:"GT",date:"2026-04-12",time:"15:30",status:"Pending"},
-  {id:"Match20",name:"MI vs RCB",team1:"MI",team2:"RCB",date:"2026-04-12",time:"19:30",status:"Pending"},
+  {id:"Match1",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-03-31",time:"19:30",status:"Pending"},
+  {id:"Match2",name:"CSK vs MI",team1:"CSK",team2:"MI",date:"2026-04-01",time:"19:30",status:"Pending"},
+  {id:"Match3",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-04-02",time:"19:30",status:"Pending"},
+  {id:"Match4",name:"DC vs SRH",team1:"DC",team2:"SRH",date:"2026-04-03",time:"19:30",status:"Pending"},
+  {id:"Match5",name:"GT vs LSG",team1:"GT",team2:"LSG",date:"2026-04-04",time:"19:30",status:"Pending"},
+  {id:"Match6",name:"MI vs RCB",team1:"MI",team2:"RCB",date:"2026-04-05",time:"15:30",status:"Pending"},
+  {id:"Match7",name:"PBKS vs DC",team1:"PBKS",team2:"DC",date:"2026-04-05",time:"19:30",status:"Pending"},
+  {id:"Match8",name:"KKR vs CSK",team1:"KKR",team2:"CSK",date:"2026-04-06",time:"19:30",status:"Pending"},
+  {id:"Match9",name:"SRH vs GT",team1:"SRH",team2:"GT",date:"2026-04-07",time:"19:30",status:"Pending"},
+  {id:"Match10",name:"LSG vs RR",team1:"LSG",team2:"RR",date:"2026-04-08",time:"19:30",status:"Pending"},
+  {id:"Match11",name:"PBKS vs MI",team1:"PBKS",team2:"MI",date:"2026-04-09",time:"19:30",status:"Pending"},
+  {id:"Match12",name:"DC vs CSK",team1:"DC",team2:"CSK",date:"2026-04-10",time:"19:30",status:"Pending"},
+  {id:"Match13",name:"KKR vs SRH",team1:"KKR",team2:"SRH",date:"2026-04-11",time:"15:30",status:"Pending"},
+  {id:"Match14",name:"GT vs RCB",team1:"GT",team2:"RCB",date:"2026-04-11",time:"19:30",status:"Pending"},
+  {id:"Match15",name:"RR vs PBKS",team1:"RR",team2:"PBKS",date:"2026-04-12",time:"15:30",status:"Pending"},
+  {id:"Match16",name:"MI vs LSG",team1:"MI",team2:"LSG",date:"2026-04-12",time:"19:30",status:"Pending"},
+  {id:"Match17",name:"SRH vs DC",team1:"SRH",team2:"DC",date:"2026-04-13",time:"19:30",status:"Pending"},
+  {id:"Match18",name:"RCB vs KKR",team1:"RCB",team2:"KKR",date:"2026-04-14",time:"19:30",status:"Pending"},
+  {id:"Match19",name:"CSK vs RR",team1:"CSK",team2:"RR",date:"2026-04-15",time:"19:30",status:"Pending"},
+  {id:"Match20",name:"PBKS vs GT",team1:"PBKS",team2:"GT",date:"2026-04-16",time:"19:30",status:"Pending"},
   {id:"Match21",name:"LSG vs SRH",team1:"LSG",team2:"SRH",date:"2026-04-17",time:"19:30",status:"Pending"},
   {id:"Match22",name:"MI vs DC",team1:"MI",team2:"DC",date:"2026-04-18",time:"15:30",status:"Pending"},
   {id:"Match23",name:"RCB vs CSK",team1:"RCB",team2:"CSK",date:"2026-04-18",time:"19:30",status:"Pending"},
@@ -1181,6 +1258,77 @@ function resetForAnother() {
   document.getElementById('submit-section').classList.add('hidden');
   document.querySelectorAll('.match-option').forEach(e=>e.classList.remove('selected'));
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+
+// ─── REGISTRATION ─────────────────────────────────────────────────────────────
+
+function openRegister() {
+  document.getElementById('register-overlay').classList.add('open');
+  document.getElementById('reg-name').focus();
+}
+
+function closeRegister() {
+  document.getElementById('register-overlay').classList.remove('open');
+  // Reset form
+  document.getElementById('reg-form-wrap').style.display = '';
+  document.getElementById('reg-success-wrap').style.display = 'none';
+  document.getElementById('reg-name').value  = '';
+  document.getElementById('reg-email').value = '';
+  document.getElementById('reg-phone').value = '';
+  document.getElementById('reg-status').innerHTML = '';
+}
+
+// Close modal on backdrop click
+document.getElementById('register-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeRegister();
+});
+
+function submitRegistration() {
+  const name  = (document.getElementById('reg-name').value  || '').trim();
+  const email = (document.getElementById('reg-email').value || '').trim();
+  const phone = (document.getElementById('reg-phone').value || '').trim();
+  const statusEl = document.getElementById('reg-status');
+
+  if (!name || !email) {
+    statusEl.innerHTML = '<span style="color:#f87171">⚠️ Name and email are required.</span>';
+    return;
+  }
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+    statusEl.innerHTML = '<span style="color:#f87171">⚠️ Please enter a valid email address.</span>';
+    return;
+  }
+
+  const btn = document.getElementById('reg-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Sending...';
+  statusEl.innerHTML = '';
+
+  const payload = {
+    action:    'register',
+    name,
+    email,
+    phone,
+    timestamp: new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
+    app_url:   window.location.href
+  };
+
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    mode:   'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(payload)
+  })
+  .then(() => {
+    // no-cors always resolves — assume success
+    document.getElementById('reg-form-wrap').style.display = 'none';
+    document.getElementById('reg-success-wrap').style.display = '';
+  })
+  .catch(() => {
+    btn.disabled = false;
+    btn.textContent = 'REQUEST ACCESS →';
+    statusEl.innerHTML = '<span style="color:#f87171">⚠️ Network error. Please try again.</span>';
+  });
 }
 
 // ─── START ───────────────────────────────────────────────────────────────────
