@@ -1,1099 +1,1616 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>IPL Fantasy — Admin Panel</title>
+<title>IPL Fantasy Selector</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --bg: #0a0e1a; --surface: #111827; --surface2: #1a2235; --border: #1e2d45;
-  --accent: #f5a623; --accent2: #e8365d; --green: #22c55e;
-  --text: #e8eaf0; --muted: #7a8ba0; --blue: #3b82f6;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #f5a623;
+    --accent2: #e8365d;
+    --green: #22c55e;
+    --text: #e8eaf0;
+    --muted: #7a8ba0;
+    --card-glow: 0 0 30px rgba(245,166,35,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245,166,35,0.07) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px);
+  }
 
-/* ── Layout ──────────────────────────────────────────────────────────────── */
-header { text-align: center; padding: 32px 20px 16px; border-bottom: 1px solid var(--border); }
-header h1 { font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 700; letter-spacing: 4px;
-  background: linear-gradient(135deg,#f5a623,#e8365d); -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent; background-clip:text; }
-header p { color: var(--muted); font-size: 0.85rem; letter-spacing: 2px; margin-top: 4px; }
-.container { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; }
-.tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
-.tab-btn {
-  padding: 10px 22px; border-radius: 8px; border: 1px solid var(--border);
-  background: var(--surface2); color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; transition: all 0.15s;
-}
-.tab-btn.active { background: rgba(245,166,35,0.12); border-color: var(--accent); color: var(--accent); }
-.tab-btn:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    position: relative;
+  }
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .cricket-icon { font-size: 2rem; }
+  h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #f5a623, #e8365d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .divider {
+    width: 80px; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    margin: 16px auto;
+    border-radius: 2px;
+  }
 
-/* ── Cards ───────────────────────────────────────────────────────────────── */
-.card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-  padding: 24px; margin-bottom: 20px;
-}
-.card-title {
-  font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 18px;
-  display: flex; align-items: center; gap: 8px;
-}
-.card-title .icon { font-size: 1rem; }
+  /* USER GREETING */
+  #user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 6px 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  #user-badge .dot { width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green); }
 
-/* ── Forms ───────────────────────────────────────────────────────────────── */
-.form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-.form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 140px; }
-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
-input[type=text], input[type=date], input[type=time], input[type=password], select, textarea {
-  background: var(--surface2); border: 1px solid var(--border); border-radius: 7px;
-  color: var(--text); padding: 9px 12px; font-family: 'Barlow', sans-serif; font-size: 0.88rem;
-  transition: border-color 0.15s; width: 100%;
-}
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
-select option { background: #1a2235; }
-input::placeholder { color: var(--muted); }
+  /* MAIN LAYOUT */
+  .container { max-width: 820px; margin: 0 auto; padding: 0 20px 60px; }
 
-/* ── Buttons ─────────────────────────────────────────────────────────────── */
-.btn {
-  padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer;
-  font-family: 'Barlow Condensed', sans-serif; font-size: 0.88rem; letter-spacing: 1.5px;
-  text-transform: uppercase; transition: all 0.15s; white-space: nowrap;
-}
-.btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; font-weight: 700; }
-.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-.btn-danger  { background: rgba(232,54,93,0.15); border: 1px solid rgba(232,54,93,0.4); color: var(--accent2); }
-.btn-danger:hover  { background: rgba(232,54,93,0.25); }
-.btn-secondary { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
-.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-.btn-green { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.4); color: var(--green); }
-.btn-green:hover { background: rgba(34,197,94,0.25); }
-.btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
+  /* STEP CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--card-glow);
+    transition: border-color 0.2s;
+  }
+  .card.active { border-color: rgba(245,166,35,0.4); }
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-num {
+    width: 22px; height: 22px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #000;
+    flex-shrink: 0;
+  }
 
-/* ── Tables ──────────────────────────────────────────────────────────────── */
-.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-.data-table th {
-  background: var(--surface2); padding: 10px 12px; text-align: left;
-  font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1.5px; font-size: 0.75rem;
-  color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border);
-}
-.data-table td { padding: 10px 12px; border-bottom: 1px solid rgba(30,45,69,0.5); vertical-align: middle; }
-.data-table tr:hover td { background: rgba(255,255,255,0.02); }
-.data-table tr:last-child td { border-bottom: none; }
-.badge {
-  display: inline-block; padding: 2px 8px; border-radius: 4px;
-  font-size: 0.68rem; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px;
-}
-.badge-pending  { background: rgba(34,197,94,0.12);  color: var(--green);   border: 1px solid rgba(34,197,94,0.3);  }
-.badge-complete { background: rgba(122,139,160,0.12); color: var(--muted);   border: 1px solid rgba(122,139,160,0.3); }
-.badge-bat  { background: rgba(59,130,246,0.12);  color: #93C5FD; }
-.badge-bowl { background: rgba(34,197,94,0.12);   color: #86EFAC; }
-.badge-ar   { background: rgba(234,179,8,0.12);   color: #FDE047; }
-.badge-wk   { background: rgba(168,85,247,0.12);  color: #D8B4FE; }
+  /* MATCH SELECT */
+  .match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .match-option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .match-option:hover { border-color: rgba(245,166,35,0.5); background: #1f2d42; }
+  .match-option.selected {
+    border-color: var(--accent);
+    background: rgba(245,166,35,0.08);
+    box-shadow: 0 0 16px rgba(245,166,35,0.15);
+  }
+  .match-option.past { opacity: 0.4; cursor: not-allowed; }
+  .match-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .match-meta { font-size: 0.75rem; color: var(--muted); }
+  .match-status {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 0.6rem; letter-spacing: 1px;
+    padding: 2px 6px; border-radius: 4px;
+    text-transform: uppercase;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .match-status.pending { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .match-status.complete { background: rgba(122,139,160,0.15); color: var(--muted); border: 1px solid rgba(122,139,160,0.3); }
 
-/* ── Alert / toast ───────────────────────────────────────────────────────── */
-.alert { padding: 11px 15px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-.alert-success { background: rgba(34,197,94,0.1);  border: 1px solid rgba(34,197,94,0.3);  color: var(--green); }
-.alert-warn    { background: rgba(232,54,93,0.1);  border: 1px solid rgba(232,54,93,0.3);  color: #f87171; }
-.alert-info    { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.25); color: var(--accent); }
-#toast { position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 260px; display: none; }
+  /* TEAM BADGES */
+  .team-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .team-col-header {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .team-col-header.t1 { background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.3); color: var(--accent); }
+  .team-col-header.t2 { background: rgba(232,54,93,0.1); border: 1px solid rgba(232,54,93,0.3); color: var(--accent2); }
+  .team-count {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    margin-top: 2px;
+    font-weight: 400;
+  }
 
-/* ── GitHub config box ───────────────────────────────────────────────────── */
-.config-box {
-  background: rgba(245,166,35,0.05); border: 1px solid rgba(245,166,35,0.2);
-  border-radius: 10px; padding: 18px; margin-bottom: 20px;
-}
-.config-box summary { cursor: pointer; font-family: 'Barlow Condensed', sans-serif; color: var(--accent); letter-spacing: 1px; font-size: 0.9rem; }
-.config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-@media (max-width: 600px) { .config-grid { grid-template-columns: 1fr; } }
+  /* PLAYER PICKER */
+  .picker-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 10px;
+  }
+  @media (max-width: 600px) { .picker-layout { grid-template-columns: 1fr; } }
 
-/* ── Player pill list ────────────────────────────────────────────────────── */
-.player-pill-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.player-pill {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px 4px 8px; border-radius: 20px; font-size: 0.8rem;
-  background: var(--surface2); border: 1px solid var(--border);
-}
-.player-pill .pill-x { cursor: pointer; opacity: 0.5; font-size: 0.7rem; }
-.player-pill .pill-x:hover { opacity: 1; color: var(--accent2); }
-.team-section { margin-bottom: 24px; }
-.team-label { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; letter-spacing: 2px; font-weight: 700; margin-bottom: 6px; }
+  .team-panel {
+    background: var(--surface2);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .team-panel-header {
+    padding: 10px 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .team-panel-header.t1 { background: rgba(245,166,35,0.15); color: var(--accent); border-bottom: 1px solid rgba(245,166,35,0.2); }
+  .team-panel-header.t2 { background: rgba(232,54,93,0.15); color: var(--accent2); border-bottom: 1px solid rgba(232,54,93,0.2); }
+  .team-count-badge {
+    font-size: 0.75rem; font-weight: 700;
+    background: rgba(0,0,0,0.3);
+    padding: 2px 8px; border-radius: 10px;
+  }
 
-/* ── Misc ─────────────────────────────────────────────────────────────────── */
-.loading { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; }
-.spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-.flex-between { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-.search-input { max-width: 260px; }
-#login-overlay {
-  position: fixed; inset: 0; background: var(--bg); z-index: 1000;
-  display: flex; align-items: center; justify-content: center;
-}
-.login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 36px; text-align: center; max-width: 380px; width: 100%; }
-.login-box h2 { font-family: 'Rajdhani', sans-serif; font-size: 1.8rem; letter-spacing: 3px; color: var(--accent); margin-bottom: 6px; }
-.login-box p { color: var(--muted); font-size: 0.82rem; margin-bottom: 24px; }
-@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
-.shake { animation: shake 0.45s ease; }
+  .search-box {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-box input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 6px 10px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.82rem;
+  }
+  .search-box input:focus { outline: none; border-color: var(--accent); }
+  .search-box input::placeholder { color: var(--muted); }
+
+  .cat-filters {
+    display: flex;
+    gap: 4px;
+    padding: 6px 10px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.12s;
+  }
+  .cat-btn.all       { background: rgba(255,255,255,0.08); color: var(--muted); border-color: var(--border); }
+  .cat-btn.bat       { background: rgba(59,130,246,0.12); color: #93C5FD; border-color: rgba(59,130,246,0.3); }
+  .cat-btn.bowl      { background: rgba(34,197,94,0.12);  color: #86EFAC; border-color: rgba(34,197,94,0.3); }
+  .cat-btn.ar        { background: rgba(234,179,8,0.12);  color: #FDE047; border-color: rgba(234,179,8,0.3); }
+  .cat-btn.wk        { background: rgba(168,85,247,0.12); color: #D8B4FE; border-color: rgba(168,85,247,0.3); }
+  .cat-btn.active    { opacity: 1; filter: brightness(1.3); transform: scale(1.05); }
+  .cat-btn:not(.active) { opacity: 0.5; }
+
+  .player-list {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 6px;
+  }
+  .player-list::-webkit-scrollbar { width: 4px; }
+  .player-list::-webkit-scrollbar-track { background: transparent; }
+  .player-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .player-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.12s;
+    margin-bottom: 3px;
+    user-select: none;
+  }
+  .player-card:hover:not(.selected):not(.disabled) {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--border);
+  }
+  .player-card.selected {
+    border-color: var(--green);
+    background: rgba(34,197,94,0.1);
+  }
+  .player-card.selected.t1 { border-color: var(--accent); background: rgba(245,166,35,0.1); }
+  .player-card.selected.t2 { border-color: var(--accent2); background: rgba(232,54,93,0.1); }
+  .player-card.disabled { opacity: 0.35; cursor: not-allowed; }
+  .player-card.dupe { border-color: var(--accent2) !important; background: rgba(232,54,93,0.15) !important; }
+
+  .cat-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .cat-dot.Batsman       { background: #60A5FA; }
+  .cat-dot.Bowler        { background: #4ADE80; }
+  .cat-dot.All-Rounder   { background: #FACC15; }
+  .cat-dot.Wicket-Keeper { background: #C084FC; }
+
+  .player-name {
+    flex: 1;
+    font-size: 0.88rem;
+    font-family: 'Barlow', sans-serif;
+    color: var(--text);
+  }
+  .cat-label {
+    font-size: 0.68rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.5px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .cat-label.Batsman       { background: rgba(59,130,246,0.15); color: #93C5FD; }
+  .cat-label.Bowler        { background: rgba(34,197,94,0.15);  color: #86EFAC; }
+  .cat-label.All-Rounder   { background: rgba(234,179,8,0.15);  color: #FDE047; }
+  .cat-label.Wicket-Keeper { background: rgba(168,85,247,0.15); color: #D8B4FE; }
+
+  .slot-num-small {
+    font-size: 0.68rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    background: rgba(245,166,35,0.2);
+    color: var(--accent);
+    border-radius: 3px;
+    padding: 1px 5px;
+    flex-shrink: 0;
+    display: none;
+  }
+  .player-card.selected .slot-num-small { display: inline; }
+
+  /* SELECTED SUMMARY STRIP */
+  .selected-strip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 44px;
+    align-items: center;
+  }
+  .selected-strip-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .sel-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px 3px 6px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-family: 'Barlow', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.12s;
+  }
+  .sel-chip:hover { opacity: 0.7; }
+  .sel-chip.t1 { background: rgba(245,166,35,0.15); border: 1px solid rgba(245,166,35,0.4); color: var(--accent); }
+  .sel-chip.t2 { background: rgba(232,54,93,0.15);  border: 1px solid rgba(232,54,93,0.4);  color: var(--accent2); }
+  .sel-chip .chip-x { font-size: 0.7rem; opacity: 0.7; }
+  .sel-chip .chip-num { font-size: 0.65rem; opacity: 0.6; }
+
+  /* OLD SLOT STYLES - kept for badge only */
+  .slot-team-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;
+    padding: 3px 8px; border-radius: 5px;
+    min-width: 48px; text-align: center;
+  }
+  .slot-team-badge.t1 { background: rgba(245,166,35,0.15); color: var(--accent); border: 1px solid rgba(245,166,35,0.3); }
+  .slot-team-badge.t2 { background: rgba(232,54,93,0.15); color: var(--accent2); border: 1px solid rgba(232,54,93,0.3); }
+  .slot-team-badge.empty { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+  select, .styled-select {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); padding: 10px 14px;
+    font-family: 'Barlow', sans-serif; font-size: 0.9rem;
+    appearance: none; -webkit-appearance: none; cursor: pointer;
+    transition: border-color 0.15s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8ba0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+  select option { background: #1a2235; }
+
+  /* VALIDATION BAR */
+  .validation-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    padding: 14px;
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .vcheck {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .vcheck.ok { color: var(--green); }
+  .vcheck.fail { color: var(--accent2); }
+  .vcheck-icon { font-size: 1rem; }
+
+  /* WINNING TEAM */
+  .win-team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .win-team-option {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    color: var(--muted);
+  }
+  .win-team-option:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .win-team-option.selected-t1 { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.08); box-shadow: 0 0 16px rgba(245,166,35,0.15); }
+  .win-team-option.selected-t2 { border-color: var(--accent2); color: var(--accent2); background: rgba(232,54,93,0.08); box-shadow: 0 0 16px rgba(232,54,93,0.15); }
+  .win-team-option.disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* SUBMIT */
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f5a623, #e8365d);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .submit-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(245,166,35,0.3); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .submit-btn:active:not(:disabled) { transform: translateY(0); }
+
+  /* SUCCESS STATE */
+  #success-panel {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .success-icon { font-size: 4rem; margin-bottom: 16px; animation: pop 0.4s ease; }
+  @keyframes pop { 0%{transform:scale(0)} 80%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  #success-panel h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2rem;
+    color: var(--green);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  #success-panel p { color: var(--muted); margin-bottom: 24px; }
+  .summary-table {
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 16px;
+    text-align: left;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    max-width: 500px;
+    margin: 0 auto 24px;
+  }
+  .summary-table strong { color: var(--accent); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; }
+  .another-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .another-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* HIDDEN */
+  .hidden { display: none !important; }
+
+  /* ALERTS */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .alert-warn { background: rgba(232,54,93,0.1); border: 1px solid rgba(232,54,93,0.3); color: #f87171; }
+  .alert-info { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.25); color: var(--accent); }
+
+  /* SECTION FADE */
+  .fade-in { animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* SCROLLABLE MATCH AREA */
+  .match-scroll { max-height: 320px; overflow-y: auto; padding-right: 4px; }
+  .match-scroll::-webkit-scrollbar { width: 4px; }
+  .match-scroll::-webkit-scrollbar-track { background: transparent; }
+  .match-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* REGISTER MODAL */
+  #register-overlay {
+    display:none; position:fixed; inset:0; background:rgba(10,14,26,0.92);
+    z-index:200; align-items:center; justify-content:center;
+  }
+  #register-overlay.open { display:flex; }
+  .register-box {
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    padding:36px 28px; max-width:400px; width:100%; text-align:center;
+    animation:fadeUp 0.25s ease;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+  .register-box h2 { font-family:'Rajdhani',sans-serif; font-size:1.6rem; letter-spacing:3px; color:var(--accent); margin-bottom:4px; }
+  .register-box p  { color:var(--muted); font-size:0.82rem; margin-bottom:24px; }
+  .reg-input {
+    width:100%; box-sizing:border-box; background:var(--surface2); border:1px solid var(--border);
+    border-radius:8px; color:var(--text); padding:12px 14px; font-family:'Barlow',sans-serif;
+    font-size:0.95rem; transition:border-color 0.15s; margin-bottom:14px;
+  }
+  .reg-input:focus { outline:none; border-color:var(--accent); }
+  .reg-input::placeholder { color:var(--muted); }
+  .reg-btn {
+    width:100%; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#000;
+    border:none; border-radius:8px; padding:13px; font-family:'Barlow Condensed',sans-serif;
+    font-size:1rem; font-weight:700; letter-spacing:2px; cursor:pointer; transition:opacity 0.15s;
+    margin-bottom:10px;
+  }
+  .reg-btn:hover { opacity:0.88; }
+  .reg-btn:disabled { opacity:0.4; cursor:not-allowed; }
+  .reg-secondary {
+    background:none; border:none; color:var(--muted); font-size:0.82rem; cursor:pointer;
+    text-decoration:underline;
+  }
+  .reg-secondary:hover { color:var(--text); }
+  #reg-status { margin-top:12px; font-size:0.85rem; }
+
+
+  /* LOGIN SPLIT LAYOUT */
+  .login-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .login-split { grid-template-columns: 1fr; }
+  }
+  #login-card { max-width: 100% !important; margin: 0 !important; }
+
+  /* SCORING RULES PANEL */
+  .rules-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--card-glow);
+  }
+  .rules-card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+  .rules-section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 10px 0 4px;
+    grid-column: 1 / -1;
+    border-bottom: 1px solid rgba(245,166,35,0.2);
+    padding-bottom: 3px;
+  }
+  .rules-section-title:first-child { margin-top: 0; }
+  .rules-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 9px;
+    font-size: 0.75rem;
+  }
+  .rules-row .r-label { color: var(--muted); }
+  .rules-row .r-pts {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    margin-left: 6px;
+  }
+  .r-pts.pos { color: var(--green); }
+  .r-pts.neg { color: var(--accent2); }
+  .r-pts.bon { color: var(--accent); }
+
+  /* GAME RULES INFO ROWS */
+  .game-rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 2px;
+  }
+  .game-rule-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 0.77rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .game-rule-row .gr-icon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .game-rule-row strong { color: var(--text); font-weight: 600; }
+  .game-rule-row.gr-warn  { border-color: rgba(232,54,93,0.3);  background: rgba(232,54,93,0.05); }
+  .game-rule-row.gr-info  { border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.05); }
+  .game-rule-row.gr-green { border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.05); }
+  .game-rule-row.gr-amber { border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.05); }
+
+
+  /* WHATSAPP SHARE BUTTON */
+  .wa-share-wrap {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  .wa-share-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #25D366;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px 12px 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    transition: all 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .wa-share-btn:hover {
+    background: #1ebe5d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(37,211,102,0.55);
+  }
+  .wa-share-btn:active { transform: translateY(0); }
+  .wa-icon {
+    width: 26px; height: 26px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .wa-share-tooltip {
+    background: var(--surface);
+    border: 1px solid #25D366;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    max-width: 220px;
+    text-align: center;
+    line-height: 1.5;
+    display: none;
+    animation: fadeUp 0.2s ease;
+  }
+  .wa-share-wrap:hover .wa-share-tooltip { display: block; }
+  @media (max-width: 480px) {
+    .wa-share-wrap { bottom: 16px; right: 16px; }
+    .wa-share-btn { padding: 11px 16px 11px 12px; font-size: 0.88rem; }
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-8px); }
+    40%      { transform: translateX(8px); }
+    60%      { transform: translateX(-5px); }
+    80%      { transform: translateX(5px); }
+  }
+  .shake { animation: shake 0.45s ease; }
 </style>
 </head>
 <body>
 
-<!-- ── Admin login overlay ────────────────────────────────────────────────── -->
-<div id="login-overlay">
-  <div class="login-box" id="login-box">
-    <div style="font-size:2rem;margin-bottom:12px">🔐</div>
-    <h2>ADMIN LOGIN</h2>
-    <p>Enter your admin password to continue</p>
-    <div style="text-align:left;margin-bottom:16px">
-      <label>Admin Password</label>
-      <input type="password" id="admin-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminLogin()"
-        style="margin-top:6px;letter-spacing:4px;text-align:center"/>
-    </div>
-    <div id="login-err" style="display:none" class="alert alert-warn">Incorrect password.</div>
-    <button class="btn btn-primary" style="width:100%" onclick="checkAdminLogin()">ENTER ADMIN PANEL →</button>
-    <p style="margin-top:16px;color:var(--muted);font-size:0.75rem">
-      Default password: <code style="color:var(--accent)">admin123</code><br>
-      Change it in the <code>ADMIN_PASSWORD</code> constant below.
-    </p>
-  </div>
-</div>
-
-<!-- ── Toast notification ─────────────────────────────────────────────────── -->
-<div id="toast"></div>
-
 <header>
-  <h1>🏏 IPL FANTASY ADMIN</h1>
-  <p>SQUAD · FIXTURES · AUTOMATION</p>
+  <div id="user-badge" class="hidden"><span class="dot"></span><span id="user-name-display"></span></div>
+  <div class="logo-mark"><span class="cricket-icon">🏏</span></div>
+  <h1>IPL Fantasy</h1>
+  <p class="subtitle">Select Your Dream XI</p>
+  <div class="divider"></div>
 </header>
 
 <div class="container">
 
-  <!-- ── GitHub Config ───────────────────────────────────────────────────── -->
-  <details class="config-box" id="config-details">
-    <summary>⚙️ GitHub Configuration — click to expand &amp; set your repo details</summary>
-    <div class="config-grid">
-      <div class="form-group">
-        <label>GitHub Owner (username or org)</label>
-        <input type="text" id="cfg-owner" placeholder="e.g. your-username"/>
+  <!-- LOGIN PANEL -->
+  <div id="login-panel" class="hidden">
+    <div class="login-split">
+
+      <!-- LEFT COLUMN: Sign In -->
+      <div>
+        <div class="card" id="login-card" style="padding:36px 28px;text-align:center;">
+          <div style="font-size:2.2rem;margin-bottom:10px;">🏏</div>
+          <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:4px;color:var(--accent)">SIGN IN</h2>
+          <p style="color:var(--muted);font-size:0.85rem;margin-bottom:28px;">Enter your name and PIN to access your Fantasy XI</p>
+
+          <div style="text-align:left;margin-bottom:14px;">
+            <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px;">Your Name</label>
+            <input id="login-name" type="text" placeholder="e.g. Rahul" autocomplete="name" autocapitalize="words"
+              onkeydown="if(event.key==='Enter') document.getElementById('login-pin').focus()"
+              style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);
+                     border-radius:8px;color:var(--text);padding:12px 14px;font-family:'Barlow',sans-serif;
+                     font-size:1rem;transition:border-color 0.15s;"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          </div>
+
+          <div style="text-align:left;margin-bottom:20px;">
+            <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px;">Your PIN</label>
+            <input id="login-pin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"
+              onkeydown="if(event.key==='Enter') doLogin()"
+              style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);
+                     border-radius:8px;color:var(--text);padding:12px 14px;font-family:'Barlow',sans-serif;
+                     font-size:1.2rem;letter-spacing:6px;text-align:center;transition:border-color 0.15s;"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          </div>
+
+          <div id="login-error" style="display:none;background:rgba(232,54,93,0.12);border:1px solid rgba(232,54,93,0.3);
+               border-radius:8px;padding:10px 14px;color:#F87171;font-size:0.82rem;margin-bottom:16px;text-align:left;"></div>
+
+          <button onclick="doLogin()"
+            style="width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;
+                   border-radius:8px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;
+                   font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity 0.15s;"
+            onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+            ENTER MY FANTASY XI →
+          </button>
+
+          <p style="color:var(--muted);font-size:0.75rem;margin-top:20px;">
+            Forgot your PIN? Contact your league admin.
+          </p>
+          <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px">
+            <p style="color:var(--muted);font-size:0.8rem;margin-bottom:10px">New to the league?</p>
+            <button onclick="openRegister()"
+              style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);
+                     border-radius:8px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;
+                     letter-spacing:2px;cursor:pointer;transition:all 0.15s;"
+              onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              📝 REQUEST ACCESS
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Repository Name</label>
-        <input type="text" id="cfg-repo" placeholder="e.g. ipl-fantasy"/>
+
+      <!-- RIGHT COLUMN: Scoring Rules -->
+      <div>
+        <div class="rules-card">
+          <div class="rules-card-title">
+            <span style="font-size:1rem">📊</span> Scoring Rules
+          </div>
+          <div class="rules-grid">
+
+            <!-- BATTING -->
+            <div class="rules-section-title">🏏 Batting</div>
+            <div class="rules-row"><span class="r-label">Run</span>              <span class="r-pts pos">+1 pt</span></div>
+            <div class="rules-row"><span class="r-label">Four</span>             <span class="r-pts pos">+6 pts</span></div>
+            <div class="rules-row"><span class="r-label">Six</span>              <span class="r-pts pos">+10 pts</span></div>
+            <div class="rules-row"><span class="r-label">50-run bonus</span>     <span class="r-pts bon">+25 pts</span></div>
+            <div class="rules-row"><span class="r-label">100-run bonus</span>    <span class="r-pts bon">+50 pts</span></div>
+            <div class="rules-row"><span class="r-label">Duck penalty</span>     <span class="r-pts neg">−10 pts</span></div>
+            <div class="rules-row" style="grid-column:1/-1">
+              <span class="r-label">Strike Rate &gt;150 (min 10 balls)</span>
+              <span class="r-pts bon">+10 pts</span>
+            </div>
+
+            <!-- BOWLING -->
+            <div class="rules-section-title">🎳 Bowling</div>
+            <div class="rules-row"><span class="r-label">Wicket</span>           <span class="r-pts pos">+10 pts</span></div>
+            <div class="rules-row"><span class="r-label">3-wicket bonus</span>   <span class="r-pts bon">+25 pts</span></div>
+            <div class="rules-row"><span class="r-label">4+ wicket bonus</span>  <span class="r-pts bon">+50 pts</span></div>
+            <div class="rules-row" style="grid-column:1/-1">
+              <span class="r-label">Economy ≤5.0 (min 2 overs)</span>
+              <span class="r-pts bon">+50 pts</span>
+            </div>
+            <div class="rules-row" style="grid-column:1/-1">
+              <span class="r-label">Economy ≤6.0 (min 2 overs)</span>
+              <span class="r-pts bon">+25 pts</span>
+            </div>
+
+            <!-- FIELDING & TEAM -->
+            <div class="rules-section-title">🧤 Fielding &amp; Team</div>
+            <div class="rules-row"><span class="r-label">Catch</span>            <span class="r-pts pos">+25 pts</span></div>
+            <div class="rules-row"><span class="r-label">Run-out</span>          <span class="r-pts pos">+25 pts</span></div>
+            <div class="rules-row" style="grid-column:1/-1">
+              <span class="r-label">Predicted winner correct</span>
+              <span class="r-pts bon">+50 pts</span>
+            </div>
+
+          </div>
+
+          <!-- GAME RULES -->
+          <div class="rules-card-title" style="margin-top:20px;margin-bottom:10px">
+            <span style="font-size:1rem">📋</span> Game Rules
+          </div>
+          <div class="game-rules-list">
+
+            <div class="game-rule-row gr-info">
+              <span class="gr-icon">📧</span>
+              <span><strong>Reminders</strong> — You'll receive email reminders
+                <strong>4 hours</strong> and <strong>2 hours</strong> before each match starts.
+                Don't forget to make your selection!</span>
+            </div>
+
+            <div class="game-rule-row gr-warn">
+              <span class="gr-icon">🔒</span>
+              <span><strong>Selection Lock</strong> — Selections are locked
+                <strong>30 minutes before</strong> the match starts. No changes
+                can be accepted after the cutoff.</span>
+            </div>
+
+            <div class="game-rule-row gr-amber">
+              <span class="gr-icon">⚠️</span>
+              <span><strong>No Selection = 0 Points</strong> — If you don't submit
+                your Fantasy XI before the lock time, your score for that match
+                will be <strong>0</strong>.</span>
+            </div>
+
+            <div class="game-rule-row gr-green">
+              <span class="gr-icon">🏆</span>
+              <span><strong>Results &amp; Rankings</strong> — Match results and the
+                updated leaderboard will be emailed to all players the
+                <strong>day after</strong> the match.</span>
+            </div>
+
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Branch</label>
-        <input type="text" id="cfg-branch" placeholder="main"/>
-      </div>
-      <div class="form-group">
-        <label>Personal Access Token (PAT)</label>
-        <input type="password" id="cfg-token" placeholder="ghp_xxxxxxxxxxxx"/>
-      </div>
+
     </div>
-    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn btn-primary" onclick="saveConfig()">💾 Save Config</button>
-      <button class="btn btn-secondary" onclick="loadDataFromGitHub()">🔄 Load data.json from GitHub</button>
-      <button class="btn btn-green" onclick="triggerWorkflow()">▶️ Trigger GitHub Workflow Now</button>
-    </div>
-    <div id="cfg-status" style="margin-top:12px"></div>
-    <div style="margin-top:12px;padding:12px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;font-size:0.78rem;color:#93C5FD">
-      <strong>Setup:</strong> Create a GitHub PAT at Settings → Developer settings → Personal access tokens → Tokens (classic).
-      Required scopes: <code>repo</code> (full) + <code>workflow</code>. The token stays in your browser session only — never sent anywhere except GitHub's API.
-    </div>
-  </details>
-
-  <!-- ── Tabs ───────────────────────────────────────────────────────────── -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('fixtures')">📅 Fixtures</button>
-    <button class="tab-btn" onclick="switchTab('squads')">👥 Squads</button>
-    <button class="tab-btn" onclick="switchTab('users')">🔑 Users</button>
-    <button class="tab-btn" onclick="switchTab('sync')">☁️ Sync to GitHub</button>
-  </div>
-
-  <!-- ════════════════════════════════════════════════════════════════
-       TAB 1 — FIXTURES
-  ════════════════════════════════════════════════════════════════ -->
-  <div class="tab-panel active" id="tab-fixtures">
-
-    <!-- Add / Edit form -->
-    <div class="card">
-      <div class="card-title"><span class="icon">➕</span> Add / Edit Match</div>
-      <div class="form-row">
-        <div class="form-group" style="max-width:120px">
-          <label>Match ID</label>
-          <input type="text" id="f-id" placeholder="Match31"/>
-        </div>
-        <div class="form-group">
-          <label>Team 1</label>
-          <select id="f-team1">
-            <option value="">— select —</option>
-            <option>RCB</option><option>MI</option><option>CSK</option><option>KKR</option>
-            <option>DC</option><option>SRH</option><option>RR</option><option>GT</option>
-            <option>LSG</option><option>PBKS</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Team 2</label>
-          <select id="f-team2">
-            <option value="">— select —</option>
-            <option>RCB</option><option>MI</option><option>CSK</option><option>KKR</option>
-            <option>DC</option><option>SRH</option><option>RR</option><option>GT</option>
-            <option>LSG</option><option>PBKS</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Date (YYYY-MM-DD)</label>
-          <input type="date" id="f-date"/>
-        </div>
-        <div class="form-group" style="max-width:120px">
-          <label>Time (IST)</label>
-          <input type="time" id="f-time" value="19:30"/>
-        </div>
-        <div class="form-group" style="max-width:130px">
-          <label>Status</label>
-          <select id="f-status">
-            <option value="Pending">Pending</option>
-            <option value="Complete">Complete</option>
-          </select>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="addOrUpdateMatch()">💾 Save Match</button>
-        <button class="btn btn-secondary" onclick="clearMatchForm()">✕ Clear</button>
-      </div>
-      <div id="fixture-form-msg" style="margin-top:10px"></div>
-    </div>
-
-    <!-- Table -->
-    <div class="card">
-      <div class="flex-between">
-        <div class="card-title" style="margin-bottom:0"><span class="icon">📋</span> All Fixtures (<span id="match-count">0</span>)</div>
-        <button class="btn btn-danger" onclick="clearAllMatches()" style="font-size:0.78rem;padding:7px 14px">🗑️ Clear All</button>
-      </div>
-      <div style="overflow-x:auto;margin-top:16px">
-        <table class="data-table" id="fixture-table">
-          <thead>
-            <tr>
-              <th>ID</th><th>Match</th><th>Date</th><th>Time (IST)</th><th>Status</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="fixture-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ════════════════════════════════════════════════════════════════
-       TAB 2 — SQUADS
-  ════════════════════════════════════════════════════════════════ -->
-  <div class="tab-panel" id="tab-squads">
-
-    <!-- Add player form -->
-    <div class="card">
-      <div class="card-title"><span class="icon">➕</span> Add Player to Squad</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Team</label>
-          <select id="s-team">
-            <option value="">— select team —</option>
-            <option>RCB</option><option>MI</option><option>CSK</option><option>KKR</option>
-            <option>DC</option><option>SRH</option><option>RR</option><option>GT</option>
-            <option>LSG</option><option>PBKS</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Player Name</label>
-          <input type="text" id="s-name" placeholder="e.g. Virat Kohli"/>
-        </div>
-        <div class="form-group" style="max-width:160px">
-          <label>Category</label>
-          <select id="s-cat">
-            <option value="Batsman">Batsman</option>
-            <option value="Bowler">Bowler</option>
-            <option value="All-Rounder">All-Rounder</option>
-            <option value="Wicket-Keeper">Wicket-Keeper</option>
-          </select>
-        </div>
-        <div class="form-group" style="align-self:flex-end;max-width:140px">
-          <button class="btn btn-primary" onclick="addPlayer()" style="width:100%">+ Add Player</button>
-        </div>
-      </div>
-      <div id="squad-form-msg" style="margin-top:8px"></div>
-    </div>
-
-    <!-- Squad display -->
-    <div class="card">
-      <div class="flex-between">
-        <div class="card-title" style="margin-bottom:0"><span class="icon">👥</span> Squad Roster</div>
-        <div class="form-group search-input" style="margin:0">
-          <input type="text" id="squad-search" placeholder="🔍 Search player..." oninput="renderSquads()"/>
-        </div>
-      </div>
-      <div id="squad-roster" style="margin-top:16px"></div>
-    </div>
-
   </div>
 
 
-  <!-- ════════════════════════════════════════════════════════════════
-       TAB 3 — USERS
-  ════════════════════════════════════════════════════════════════ -->
-  <div class="tab-panel" id="tab-users">
+  <!-- REGISTER MODAL OVERLAY -->
+  <div id="register-overlay">
+    <div class="register-box">
+      <div style="font-size:2rem;margin-bottom:10px">📝</div>
+      <h2>JOIN THE LEAGUE</h2>
+      <p>Request access to IPL Fantasy XI. Your admin will review and send your PIN.</p>
 
-    <!-- Add / Edit user form -->
-    <div class="card">
-      <div class="card-title"><span class="icon">➕</span> Add / Edit User</div>
-      <div class="form-row">
-        <div class="form-group" style="max-width:160px">
-          <label>User ID</label>
-          <input type="text" id="u-id" placeholder="U20260006" style="font-family:monospace"/>
-        </div>
-        <div class="form-group">
-          <label>Display Name (login name)</label>
-          <input type="text" id="u-name" placeholder="e.g. Sneha"/>
-        </div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="text" id="u-email" placeholder="user@example.com"/>
-        </div>
-        <div class="form-group" style="max-width:130px">
-          <label>PIN (4–6 digits)</label>
-          <input type="text" id="u-pin" placeholder="1234" maxlength="6" style="letter-spacing:4px;text-align:center;font-family:monospace"/>
-        </div>
-        <div class="form-group" style="align-self:flex-end;max-width:160px">
-          <button class="btn btn-primary" onclick="addOrUpdateUser()" style="width:100%">💾 Save User</button>
-        </div>
+      <div id="reg-form-wrap">
+        <input class="reg-input" id="reg-name"  type="text"  placeholder="Your Name (e.g. Sneha)" autocapitalize="words"/>
+        <input class="reg-input" id="reg-email" type="email" placeholder="Your Email Address"/>
+        <input class="reg-input" id="reg-phone" type="tel"   placeholder="WhatsApp Number (optional, e.g. +6591234567)"/>
+        <button class="reg-btn" id="reg-submit-btn" onclick="submitRegistration()">REQUEST ACCESS →</button>
+        <div id="reg-status"></div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-secondary" onclick="clearUserForm()">✕ Clear</button>
-        <button class="btn btn-secondary" onclick="autoGenerateId()" style="font-size:0.78rem">🔢 Auto-generate ID</button>
+
+      <div id="reg-success-wrap" style="display:none">
+        <div style="font-size:2.5rem;margin-bottom:12px">✅</div>
+        <p style="color:var(--green);font-size:0.95rem;margin-bottom:4px"><strong>Request sent!</strong></p>
+        <p style="color:var(--muted);font-size:0.82rem">Your admin has been notified. You'll receive your PIN via email once approved.</p>
       </div>
-      <div id="user-form-msg" style="margin-top:10px"></div>
+
+      <div style="margin-top:20px">
+        <button class="reg-secondary" onclick="closeRegister()">← Back to Sign In</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Users table -->
-    <div class="card">
-      <div class="flex-between">
-        <div class="card-title" style="margin-bottom:0"><span class="icon">🔑</span> All Users (<span id="user-count">0</span>)</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <input type="text" id="user-search" placeholder="🔍 Search..." oninput="renderUsers()"
-            style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;
-                   color:var(--text);padding:7px 12px;font-size:0.85rem;max-width:200px"/>
-          <button class="btn btn-green" onclick="downloadXlsx()" style="font-size:0.78rem;padding:7px 14px">📥 Download XLSX</button>
-        </div>
-      </div>
-      <div style="overflow-x:auto;margin-top:16px">
-        <table class="data-table" id="user-table">
-          <thead>
-            <tr>
-              <th>User ID</th><th>Name</th><th>Email</th><th>PIN</th><th>App URL</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="user-tbody"></tbody>
-        </table>
+  <!-- MAIN FORM -->
+  <div id="main-form" class="hidden">
+
+    <!-- STEP 1: MATCH -->
+    <div class="card active" id="step1">
+      <div class="card-title"><span class="step-num">1</span> Select Today's Match</div>
+      <div class="match-scroll">
+        <div class="match-grid" id="match-grid"></div>
       </div>
     </div>
 
-    <!-- Info box -->
-    <div class="card" style="background:rgba(59,130,246,0.05);border-color:rgba(59,130,246,0.2)">
-      <div class="card-title" style="color:#93C5FD"><span class="icon">ℹ️</span> How Users Work</div>
-      <p style="font-size:0.85rem;color:var(--muted);line-height:1.8">
-        • <strong style="color:var(--text)">Name</strong> is the login display name — users type it exactly on the login screen (case-insensitive).<br>
-        • <strong style="color:var(--text)">PIN</strong> is the private 4–6 digit code each user types to authenticate.<br>
-        • <strong style="color:var(--text)">Email</strong> is for your reference only (to send credentials) — not used in the app.<br>
-        • After saving changes, go to <strong style="color:var(--accent)">Sync to GitHub</strong> → Push data.json → Trigger Workflow.<br>
-        • The workflow automatically regenerates <code>index.html</code> and <code>user_list.xlsx</code> in your repo.
-      </p>
+    <!-- STEP 2: PLAYERS -->
+    <div class="card hidden fade-in" id="step2">
+      <div class="card-title"><span class="step-num">2</span> Pick Your 11 Players</div>
+
+      <div class="alert alert-info" style="margin-bottom:14px;">
+        🛡️ Pick at least <strong>4 players</strong> from <strong>each</strong> team (max 7 from one team). No duplicate players allowed.
+      </div>
+
+      <div class="picker-layout" id="picker-layout"></div>
+
+      <div class="selected-strip" id="selected-strip">
+        <div class="selected-strip-label">Your XI — tap a chip to remove</div>
+        <span style="color:var(--muted);font-size:0.82rem;" id="strip-empty">No players selected yet</span>
+      </div>
+
+      <div class="validation-bar" id="validation-bar" style="margin-top:12px;">
+        <div class="vcheck" id="v-count"><span class="vcheck-icon">⬜</span> 11 players selected</div>
+        <div class="vcheck" id="v-min4"><span class="vcheck-icon">⬜</span> Min 4 from each team</div>
+        <div class="vcheck" id="v-nodupe"><span class="vcheck-icon">⬜</span> No duplicates</div>
+      </div>
+    </div>
+
+    <!-- STEP 3: WINNING TEAM -->
+    <div class="card hidden fade-in" id="step3">
+      <div class="card-title"><span class="step-num">3</span> Predict the Winner</div>
+      <div class="win-team-grid" id="win-team-grid"></div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div id="submit-section" class="hidden fade-in">
+      <div id="form-alert"></div>
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()">⚡ Submit My Fantasy XI</button>
     </div>
 
   </div>
 
-  <!-- ════════════════════════════════════════════════════════════════
-       TAB 4 — SYNC
-  ════════════════════════════════════════════════════════════════ -->
-  <div class="tab-panel" id="tab-sync">
-
-    <div class="card">
-      <div class="card-title"><span class="icon">☁️</span> Push Changes to GitHub</div>
-      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px;line-height:1.7">
-        This will update <code>data.json</code> in your GitHub repository, then trigger the
-        <code>update-fixtures.yml</code> workflow which regenerates <code>index.html</code> and
-        <code>user_list.xlsx</code> automatically. Make sure your GitHub config is saved above first.
-      </p>
-      <div id="sync-status" style="margin-bottom:16px"></div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="syncToGitHub()" id="sync-btn">☁️ Push data.json to GitHub</button>
-        <button class="btn btn-green"   onclick="triggerWorkflow()" id="trigger-btn">▶️ Trigger Workflow (regenerate HTML)</button>
-        <button class="btn btn-secondary" onclick="exportJSON()">⬇️ Download data.json Locally</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon">📋</span> Current data.json Preview</div>
-      <textarea id="json-preview" readonly style="width:100%;height:320px;font-family:monospace;font-size:0.78rem;resize:vertical"></textarea>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><span class="icon">📥</span> Import data.json</div>
-      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:14px">Paste a <code>data.json</code> below to import it into the editor.</p>
-      <textarea id="json-import" style="width:100%;height:160px;font-family:monospace;font-size:0.78rem;resize:vertical" placeholder='{"squads":{...},"matches":[...]}'></textarea>
-      <button class="btn btn-secondary" style="margin-top:10px" onclick="importJSON()">📥 Import JSON</button>
-      <div id="import-msg" style="margin-top:8px"></div>
-    </div>
-
+  <!-- SUCCESS -->
+  <div id="success-panel">
+    <div class="success-icon">🏆</div>
+    <h2>Team Locked In!</h2>
+    <p>Your Fantasy XI has been submitted successfully.</p>
+    <div class="summary-table" id="summary-content"></div>
+    <button class="another-btn" onclick="resetForAnother()">Submit for Another Match</button>
   </div>
 
-</div><!-- /container -->
+</div>
 
 <script>
-// ════════════════════════════════════════════════════════════════════════════
-// CONFIG & AUTH
-// ════════════════════════════════════════════════════════════════════════════
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+// ⚠️  Paste your Google Apps Script Web App URL here (one place, used everywhere)
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzsDKKt0lMUZYcdbwq2E6cGGP69XzjYczUlOviIK8W6QES3DxwSs1hhJgHxUozjviM_Fw/exec';
 
-// Change this password before deploying!
-const ADMIN_PASSWORD = "admin123";
+// ─── DATA ───────────────────────────────────────────────────────────────────
 
-function checkAdminLogin() {
-  const pw = document.getElementById('admin-pw').value;
-  if (pw === ADMIN_PASSWORD) {
-    document.getElementById('login-overlay').style.display = 'none';
-    loadLocalState();
-    renderAll();
-  } else {
-    const err = document.getElementById('login-err');
-    err.style.display = 'flex';
-    const box = document.getElementById('login-box');
-    box.classList.remove('shake');
-    void box.offsetWidth;
-    box.classList.add('shake');
-    document.getElementById('admin-pw').value = '';
+// @@BEGIN_SQUADS@@
+const SQUADS = {
+  RCB: [{n:"Virat Kohli",c:"Batsman"},{n:"Rajat Patidar",c:"Batsman"},{n:"Phil Salt",c:"Wicket-Keeper"},{n:"Devdutt Padikkal",c:"Batsman"},{n:"Jacob Bethell",c:"All-Rounder"},{n:"Liam Livingstone",c:"All-Rounder"},{n:"Tim David",c:"All-Rounder"},{n:"Jitesh Sharma",c:"Wicket-Keeper"},{n:"Krunal Pandya",c:"All-Rounder"},{n:"Cameron Green",c:"All-Rounder"},{n:"Romario Shepherd",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Swapnil Singh",c:"All-Rounder"},{n:"Yash Dayal",c:"Bowler"},{n:"Bhuvneshwar Kumar",c:"Bowler"},{n:"Josh Hazlewood",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Nwelwetsi Rabada",c:"Bowler"},{n:"Suyash Sharma",c:"Bowler"},{n:"Rasikh Dar",c:"Bowler"},{n:"Lungi Ngidi",c:"Bowler"},{n:"Manoj Bhandage",c:"Bowler"},{n:"Abhinandan Singh",c:"Bowler"}],
+  MI: [{n:"Rohit Sharma",c:"Batsman"},{n:"Suryakumar Yadav",c:"Batsman"},{n:"Tilak Varma",c:"Batsman"},{n:"Ryan Rickelton",c:"Wicket-Keeper"},{n:"Robin Minz",c:"Wicket-Keeper"},{n:"Krishnan Shrijith",c:"Wicket-Keeper"},{n:"Hardik Pandya",c:"All-Rounder"},{n:"Will Jacks",c:"All-Rounder"},{n:"Mitchell Santner",c:"All-Rounder"},{n:"Naman Dhir",c:"All-Rounder"},{n:"Raj Angad Bawa",c:"All-Rounder"},{n:"Bevon Jacobs",c:"All-Rounder"},{n:"Arjun Tendulkar",c:"All-Rounder"},{n:"Jasprit Bumrah",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Karn Sharma",c:"Bowler"},{n:"Mujeeb Ur Rahman",c:"Bowler"},{n:"Reece Topley",c:"Bowler"},{n:"Vignesh Puthur",c:"Bowler"},{n:"Ashwani Kumar",c:"Bowler"},{n:"Satyanarayana Raju",c:"Bowler"},{n:"Lizaad Williams",c:"Bowler"}],
+  CSK: [{n:"MS Dhoni",c:"Wicket-Keeper"},{n:"Devon Conway",c:"Wicket-Keeper"},{n:"Urvil Patel",c:"Wicket-Keeper"},{n:"Ruturaj Gaikwad",c:"Batsman"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Shaik Rasheed",c:"Batsman"},{n:"Rachin Ravindra",c:"All-Rounder"},{n:"Shivam Dube",c:"All-Rounder"},{n:"Vijay Shankar",c:"All-Rounder"},{n:"Ravindra Jadeja",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Jamie Overton",c:"All-Rounder"},{n:"RS Hangargekar",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Shardul Thakur",c:"All-Rounder"},{n:"Matheesha Pathirana",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Mukesh Choudhary",c:"Bowler"},{n:"Noor Ahmad",c:"Bowler"},{n:"Khaleel Ahmed",c:"Bowler"},{n:"Kamlesh Nagarkoti",c:"Bowler"},{n:"Anshul Kamboj",c:"Bowler"},{n:"Nathan Ellis",c:"Bowler"}],
+  KKR: [{n:"Quinton de Kock",c:"Wicket-Keeper"},{n:"Rahmanullah Gurbaz",c:"Wicket-Keeper"},{n:"Luvnith Sisodia",c:"Wicket-Keeper"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Angkrish Raghuvanshi",c:"Batsman"},{n:"Rinku Singh",c:"Batsman"},{n:"Manish Pandey",c:"Batsman"},{n:"Rovman Powell",c:"All-Rounder"},{n:"Ramandeep Singh",c:"All-Rounder"},{n:"Andre Russell",c:"All-Rounder"},{n:"Moeen Ali",c:"All-Rounder"},{n:"Sunil Narine",c:"All-Rounder"},{n:"Venkatesh Iyer",c:"All-Rounder"},{n:"Anukul Roy",c:"All-Rounder"},{n:"Shivam Shukla",c:"All-Rounder"},{n:"Vaibhav Arora",c:"Bowler"},{n:"Harshit Rana",c:"Bowler"},{n:"Anrich Nortje",c:"Bowler"},{n:"Spencer Johnson",c:"Bowler"},{n:"Mayank Markande",c:"Bowler"},{n:"Chetan Sakariya",c:"Bowler"}],
+  DC: [{n:"KL Rahul",c:"Wicket-Keeper"},{n:"Abishek Porel",c:"Wicket-Keeper"},{n:"Harry Brook",c:"Batsman"},{n:"Faf du Plessis",c:"Batsman"},{n:"Jake Fraser-McGurk",c:"Batsman"},{n:"Karun Nair",c:"Batsman"},{n:"Sameer Rizvi",c:"Batsman"},{n:"Axar Patel",c:"All-Rounder"},{n:"Triston Stubbs",c:"All-Rounder"},{n:"Ashutosh Sharma",c:"All-Rounder"},{n:"Donovan Ferreira",c:"All-Rounder"},{n:"Tripurana Vijay",c:"All-Rounder"},{n:"Kuldeep Yadav",c:"Bowler"},{n:"Mitchell Starc",c:"Bowler"},{n:"Mukesh Kumar",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"T Natarajan",c:"Bowler"},{n:"Mohit Sharma",c:"Bowler"},{n:"Darshan Nalkande",c:"Bowler"},{n:"Vipraj Nigam",c:"Bowler"}],
+  SRH: [{n:"Heinrich Klaasen",c:"Wicket-Keeper"},{n:"Ishan Kishan",c:"Wicket-Keeper"},{n:"Travis Head",c:"Batsman"},{n:"Rahul Tripathi",c:"Batsman"},{n:"Atharva Taide",c:"Batsman"},{n:"Anmolpreet Singh",c:"Batsman"},{n:"Sachin Baby",c:"Batsman"},{n:"Pat Cummins",c:"All-Rounder"},{n:"Abhishek Sharma",c:"All-Rounder"},{n:"Nitish Kumar Reddy",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Wiaan Mulder",c:"All-Rounder"},{n:"Harshal Patel",c:"Bowler"},{n:"Adam Zampa",c:"Bowler"},{n:"Jaydev Unadkat",c:"Bowler"},{n:"Brydon Carse",c:"Bowler"},{n:"Raz Janat",c:"Bowler"},{n:"Akeal Hosein",c:"Bowler"},{n:"Simarjeet Singh",c:"Bowler"},{n:"Zeeshan Ansari",c:"Bowler"}],
+  RR: [{n:"Sanju Samson",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Dhruv Jurel",c:"Wicket-Keeper"},{n:"Yashasvi Jaiswal",c:"Batsman"},{n:"Shimron Hetmyer",c:"Batsman"},{n:"Vaibhav Suryavanshi",c:"Batsman"},{n:"Riyan Parag",c:"All-Rounder"},{n:"Nitish Rana",c:"All-Rounder"},{n:"Shubham Dubey",c:"All-Rounder"},{n:"FA Allen",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Wanindu Hasaranga",c:"All-Rounder"},{n:"Maheesh Theekshana",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Sandeep Sharma",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Kumar Kartikeya",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Akash Madhwal",c:"Bowler"}],
+  GT: [{n:"Anuj Rawat",c:"Wicket-Keeper"},{n:"Kumar Kushagra",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Shubman Gill",c:"Batsman"},{n:"Sai Sudharsan",c:"Batsman"},{n:"Shahrukh Khan",c:"Batsman"},{n:"Rahul Tewatia",c:"All-Rounder"},{n:"Mahipal Lomror",c:"All-Rounder"},{n:"Sherfane Rutherford",c:"All-Rounder"},{n:"Washington Sundar",c:"All-Rounder"},{n:"Nishant Sindhu",c:"All-Rounder"},{n:"Rashid Khan",c:"All-Rounder"},{n:"Arshad Khan",c:"All-Rounder"},{n:"Sai Kishore",c:"All-Rounder"},{n:"Jayant Yadav",c:"All-Rounder"},{n:"Dasun Shanaka",c:"All-Rounder"},{n:"Karim Janat",c:"All-Rounder"},{n:"Kagiso Rabada",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Prasidh Krishna",c:"Bowler"},{n:"Gerald Coetzee",c:"Bowler"},{n:"Gurnoor Brar",c:"Bowler"},{n:"Kulwant Khejroliya",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"Manav Suthar",c:"Bowler"}],
+  LSG: [{n:"Rishabh Pant",c:"Wicket-Keeper"},{n:"Nicholas Pooran",c:"Wicket-Keeper"},{n:"Aryan Juyal",c:"Wicket-Keeper"},{n:"Matthew Breetzke",c:"Batsman"},{n:"Himmat Singh",c:"Batsman"},{n:"Ayush Badoni",c:"Batsman"},{n:"David Miller",c:"Batsman"},{n:"Mitchell Marsh",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Abdul Samad",c:"All-Rounder"},{n:"Shahbaz Ahmed",c:"All-Rounder"},{n:"Arshin Kulkarni",c:"All-Rounder"},{n:"Rajvardhan Hangargekar",c:"All-Rounder"},{n:"Ravi Bishnoi",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Akash Deep",c:"Bowler"},{n:"Shamar Joseph",c:"Bowler"},{n:"Mayank Yadav",c:"Bowler"},{n:"Mohsin Khan",c:"Bowler"},{n:"Digvesh Singh",c:"Bowler"},{n:"Akash Singh",c:"Bowler"},{n:"Yuvraj Chaudhary",c:"Bowler"},{n:"Prince Yadav",c:"Bowler"},{n:"Manimaran Siddharth",c:"Bowler"}],
+  PBKS: [{n:"Prabhsimran Singh",c:"Wicket-Keeper"},{n:"Vishnu Vinod",c:"Wicket-Keeper"},{n:"Shreyas Iyer",c:"Batsman"},{n:"Priyansh Arya",c:"Batsman"},{n:"Nehal Wadhera",c:"Batsman"},{n:"Shashank Singh",c:"All-Rounder"},{n:"Marcus Stoinis",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Aaron Hardie",c:"All-Rounder"},{n:"Azmatullah Omarzai",c:"All-Rounder"},{n:"Suryansh Shedge",c:"All-Rounder"},{n:"Harpreet Brar",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Musheer Khan",c:"All-Rounder"},{n:"Arshdeep Singh",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Harshal Patel",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Xavier Bartlett",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Vijaykumar Vyshak",c:"Bowler"},{n:"Pyla Avinash",c:"Bowler"},{n:"Yash Thakur",c:"Bowler"}],
+};
+// @@END_SQUADS@@
+
+// @@BEGIN_MATCHES@@
+const MATCHES = [
+  {id:"TestMatch1",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-03-15",time:"13:30",status:"Complete"},
+  {id:"TestMatch2",name:"CSK vs MI",team1:"CSK",team2:"MI",date:"2026-03-16",time:"12:30",status:"Complete"},
+  {id:"TestMatch3",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-03-17",time:"14:00",status:"Complete"},
+  {id:"Match1",name:"RCB vs SRH",team1:"RCB",team2:"SRH",date:"2026-03-28",time:"19:30",status:"Pending"},
+  {id:"Match2",name:"MI vs KKR",team1:"MI",team2:"KKR",date:"2026-03-29",time:"19:30",status:"Pending"},
+  {id:"Match3",name:"RR vs CSK",team1:"RR",team2:"CSK",date:"2026-03-30",time:"19:30",status:"Pending"},
+  {id:"Match4",name:"PBKS vs GT",team1:"PBKS",team2:"GT",date:"2026-03-31",time:"19:30",status:"Pending"},
+  {id:"Match5",name:"LSG vs DC",team1:"LSG",team2:"DC",date:"2026-04-01",time:"19:30",status:"Pending"},
+  {id:"Match6",name:"KKR vs SRH",team1:"KKR",team2:"SRH",date:"2026-04-02",time:"19:30",status:"Pending"},
+  {id:"Match7",name:"CSK vs PBKS",team1:"CSK",team2:"PBKS",date:"2026-04-03",time:"19:30",status:"Pending"},
+  {id:"Match8",name:"DC vs MI",team1:"DC",team2:"MI",date:"2026-04-04",time:"15:30",status:"Pending"},
+  {id:"Match9",name:"GT vs RR",team1:"GT",team2:"RR",date:"2026-04-04",time:"19:30",status:"Pending"},
+  {id:"Match10",name:"SRH vs LSG",team1:"SRH",team2:"LSG",date:"2026-04-05",time:"15:30",status:"Pending"},
+  {id:"Match11",name:"RCB vs CSK",team1:"RCB",team2:"CSK",date:"2026-04-05",time:"19:30",status:"Pending"},
+  {id:"Match12",name:"KKR vs PBKS",team1:"KKR",team2:"PBKS",date:"2026-04-06",time:"19:30",status:"Pending"},
+  {id:"Match13",name:"RR vs MI",team1:"RR",team2:"MI",date:"2026-04-07",time:"19:30",status:"Pending"},
+  {id:"Match14",name:"DC vs GT",team1:"DC",team2:"GT",date:"2026-04-08",time:"19:30",status:"Pending"},
+  {id:"Match15",name:"KKR vs LSG",team1:"KKR",team2:"LSG",date:"2026-04-09",time:"19:30",status:"Pending"},
+  {id:"Match16",name:"RR vs RCB",team1:"RR",team2:"RCB",date:"2026-04-10",time:"19:30",status:"Pending"},
+  {id:"Match17",name:"PBKS vs SRH",team1:"PBKS",team2:"SRH",date:"2026-04-11",time:"15:30",status:"Pending"},
+  {id:"Match18",name:"CSK vs DC",team1:"CSK",team2:"DC",date:"2026-04-11",time:"19:30",status:"Pending"},
+  {id:"Match19",name:"LSG vs GT",team1:"LSG",team2:"GT",date:"2026-04-12",time:"15:30",status:"Pending"},
+  {id:"Match20",name:"MI vs RCB",team1:"MI",team2:"RCB",date:"2026-04-12",time:"19:30",status:"Pending"},
+  {id:"Match21",name:"LSG vs SRH",team1:"LSG",team2:"SRH",date:"2026-04-17",time:"19:30",status:"Pending"},
+  {id:"Match22",name:"MI vs DC",team1:"MI",team2:"DC",date:"2026-04-18",time:"15:30",status:"Pending"},
+  {id:"Match23",name:"RCB vs CSK",team1:"RCB",team2:"CSK",date:"2026-04-18",time:"19:30",status:"Pending"},
+  {id:"Match24",name:"GT vs RR",team1:"GT",team2:"RR",date:"2026-04-19",time:"15:30",status:"Pending"},
+  {id:"Match25",name:"KKR vs PBKS",team1:"KKR",team2:"PBKS",date:"2026-04-19",time:"19:30",status:"Pending"},
+  {id:"Match26",name:"DC vs LSG",team1:"DC",team2:"LSG",date:"2026-04-20",time:"19:30",status:"Pending"},
+  {id:"Match27",name:"CSK vs SRH",team1:"CSK",team2:"SRH",date:"2026-04-21",time:"19:30",status:"Pending"},
+  {id:"Match28",name:"RR vs MI",team1:"RR",team2:"MI",date:"2026-04-22",time:"19:30",status:"Pending"},
+  {id:"Match29",name:"PBKS vs RCB",team1:"PBKS",team2:"RCB",date:"2026-04-23",time:"19:30",status:"Pending"},
+  {id:"Match30",name:"KKR vs GT",team1:"KKR",team2:"GT",date:"2026-04-24",time:"19:30",status:"Pending"}
+];
+// @@END_MATCHES@@
+
+// @@BEGIN_USERS@@
+// Format: "Name": { id:"UXXXXXXXX", pin:"NNNN", email:"..." }
+const USER_PINS = {
+  "Rohit": { id:"U20260001", pin:"7890", email:"learn2earn06@gmail.com" },
+  "Rahul": { id:"U20260002", pin:"1234", email:"rohit.surve@outlook.com" },
+  "Priya": { id:"U20260003", pin:"2345", email:"rohitmsurve2024@gmail.com" },
+  "Amit": { id:"U20260004", pin:"3456", email:"ashokvshelke61@gmail.com" },
+  "Rohit5": { id:"U20260005", pin:"9999", email:"test@gmail.com" },
+  "Mayuri": { id:"U20260006", pin:"0616", email:"mayurirsurve@gmail.com" },
+};
+// @@END_USERS@@
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+
+let selectedMatch  = null;
+let selectedWinner = null;
+let currentUser    = null;
+let loginAttempts  = 0;
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+
+function init() {
+  // Always show the login screen first
+  document.getElementById('login-panel').classList.remove('hidden');
+  document.getElementById('main-form').classList.add('hidden');
+
+  // Pre-fill name if passed in URL (?name=Rahul) as a convenience shortcut
+  const qs = new URLSearchParams(window.location.search);
+  const urlName = qs.get('name') || new URLSearchParams(window.location.hash.replace(/^#/,'')).get('name');
+  if (urlName) {
+    const nameInput = document.getElementById('login-name');
+    if (nameInput) {
+      nameInput.value = urlName;
+      document.getElementById('login-pin').focus();
+    }
   }
 }
-document.getElementById('admin-pw').addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkAdminLogin();
+
+// ─── LOGIN ───────────────────────────────────────────────────────────────────
+
+function doLogin() {
+  const nameRaw = (document.getElementById('login-name').value || '').trim();
+  const pin     = (document.getElementById('login-pin').value  || '').trim();
+  const errEl   = document.getElementById('login-error');
+
+  errEl.style.display = 'none';
+
+  if (!nameRaw || !pin) {
+    showLoginError('Please enter both your name and PIN.');
+    return;
+  }
+
+  // Find the user — try exact match first, then case-insensitive
+  let user = null;
+  let matchedName = null;
+  if (USER_PINS[nameRaw]) {
+    matchedName = nameRaw;
+  } else {
+    // Case-insensitive search
+    const lower = nameRaw.toLowerCase();
+    matchedName = Object.keys(USER_PINS).find(k => k.toLowerCase() === lower) || null;
+  }
+
+  if (matchedName && USER_PINS[matchedName].pin === pin) {
+    // ✅ Correct — let them in
+    loginAttempts = 0;
+    currentUser = { id: USER_PINS[matchedName].id, name: matchedName };
+    document.getElementById('login-panel').classList.add('hidden');
+    document.getElementById('main-form').classList.remove('hidden');
+    document.getElementById('user-badge').classList.remove('hidden');
+    document.getElementById('user-name-display').textContent = '👤 ' + matchedName;
+    renderMatches();
+  } else {
+    // ❌ Wrong — show error, track attempts
+    loginAttempts++;
+    if (!matchedName) {
+      showLoginError('Name not recognised. Check spelling — it must match exactly.');
+    } else {
+      showLoginError('Wrong PIN. Please try again.' + (loginAttempts >= 3 ? ' Contact your admin if you\'ve forgotten your PIN.' : ''));
+    }
+    // Shake animation on the card
+    const card = document.getElementById('login-card');
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 500);
+    // Clear PIN field only
+    document.getElementById('login-pin').value = '';
+    document.getElementById('login-pin').focus();
+  }
+}
+
+function showLoginError(msg) {
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = msg;
+  errEl.style.display = 'block';
+}
+
+// ─── RENDER MATCHES ──────────────────────────────────────────────────────────
+
+function renderMatches() {
+  const grid = document.getElementById('match-grid');
+  grid.innerHTML = '';
+  MATCHES.forEach(m => {
+    const isPast = m.status === 'Complete';
+    const d = new Date(m.date);
+    const dateStr = d.toLocaleDateString('en-IN', {day:'numeric',month:'short'});
+    const div = document.createElement('div');
+    div.className = 'match-option' + (isPast ? ' past' : '');
+    div.innerHTML = `
+      <div class="match-status ${isPast?'complete':'pending'}">${isPast?'Done':'Open'}</div>
+      <div class="match-name">${m.name}</div>
+      <div class="match-meta">${dateStr} · ${m.time} IST</div>
+    `;
+    if (!isPast) div.onclick = () => selectMatch(m, div);
+    grid.appendChild(div);
+  });
+}
+
+function selectMatch(match, el) {
+  document.querySelectorAll('.match-option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMatch = match;
+  renderPlayerSlots(match);
+  document.getElementById('step2').classList.remove('hidden');
+  document.getElementById('step2').classList.add('fade-in');
+  document.getElementById('step3').classList.add('hidden');
+  document.getElementById('submit-section').classList.add('hidden');
+  selectedWinner = null;
+  document.getElementById('step2').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ─── SELECTED PLAYERS STATE ──────────────────────────────────────────────────
+// Array of 11 slots: null or {player, team, cat}
+let picks = Array(11).fill(null);
+
+// ─── RENDER PLAYER PICKER ────────────────────────────────────────────────────
+
+function renderPlayerSlots(match) {
+  picks = Array(11).fill(null);
+  const t1 = match.team1, t2 = match.team2;
+  const layout = document.getElementById('picker-layout');
+  layout.innerHTML = `
+    ${buildTeamPanel(t1, 't1')}
+    ${buildTeamPanel(t2, 't2')}
+  `;
+  renderStrip();
+  updateValidation();
+}
+
+function buildTeamPanel(team, cls) {
+  const players = SQUADS[team] || [];
+  const cats = ['All','Batsman','Bowler','All-Rounder','Wicket-Keeper'];
+  const catClass = {All:'all',Batsman:'bat',Bowler:'bowl','All-Rounder':'ar','Wicket-Keeper':'wk'};
+  return `
+    <div class="team-panel">
+      <div class="team-panel-header ${cls}">
+        <span>${team}</span>
+        <span class="team-count-badge" id="count-${team}">0 / 11</span>
+      </div>
+      <div class="search-box">
+        <input type="text" placeholder="🔍 Search player..." oninput="filterPanel('${team}')" id="search-${team}"/>
+      </div>
+      <div class="cat-filters" id="catfilter-${team}">
+        ${cats.map(c=>`<button class="cat-btn ${catClass[c]} ${c==='All'?'active':''}" onclick="setCatFilter('${team}','${c}',this)">${c==='All'?'All':c==='Wicket-Keeper'?'WK':c==='All-Rounder'?'AR':c}</button>`).join('')}
+      </div>
+      <div class="player-list" id="list-${team}">
+        ${players.map(p => buildPlayerCard(p, team, cls)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function buildPlayerCard(p, team, cls) {
+  const id = `card-${team}-${p.n.replace(/\s+/g,'_')}`;
+  return `
+    <div class="player-card" id="${id}" data-name="${p.n}" data-team="${team}" data-cat="${p.c}" onclick="togglePlayer('${p.n}','${team}','${p.c}','${cls}')">
+      <span class="cat-dot ${p.c}"></span>
+      <span class="player-name">${p.n}</span>
+      <span class="cat-label ${p.c}">${p.c === 'Wicket-Keeper' ? 'WK' : p.c === 'All-Rounder' ? 'AR' : p.c}</span>
+      <span class="slot-num-small" id="slotlabel-${team}-${p.n.replace(/\s+/g,'_')}"></span>
+    </div>
+  `;
+}
+
+// ─── FILTER ──────────────────────────────────────────────────────────────────
+
+const activeCatFilter = {};
+
+function setCatFilter(team, cat, btn) {
+  activeCatFilter[team] = cat;
+  document.querySelectorAll(`#catfilter-${team} .cat-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterPanel(team);
+}
+
+function filterPanel(team) {
+  const search = (document.getElementById(`search-${team}`)?.value || '').toLowerCase();
+  const cat = activeCatFilter[team] || 'All';
+  document.querySelectorAll(`#list-${team} .player-card`).forEach(card => {
+    const name = card.dataset.name.toLowerCase();
+    const cardCat = card.dataset.cat;
+    const matchSearch = !search || name.includes(search);
+    const matchCat = cat === 'All' || cardCat === cat;
+    card.style.display = (matchSearch && matchCat) ? '' : 'none';
+  });
+}
+
+// ─── TOGGLE PLAYER ───────────────────────────────────────────────────────────
+
+function togglePlayer(name, team, cat, cls) {
+  // Already selected — deselect
+  const existingIdx = picks.findIndex(p => p && p.player === name && p.team === team);
+  if (existingIdx >= 0) {
+    picks[existingIdx] = null;
+    refreshCardStates();
+    renderStrip();
+    updateValidation();
+    return;
+  }
+  // Find next empty slot
+  const emptyIdx = picks.findIndex(p => p === null);
+  if (emptyIdx < 0) return; // all 11 filled
+  picks[emptyIdx] = { player: name, team, cat, cls };
+  refreshCardStates();
+  renderStrip();
+  updateValidation();
+}
+
+function refreshCardStates() {
+  const selectedNames = new Set(picks.filter(Boolean).map(p => p.player));
+  const dupeNames = new Set();
+  const seen = {};
+  picks.filter(Boolean).forEach(p => { seen[p.player] = (seen[p.player]||0)+1; if(seen[p.player]>1) dupeNames.add(p.player); });
+
+  document.querySelectorAll('.player-card').forEach(card => {
+    const name = card.dataset.name;
+    const team = card.dataset.team;
+    const isSelected = picks.some(p => p && p.player === name && p.team === team);
+    const isDupe = dupeNames.has(name);
+    const slotIdx = picks.findIndex(p => p && p.player === name && p.team === team);
+    const slotLabel = document.getElementById(`slotlabel-${team}-${name.replace(/\s+/g,'_')}`);
+
+    card.classList.toggle('selected', isSelected);
+    card.classList.toggle('dupe', isDupe);
+    // colour class
+    if (isSelected) {
+      const pick = picks[slotIdx];
+      card.classList.toggle('t1', pick?.cls === 't1');
+      card.classList.toggle('t2', pick?.cls === 't2');
+    } else {
+      card.classList.remove('t1','t2');
+    }
+    if (slotLabel) slotLabel.textContent = isSelected ? `#${slotIdx+1}` : '';
+
+    // Disable if 11 already picked and this card isn't selected
+    const full = picks.filter(Boolean).length >= 11;
+    card.classList.toggle('disabled', full && !isSelected);
+  });
+
+  // Update count badges
+  Object.keys(SQUADS).forEach(t => {
+    const el = document.getElementById(`count-${t}`);
+    if (el) {
+      const cnt = picks.filter(p => p && p.team === t).length;
+      el.textContent = `${cnt} / 11`;
+    }
+  });
+}
+
+// ─── SELECTED STRIP ──────────────────────────────────────────────────────────
+
+function renderStrip() {
+  const strip = document.getElementById('selected-strip');
+  const empty = document.getElementById('strip-empty');
+  const filled = picks.filter(Boolean);
+  // Remove old chips
+  strip.querySelectorAll('.sel-chip').forEach(c => c.remove());
+  if (filled.length === 0) {
+    if (empty) empty.style.display = '';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  picks.forEach((p, i) => {
+    if (!p) return;
+    const chip = document.createElement('span');
+    chip.className = `sel-chip ${p.cls}`;
+    chip.innerHTML = `<span class="chip-num">#${i+1}</span> ${p.player} <span class="chip-x">✕</span>`;
+    chip.onclick = () => { picks[i] = null; refreshCardStates(); renderStrip(); updateValidation(); };
+    strip.appendChild(chip);
+  });
+}
+
+// ─── VALIDATION ──────────────────────────────────────────────────────────────
+
+function updateValidation() {
+  const filled = picks.filter(Boolean);
+  const allFilled = filled.length === 11;
+
+  const playerNames = filled.map(p => p.player);
+  const noDupes = new Set(playerNames).size === playerNames.length;
+
+  const t1 = selectedMatch?.team1, t2 = selectedMatch?.team2;
+  const t1count = filled.filter(p => p.team === t1).length;
+  const t2count = filled.filter(p => p.team === t2).length;
+  const min4 = t1count >= 4 && t2count >= 4;
+
+  setCheck('v-count', allFilled, `11 players selected (${filled.length}/11)`);
+  setCheck('v-nodupe', noDupes && filled.length > 0, 'No duplicates');
+  setCheck('v-min4', min4 && filled.length > 0, `Min 4 from each team (${t1}: ${t1count}, ${t2}: ${t2count})`);
+
+  if (allFilled && noDupes && min4) {
+    renderWinnerStep();
+    document.getElementById('step3').classList.remove('hidden');
+    document.getElementById('step3').classList.add('fade-in');
+  } else {
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('submit-section').classList.add('hidden');
+    selectedWinner = null;
+  }
+}
+
+function getSelections() {
+  return picks.map((p, i) => p ? { slot: i+1, player: p.player, team: p.team, cat: p.cat } : { slot: i+1, player: null, team: null });
+}
+
+function setCheck(id, ok, label) {
+  const el = document.getElementById(id);
+  el.className = 'vcheck ' + (ok ? 'ok' : '');
+  el.innerHTML = `<span class="vcheck-icon">${ok ? '✅' : '⬜'}</span> ${label}`;
+}
+
+// ─── WINNER STEP ─────────────────────────────────────────────────────────────
+
+function renderWinnerStep() {
+  const { team1, team2 } = selectedMatch;
+  document.getElementById('win-team-grid').innerHTML = `
+    <div class="win-team-option" id="win-${team1}" onclick="selectWinner('${team1}')">${team1}</div>
+    <div class="win-team-option" id="win-${team2}" onclick="selectWinner('${team2}')">${team2}</div>
+  `;
+}
+
+function selectWinner(team) {
+  selectedWinner = team;
+  const { team1, team2 } = selectedMatch;
+  document.getElementById('win-' + team1).className = 'win-team-option' + (team === team1 ? ' selected-t1' : '');
+  document.getElementById('win-' + team2).className = 'win-team-option' + (team === team2 ? ' selected-t2' : '');
+  document.getElementById('submit-section').classList.remove('hidden');
+  document.getElementById('submit-section').classList.add('fade-in');
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('submit-section').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ─── SUBMIT ──────────────────────────────────────────────────────────────────
+
+function submitForm() {
+  const filled = picks.filter(Boolean);
+  const alertEl = document.getElementById('form-alert');
+  alertEl.innerHTML = '';
+
+  if (!selectedMatch || !selectedWinner || filled.length < 11) {
+    alertEl.innerHTML = '<div class="alert alert-warn">⚠️ Please complete all selections before submitting.</div>';
+    return;
+  }
+
+  const players = picks.map(p => p ? p.player : '');
+
+  // SGT = UTC+8 — format timestamp as "DD/MM/YYYY HH:MM:SS" in Singapore time
+  const now = new Date();
+  const sgtOptions = {
+    timeZone: 'Asia/Singapore',
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false
+  };
+  const sgtTimestamp = now.toLocaleString('en-SG', sgtOptions);
+
+  const submission = {
+    user_name: currentUser.name,
+    user_id: currentUser.id,
+    match_id: selectedMatch.id,
+    match: selectedMatch.name,
+    date: selectedMatch.date,
+    time: selectedMatch.time,
+    team1: selectedMatch.team1,
+    team2: selectedMatch.team2,
+    players,
+    selected_team: selectedWinner,
+    status: 'Complete',
+    timestamp: sgtTimestamp   // SGT time, e.g. "31/03/2026, 19:45:22"
+  };
+
+  // WEB_APP_URL is now a global constant at the top of this script ↑
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Warn loudly if URL not configured yet
+  if (!WEB_APP_URL || WEB_APP_URL.includes('PASTE_YOUR')) {
+    console.warn('⚠️ WEB_APP_URL not set — submission not sent to Google Sheet');
+    showSuccess(true); // show success UI but note the skip
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Submitting...';
+
+  fetch(WEB_APP_URL, {
+    method:  'POST',
+    mode:    'no-cors',
+    headers: { 'Content-Type': 'text/plain' },  // text/plain required for no-cors
+    body:    JSON.stringify(submission)
+  })
+  .catch((err) => console.error('Fetch error:', err))
+  .finally(() => showSuccess(false));
+
+  function showSuccess(skipped) {
+    const t1 = selectedMatch.team1, t2 = selectedMatch.team2;
+    const t1players = picks.filter(p => p && p.team === t1);
+    const t2players = picks.filter(p => p && p.team === t2);
+
+    const playerRows = (arr) => arr.map((p) =>
+      `<span style="display:inline-flex;align-items:center;gap:5px;margin:2px 4px 2px 0">
+        <span class="cat-dot ${p.cat}" style="width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0"></span>
+        ${p.player}
+        <span class="cat-label ${p.cat}" style="font-size:0.62rem;padding:1px 4px;border-radius:2px">${p.cat==='Wicket-Keeper'?'WK':p.cat==='All-Rounder'?'AR':p.cat}</span>
+      </span>`
+    ).join('');
+
+    const sheetNote = skipped
+      ? `<div style="background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);border-radius:8px;
+              padding:10px 14px;margin-bottom:14px;font-size:0.8rem;color:#FDE047;">
+           ⚠️ <strong>Sheet not configured</strong> — WEB_APP_URL is not set. Your selection was NOT saved to Google Sheets.
+           Open index.html and update the WEB_APP_URL constant near the top of the &lt;script&gt; block.
+         </div>`
+      : '';
+
+    document.getElementById('summary-content').innerHTML = `
+      ${sheetNote}
+      <strong>USER</strong><br>${currentUser.name}<br><br>
+      <strong>MATCH</strong><br>${selectedMatch.name} · ${selectedMatch.date}<br><br>
+      <strong style="color:var(--accent)">${t1} (${t1players.length})</strong><br><div style="line-height:2">${playerRows(t1players)}</div><br>
+      <strong style="color:var(--accent2)">${t2} (${t2players.length})</strong><br><div style="line-height:2">${playerRows(t2players)}</div><br>
+      <strong>PREDICTED WINNER</strong><br><span style="color:var(--green);font-weight:700">${selectedWinner} 🏆</span>
+    `;
+
+    document.getElementById('main-form').classList.add('hidden');
+    document.getElementById('success-panel').style.display = 'block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  } // end showSuccess
+} // end submitForm
+
+function resetForAnother() {
+  selectedMatch = null;
+  selectedWinner = null;
+  picks = Array(11).fill(null);
+  document.getElementById('success-panel').style.display = 'none';
+  document.getElementById('main-form').classList.remove('hidden');
+  document.getElementById('step2').classList.add('hidden');
+  document.getElementById('step3').classList.add('hidden');
+  document.getElementById('submit-section').classList.add('hidden');
+  document.querySelectorAll('.match-option').forEach(e=>e.classList.remove('selected'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+
+// ─── REGISTRATION ─────────────────────────────────────────────────────────────
+
+function openRegister() {
+  document.getElementById('register-overlay').classList.add('open');
+  document.getElementById('reg-name').focus();
+}
+
+function closeRegister() {
+  document.getElementById('register-overlay').classList.remove('open');
+  // Reset form
+  document.getElementById('reg-form-wrap').style.display = '';
+  document.getElementById('reg-success-wrap').style.display = 'none';
+  document.getElementById('reg-name').value  = '';
+  document.getElementById('reg-email').value = '';
+  document.getElementById('reg-phone').value = '';
+  document.getElementById('reg-status').innerHTML = '';
+}
+
+// Close modal on backdrop click
+document.getElementById('register-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeRegister();
 });
 
-// ════════════════════════════════════════════════════════════════════════════
-// STATE — lives in memory only (no localStorage)
-// ════════════════════════════════════════════════════════════════════════════
+function submitRegistration() {
+  const name  = (document.getElementById('reg-name').value  || '').trim();
+  const email = (document.getElementById('reg-email').value || '').trim();
+  const phone = (document.getElementById('reg-phone').value || '').trim();
+  const statusEl = document.getElementById('reg-status');
 
-let state = {
-  squads: {},
-  matches: []
-};
-
-// GitHub config — session-only memory
-let ghConfig = { owner: '', repo: '', branch: 'main', token: '' };
-
-// ════════════════════════════════════════════════════════════════════════════
-// PERSIST CONFIG (session memory only)
-// ════════════════════════════════════════════════════════════════════════════
-
-function saveConfig() {
-  ghConfig.owner  = document.getElementById('cfg-owner').value.trim();
-  ghConfig.repo   = document.getElementById('cfg-repo').value.trim();
-  ghConfig.branch = document.getElementById('cfg-branch').value.trim() || 'main';
-  ghConfig.token  = document.getElementById('cfg-token').value.trim();
-  if (!ghConfig.owner || !ghConfig.repo || !ghConfig.token) {
-    setStatus('cfg-status', '⚠️ Please fill Owner, Repo, and Token.', 'warn');
+  if (!name || !email) {
+    statusEl.innerHTML = '<span style="color:#f87171">⚠️ Name and email are required.</span>';
     return;
   }
-  setStatus('cfg-status', '✅ Config saved for this session.', 'success');
-}
-
-function loadLocalState() {
-  state = JSON.parse(JSON.stringify(DEFAULT_DATA));
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// TABS
-// ════════════════════════════════════════════════════════════════════════════
-
-function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => {
-    const tabs = ['fixtures','squads','users','sync'];
-    b.classList.toggle('active', tabs[i] === name);
-  });
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  if (name === 'sync') updateJSONPreview();
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// FIXTURES
-// ════════════════════════════════════════════════════════════════════════════
-
-function renderFixtures() {
-  const tbody = document.getElementById('fixture-tbody');
-  tbody.innerHTML = '';
-  document.getElementById('match-count').textContent = state.matches.length;
-
-  state.matches.forEach((m, idx) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="font-family:monospace;font-size:0.78rem;color:var(--muted)">${m.id}</td>
-      <td><strong>${m.name}</strong></td>
-      <td>${m.date}</td>
-      <td>${m.time} IST</td>
-      <td><span class="badge badge-${m.status === 'Complete' ? 'complete' : 'pending'}">${m.status}</span></td>
-      <td style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn btn-secondary" style="padding:5px 10px;font-size:0.72rem" onclick="editMatch(${idx})">✏️ Edit</button>
-        <button class="btn btn-danger"    style="padding:5px 10px;font-size:0.72rem" onclick="deleteMatch(${idx})">🗑️</button>
-        <button class="btn btn-secondary" style="padding:5px 10px;font-size:0.72rem" onclick="toggleStatus(${idx})">${m.status === 'Complete' ? '↩️ Reopen' : '✅ Complete'}</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function addOrUpdateMatch() {
-  const id     = document.getElementById('f-id').value.trim();
-  const t1     = document.getElementById('f-team1').value;
-  const t2     = document.getElementById('f-team2').value;
-  const date   = document.getElementById('f-date').value;
-  const time   = document.getElementById('f-time').value;
-  const status = document.getElementById('f-status').value;
-
-  if (!id || !t1 || !t2 || !date || !time) {
-    setStatus('fixture-form-msg', '⚠️ Please fill in all fields.', 'warn'); return;
-  }
-  if (t1 === t2) {
-    setStatus('fixture-form-msg', '⚠️ Team 1 and Team 2 must be different.', 'warn'); return;
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+    statusEl.innerHTML = '<span style="color:#f87171">⚠️ Please enter a valid email address.</span>';
+    return;
   }
 
-  const name = `${t1} vs ${t2}`;
-  const existing = state.matches.findIndex(m => m.id === id);
-
-  if (existing >= 0) {
-    state.matches[existing] = { id, name, team1:t1, team2:t2, date, time, status };
-    setStatus('fixture-form-msg', `✅ Match "${name}" updated.`, 'success');
-  } else {
-    state.matches.push({ id, name, team1:t1, team2:t2, date, time, status });
-    setStatus('fixture-form-msg', `✅ Match "${name}" added.`, 'success');
-  }
-
-  // Sort by date then time
-  state.matches.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-  clearMatchForm();
-  renderFixtures();
-}
-
-function editMatch(idx) {
-  const m = state.matches[idx];
-  document.getElementById('f-id').value     = m.id;
-  document.getElementById('f-team1').value  = m.team1;
-  document.getElementById('f-team2').value  = m.team2;
-  document.getElementById('f-date').value   = m.date;
-  document.getElementById('f-time').value   = m.time;
-  document.getElementById('f-status').value = m.status;
-  document.getElementById('f-id').focus();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function deleteMatch(idx) {
-  const m = state.matches[idx];
-  if (!confirm(`Delete match "${m.name}" on ${m.date}?`)) return;
-  state.matches.splice(idx, 1);
-  renderFixtures();
-  showToast(`Deleted: ${m.name}`, 'warn');
-}
-
-function toggleStatus(idx) {
-  const m = state.matches[idx];
-  m.status = m.status === 'Complete' ? 'Pending' : 'Complete';
-  renderFixtures();
-  showToast(`${m.name} → ${m.status}`, 'success');
-}
-
-function clearMatchForm() {
-  ['f-id','f-team1','f-team2','f-date','f-time'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el.tagName === 'SELECT') el.selectedIndex = 0;
-    else el.value = id === 'f-time' ? '19:30' : '';
-  });
-  document.getElementById('f-status').value = 'Pending';
-  document.getElementById('fixture-form-msg').innerHTML = '';
-}
-
-function clearAllMatches() {
-  if (!confirm('Clear ALL matches? This cannot be undone.')) return;
-  state.matches = [];
-  renderFixtures();
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// SQUADS
-// ════════════════════════════════════════════════════════════════════════════
-
-function addPlayer() {
-  const team = document.getElementById('s-team').value;
-  const name = document.getElementById('s-name').value.trim();
-  const cat  = document.getElementById('s-cat').value;
-
-  if (!team || !name) {
-    setStatus('squad-form-msg', '⚠️ Select a team and enter a player name.', 'warn'); return;
-  }
-  if (!state.squads[team]) state.squads[team] = [];
-
-  const exists = state.squads[team].some(p => p.n.toLowerCase() === name.toLowerCase());
-  if (exists) {
-    setStatus('squad-form-msg', `⚠️ ${name} is already in ${team}'s squad.`, 'warn'); return;
-  }
-
-  state.squads[team].push({ n: name, c: cat });
-  document.getElementById('s-name').value = '';
-  setStatus('squad-form-msg', `✅ ${name} added to ${team}.`, 'success');
-  renderSquads();
-}
-
-function removePlayer(team, playerName) {
-  if (!confirm(`Remove ${playerName} from ${team}?`)) return;
-  state.squads[team] = state.squads[team].filter(p => p.n !== playerName);
-  renderSquads();
-  showToast(`Removed ${playerName} from ${team}`, 'warn');
-}
-
-function renderSquads() {
-  const search = (document.getElementById('squad-search')?.value || '').toLowerCase();
-  const roster = document.getElementById('squad-roster');
-  roster.innerHTML = '';
-
-  const TEAM_COLORS = {
-    RCB:'#e8365d', MI:'#1a3a6b', CSK:'#f5a623', KKR:'#9b59b6',
-    DC:'#1e90ff', SRH:'#e67e22', RR:'#e74c3c', GT:'#2ecc71', LSG:'#3498db', PBKS:'#e74c3c'
-  };
-
-  const CAT_CLASS = {
-    'Batsman':'bat', 'Bowler':'bowl', 'All-Rounder':'ar', 'Wicket-Keeper':'wk'
-  };
-  const CAT_SHORT = {
-    'Batsman':'BAT', 'Bowler':'BOWL', 'All-Rounder':'AR', 'Wicket-Keeper':'WK'
-  };
-
-  Object.entries(state.squads).forEach(([team, players]) => {
-    const filtered = search
-      ? players.filter(p => p.n.toLowerCase().includes(search) || p.c.toLowerCase().includes(search))
-      : players;
-    if (filtered.length === 0 && search) return;
-
-    const color = TEAM_COLORS[team] || 'var(--accent)';
-    const div = document.createElement('div');
-    div.className = 'team-section';
-    div.innerHTML = `
-      <div class="team-label" style="color:${color}">${team}
-        <span style="color:var(--muted);font-size:0.78rem;font-weight:400">${filtered.length} / ${players.length} players</span>
-      </div>
-      <div class="player-pill-wrap" id="pills-${team}"></div>
-    `;
-    roster.appendChild(div);
-
-    const pillWrap = div.querySelector(`#pills-${team}`);
-    filtered.forEach(p => {
-      const pill = document.createElement('span');
-      pill.className = 'player-pill';
-      pill.innerHTML = `
-        <span class="badge badge-${CAT_CLASS[p.c] || 'bat'}" style="font-size:0.62rem">${CAT_SHORT[p.c] || p.c}</span>
-        ${p.n}
-        <span class="pill-x" onclick="removePlayer('${team}','${p.n.replace(/'/g,"\\'")}')">✕</span>
-      `;
-      pillWrap.appendChild(pill);
-    });
-  });
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// SYNC / GITHUB
-// ════════════════════════════════════════════════════════════════════════════
-
-function updateJSONPreview() {
-  document.getElementById('json-preview').value = JSON.stringify(state, null, 2);
-}
-
-function exportJSON() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'data.json';
-  a.click();
-  showToast('data.json downloaded!', 'success');
-}
-
-function importJSON() {
-  const raw = document.getElementById('json-import').value.trim();
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed.squads || !parsed.matches) throw new Error('Missing squads or matches keys.');
-    if (!parsed.users) parsed.users = [];
-    state = parsed;
-    renderAll();
-    setStatus('import-msg', '✅ JSON imported successfully.', 'success');
-  } catch(e) {
-    setStatus('import-msg', `⚠️ Invalid JSON: ${e.message}`, 'warn');
-  }
-}
-
-async function loadDataFromGitHub() {
-  if (!checkConfig()) return;
-  const { owner, repo, branch, token } = ghConfig;
-  setStatus('cfg-status', '<div class="loading"><div class="spinner"></div> Loading data.json from GitHub...</div>', 'info');
-
-  try {
-    const res = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/contents/data.json?ref=${branch}`,
-      { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } }
-    );
-    if (!res.ok) throw new Error(`HTTP ${res.status} — ${(await res.json()).message}`);
-    const json = await res.json();
-    const content = atob(json.content.replace(/\n/g, ''));
-    state = JSON.parse(content);
-    renderAll();
-    setStatus('cfg-status', '✅ data.json loaded from GitHub!', 'success');
-    showToast('Data loaded from GitHub', 'success');
-  } catch(e) {
-    setStatus('cfg-status', `⚠️ Failed: ${e.message}`, 'warn');
-  }
-}
-
-async function syncToGitHub() {
-  if (!checkConfig()) return;
-  const { owner, repo, branch, token } = ghConfig;
-  const btn = document.getElementById('sync-btn');
+  const btn = document.getElementById('reg-submit-btn');
   btn.disabled = true;
-  setStatus('sync-status', '<div class="loading"><div class="spinner"></div> Fetching current SHA...</div>', 'info');
+  btn.textContent = '⏳ Sending...';
+  statusEl.innerHTML = '';
 
-  try {
-    // 1. Get current SHA of data.json
-    const getRes = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/contents/data.json?ref=${branch}`,
-      { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } }
-    );
-    let sha = null;
-    if (getRes.ok) {
-      sha = (await getRes.json()).sha;
-    } else if (getRes.status !== 404) {
-      throw new Error(`HTTP ${getRes.status}`);
-    }
+  const payload = {
+    action:    'register',
+    name,
+    email,
+    phone,
+    timestamp: new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
+    app_url:   window.location.href
+  };
 
-    // 2. Push updated data.json
-    setStatus('sync-status', '<div class="loading"><div class="spinner"></div> Pushing data.json...</div>', 'info');
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
-    const body = {
-      message: `chore: admin panel update — ${new Date().toISOString()}`,
-      content,
-      branch,
-      ...(sha ? { sha } : {})
-    };
+  // no-cors + text/plain = the only Content-Type browsers allow cross-origin without preflight.
+  // GAS reads e.postData.contents regardless of content-type, so JSON parsing still works.
+  // We treat this as fire-and-forget: show success after 5s regardless (opaque response).
+  const controller = new AbortController();
+  const timeoutId  = setTimeout(() => controller.abort(), 8000); // 8s hard timeout
 
-    const putRes = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/contents/data.json`,
-      {
-        method: 'PUT',
-        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      }
-    );
-    if (!putRes.ok) throw new Error(`Push failed: HTTP ${putRes.status} — ${(await putRes.json()).message}`);
-
-    setStatus('sync-status', '✅ data.json pushed to GitHub! Now trigger the workflow to regenerate index.html.', 'success');
-    showToast('data.json pushed successfully!', 'success');
-  } catch(e) {
-    setStatus('sync-status', `⚠️ Error: ${e.message}`, 'warn');
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-async function triggerWorkflow() {
-  if (!checkConfig()) return;
-  const { owner, repo, branch, token } = ghConfig;
-  const btn = document.getElementById('trigger-btn');
-  if (btn) btn.disabled = true;
-  setStatus('sync-status', '<div class="loading"><div class="spinner"></div> Triggering GitHub Actions workflow...</div>', 'info');
-
-  try {
-    const res = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/actions/workflows/update-fixtures.yml/dispatches`,
-      {
-        method: 'POST',
-        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ref: branch, inputs: { reason: 'Admin panel manual trigger' } })
-      }
-    );
-    if (res.status === 204) {
-      setStatus('sync-status', '✅ Workflow triggered! Check GitHub Actions tab for progress. index.html will update in ~30 seconds.', 'success');
-      showToast('Workflow triggered!', 'success');
-    } else {
-      const err = await res.json();
-      throw new Error(`HTTP ${res.status} — ${err.message}`);
-    }
-  } catch(e) {
-    setStatus('sync-status', `⚠️ Error: ${e.message}`, 'warn');
-  } finally {
-    if (btn) btn.disabled = false;
-  }
-}
-
-function checkConfig() {
-  if (!ghConfig.owner || !ghConfig.repo || !ghConfig.token) {
-    showToast('⚠️ Set your GitHub config first!', 'warn');
-    document.getElementById('config-details').open = true;
-    return false;
-  }
-  return true;
-}
-
-
-// ════════════════════════════════════════════════════════════════════════════
-// USERS
-// ════════════════════════════════════════════════════════════════════════════
-
-const APP_URL = "https://sgipl2026-lgtm.github.io/selection/";
-
-function nextUserId() {
-  if (!state.users || state.users.length === 0) return "U20260001";
-  const nums = state.users
-    .map(u => parseInt((u.id || "").replace(/[^0-9]/g, ""), 10))
-    .filter(n => !isNaN(n));
-  const next = Math.max(...nums) + 1;
-  return "U" + String(next).padStart(8, "0");
-}
-
-function autoGenerateId() {
-  document.getElementById('u-id').value = nextUserId();
-}
-
-function addOrUpdateUser() {
-  const id    = document.getElementById('u-id').value.trim();
-  const name  = document.getElementById('u-name').value.trim();
-  const email = document.getElementById('u-email').value.trim();
-  const pin   = document.getElementById('u-pin').value.trim();
-
-  if (!id || !name || !pin) {
-    setStatus('user-form-msg', '⚠️ User ID, Name and PIN are all required.', 'warn'); return;
-  }
-  if (!/^\d{4,6}$/.test(pin)) {
-    setStatus('user-form-msg', '⚠️ PIN must be 4–6 digits.', 'warn'); return;
-  }
-
-  if (!state.users) state.users = [];
-
-  // Check duplicate name (excluding current edit target by ID)
-  const dupName = state.users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.id !== id);
-  if (dupName) {
-    setStatus('user-form-msg', `⚠️ Name "${name}" is already taken by ${dupName.id}.`, 'warn'); return;
-  }
-
-  const existing = state.users.findIndex(u => u.id === id);
-  if (existing >= 0) {
-    state.users[existing] = { id, name, pin, email };
-    setStatus('user-form-msg', `✅ User "${name}" updated.`, 'success');
-  } else {
-    state.users.push({ id, name, pin, email });
-    setStatus('user-form-msg', `✅ User "${name}" added.`, 'success');
-  }
-
-  state.users.sort((a, b) => a.id.localeCompare(b.id));
-  clearUserForm();
-  renderUsers();
-}
-
-function editUser(idx) {
-  const u = state.users[idx];
-  document.getElementById('u-id').value    = u.id;
-  document.getElementById('u-name').value  = u.name;
-  document.getElementById('u-email').value = u.email || '';
-  document.getElementById('u-pin').value   = u.pin;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function deleteUser(idx) {
-  const u = state.users[idx];
-  if (!confirm(`Delete user "${u.name}" (${u.id})? They will no longer be able to log in.`)) return;
-  state.users.splice(idx, 1);
-  renderUsers();
-  showToast(`Deleted user: ${u.name}`, 'warn');
-}
-
-function resetPin(idx) {
-  const u = state.users[idx];
-  const newPin = prompt(`Enter new PIN for "${u.name}" (4–6 digits):`, u.pin);
-  if (!newPin) return;
-  if (!/^\d{4,6}$/.test(newPin.trim())) {
-    showToast('⚠️ PIN must be 4–6 digits', 'warn'); return;
-  }
-  state.users[idx].pin = newPin.trim();
-  renderUsers();
-  showToast(`PIN updated for ${u.name}`, 'success');
-}
-
-function clearUserForm() {
-  ['u-id','u-name','u-email','u-pin'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-  document.getElementById('user-form-msg').innerHTML = '';
-}
-
-function renderUsers() {
-  const search = (document.getElementById('user-search')?.value || '').toLowerCase();
-  const tbody = document.getElementById('user-tbody');
-  const users = state.users || [];
-  tbody.innerHTML = '';
-  document.getElementById('user-count').textContent = users.length;
-
-  const filtered = search
-    ? users.filter(u =>
-        u.name.toLowerCase().includes(search) ||
-        (u.email || '').toLowerCase().includes(search) ||
-        u.id.toLowerCase().includes(search))
-    : users;
-
-  if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">
-      ${users.length === 0 ? 'No users yet — add one above.' : 'No users match your search.'}</td></tr>`;
-    return;
-  }
-
-  filtered.forEach((u, fi) => {
-    const idx = users.indexOf(u);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="font-family:monospace;font-size:0.8rem;color:var(--muted)">${u.id}</td>
-      <td><strong>${u.name}</strong></td>
-      <td style="font-size:0.82rem;color:var(--muted)">${u.email || '<em>—</em>'}</td>
-      <td>
-        <span style="font-family:monospace;background:rgba(0,0,0,0.3);padding:3px 8px;border-radius:4px;
-          font-size:0.85rem;letter-spacing:2px" id="pin-display-${idx}">••••</span>
-        <button onclick="togglePin(${idx})" style="background:none;border:none;cursor:pointer;
-          color:var(--muted);font-size:0.75rem;margin-left:4px" title="Show/hide PIN">👁</button>
-      </td>
-      <td style="font-size:0.75rem;color:var(--muted)">
-        <a href="${APP_URL}" target="_blank" style="color:var(--blue);text-decoration:none">${APP_URL}</a>
-      </td>
-      <td style="display:flex;gap:5px;flex-wrap:wrap">
-        <button class="btn btn-secondary" style="padding:5px 9px;font-size:0.72rem" onclick="editUser(${idx})">✏️ Edit</button>
-        <button class="btn btn-secondary" style="padding:5px 9px;font-size:0.72rem" onclick="resetPin(${idx})">🔑 PIN</button>
-        <button class="btn btn-danger"    style="padding:5px 9px;font-size:0.72rem" onclick="deleteUser(${idx})">🗑️</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
+  fetch(WEB_APP_URL, {
+    method:  'POST',
+    mode:    'no-cors',
+    headers: { 'Content-Type': 'text/plain' },  // ← must be text/plain for no-cors
+    body:    JSON.stringify(payload),
+    signal:  controller.signal
+  })
+  .catch(() => {}) // opaque response or abort — both are fine, GAS received the request
+  .finally(() => {
+    clearTimeout(timeoutId);
+    document.getElementById('reg-form-wrap').style.display = 'none';
+    document.getElementById('reg-success-wrap').style.display = '';
   });
 }
 
-function togglePin(idx) {
-  const el = document.getElementById(`pin-display-${idx}`);
-  if (!el) return;
-  const u = state.users[idx];
-  el.textContent = el.textContent.includes('•') ? u.pin : '••••';
-}
-
-function downloadXlsx() {
-  // Build a minimal CSV-based approach that works in-browser
-  // For a real xlsx, the workflow generates user_list.xlsx on GitHub
-  const users = state.users || [];
-  const rows = [
-    ['User ID', 'User Name', 'User Email ID', 'User PIN', 'User URL'],
-    ...users.map(u => [u.id, u.name, u.email || '', u.pin, APP_URL])
-  ];
-  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'\"')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'user_list.csv';
-  a.click();
-  showToast('Downloaded user_list.csv (XLSX is auto-generated by GitHub workflow)', 'info');
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// HELPERS
-// ════════════════════════════════════════════════════════════════════════════
-
-function renderAll() {
-  renderFixtures();
-  renderSquads();
-  renderUsers();
-  updateJSONPreview();
-}
-
-function setStatus(id, html, type) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.innerHTML = `<div class="alert alert-${type}">${html}</div>`;
-}
-
-let toastTimer;
-function showToast(msg, type = 'info') {
-  const t = document.getElementById('toast');
-  t.innerHTML = `<div class="alert alert-${type}" style="box-shadow:0 4px 20px rgba(0,0,0,0.4)">${msg}</div>`;
-  t.style.display = 'block';
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3000);
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// DEFAULT DATA (bundled from data.json at build time)
-// — The Python script will replace this block too if you add a marker —
-// ════════════════════════════════════════════════════════════════════════════
-
-const DEFAULT_DATA = {
-  "squads": {
-    "RCB": [{"n":"Virat Kohli","c":"Batsman"},{"n":"Rajat Patidar","c":"Batsman"},{"n":"Phil Salt","c":"Wicket-Keeper"},{"n":"Devdutt Padikkal","c":"Batsman"},{"n":"Jacob Bethell","c":"All-Rounder"},{"n":"Liam Livingstone","c":"All-Rounder"},{"n":"Tim David","c":"All-Rounder"},{"n":"Jitesh Sharma","c":"Wicket-Keeper"},{"n":"Krunal Pandya","c":"All-Rounder"},{"n":"Cameron Green","c":"All-Rounder"},{"n":"Romario Shepherd","c":"All-Rounder"},{"n":"Glenn Maxwell","c":"All-Rounder"},{"n":"Swapnil Singh","c":"All-Rounder"},{"n":"Yash Dayal","c":"Bowler"},{"n":"Bhuvneshwar Kumar","c":"Bowler"},{"n":"Josh Hazlewood","c":"Bowler"},{"n":"Lockie Ferguson","c":"Bowler"},{"n":"Mohammed Siraj","c":"Bowler"},{"n":"Nwelwetsi Rabada","c":"Bowler"},{"n":"Suyash Sharma","c":"Bowler"},{"n":"Rasikh Dar","c":"Bowler"},{"n":"Lungi Ngidi","c":"Bowler"},{"n":"Manoj Bhandage","c":"Bowler"},{"n":"Abhinandan Singh","c":"Bowler"}],
-    "MI": [{"n":"Rohit Sharma","c":"Batsman"},{"n":"Suryakumar Yadav","c":"Batsman"},{"n":"Tilak Varma","c":"Batsman"},{"n":"Ryan Rickelton","c":"Wicket-Keeper"},{"n":"Robin Minz","c":"Wicket-Keeper"},{"n":"Krishnan Shrijith","c":"Wicket-Keeper"},{"n":"Hardik Pandya","c":"All-Rounder"},{"n":"Will Jacks","c":"All-Rounder"},{"n":"Mitchell Santner","c":"All-Rounder"},{"n":"Naman Dhir","c":"All-Rounder"},{"n":"Raj Angad Bawa","c":"All-Rounder"},{"n":"Bevon Jacobs","c":"All-Rounder"},{"n":"Arjun Tendulkar","c":"All-Rounder"},{"n":"Jasprit Bumrah","c":"Bowler"},{"n":"Trent Boult","c":"Bowler"},{"n":"Deepak Chahar","c":"Bowler"},{"n":"Karn Sharma","c":"Bowler"},{"n":"Mujeeb Ur Rahman","c":"Bowler"},{"n":"Reece Topley","c":"Bowler"},{"n":"Vignesh Puthur","c":"Bowler"},{"n":"Ashwani Kumar","c":"Bowler"},{"n":"Satyanarayana Raju","c":"Bowler"},{"n":"Lizaad Williams","c":"Bowler"}],
-    "CSK": [{"n":"MS Dhoni","c":"Wicket-Keeper"},{"n":"Devon Conway","c":"Wicket-Keeper"},{"n":"Urvil Patel","c":"Wicket-Keeper"},{"n":"Ruturaj Gaikwad","c":"Batsman"},{"n":"Ajinkya Rahane","c":"Batsman"},{"n":"Shaik Rasheed","c":"Batsman"},{"n":"Rachin Ravindra","c":"All-Rounder"},{"n":"Shivam Dube","c":"All-Rounder"},{"n":"Vijay Shankar","c":"All-Rounder"},{"n":"Ravindra Jadeja","c":"All-Rounder"},{"n":"Sam Curran","c":"All-Rounder"},{"n":"Jamie Overton","c":"All-Rounder"},{"n":"RS Hangargekar","c":"All-Rounder"},{"n":"Ravichandran Ashwin","c":"All-Rounder"},{"n":"Shardul Thakur","c":"All-Rounder"},{"n":"Matheesha Pathirana","c":"Bowler"},{"n":"Deepak Chahar","c":"Bowler"},{"n":"Tushar Deshpande","c":"Bowler"},{"n":"Mukesh Choudhary","c":"Bowler"},{"n":"Noor Ahmad","c":"Bowler"},{"n":"Khaleel Ahmed","c":"Bowler"},{"n":"Kamlesh Nagarkoti","c":"Bowler"},{"n":"Anshul Kamboj","c":"Bowler"},{"n":"Nathan Ellis","c":"Bowler"}],
-    "KKR": [{"n":"Quinton de Kock","c":"Wicket-Keeper"},{"n":"Rahmanullah Gurbaz","c":"Wicket-Keeper"},{"n":"Luvnith Sisodia","c":"Wicket-Keeper"},{"n":"Ajinkya Rahane","c":"Batsman"},{"n":"Angkrish Raghuvanshi","c":"Batsman"},{"n":"Rinku Singh","c":"Batsman"},{"n":"Manish Pandey","c":"Batsman"},{"n":"Rovman Powell","c":"All-Rounder"},{"n":"Ramandeep Singh","c":"All-Rounder"},{"n":"Andre Russell","c":"All-Rounder"},{"n":"Moeen Ali","c":"All-Rounder"},{"n":"Sunil Narine","c":"All-Rounder"},{"n":"Venkatesh Iyer","c":"All-Rounder"},{"n":"Anukul Roy","c":"All-Rounder"},{"n":"Shivam Shukla","c":"All-Rounder"},{"n":"Vaibhav Arora","c":"Bowler"},{"n":"Harshit Rana","c":"Bowler"},{"n":"Anrich Nortje","c":"Bowler"},{"n":"Spencer Johnson","c":"Bowler"},{"n":"Mayank Markande","c":"Bowler"},{"n":"Chetan Sakariya","c":"Bowler"}],
-    "DC": [{"n":"KL Rahul","c":"Wicket-Keeper"},{"n":"Abishek Porel","c":"Wicket-Keeper"},{"n":"Harry Brook","c":"Batsman"},{"n":"Faf du Plessis","c":"Batsman"},{"n":"Jake Fraser-McGurk","c":"Batsman"},{"n":"Karun Nair","c":"Batsman"},{"n":"Sameer Rizvi","c":"Batsman"},{"n":"Axar Patel","c":"All-Rounder"},{"n":"Triston Stubbs","c":"All-Rounder"},{"n":"Ashutosh Sharma","c":"All-Rounder"},{"n":"Donovan Ferreira","c":"All-Rounder"},{"n":"Tripurana Vijay","c":"All-Rounder"},{"n":"Kuldeep Yadav","c":"Bowler"},{"n":"Mitchell Starc","c":"Bowler"},{"n":"Mukesh Kumar","c":"Bowler"},{"n":"Ishant Sharma","c":"Bowler"},{"n":"T Natarajan","c":"Bowler"},{"n":"Mohit Sharma","c":"Bowler"},{"n":"Darshan Nalkande","c":"Bowler"},{"n":"Vipraj Nigam","c":"Bowler"}],
-    "SRH": [{"n":"Heinrich Klaasen","c":"Wicket-Keeper"},{"n":"Ishan Kishan","c":"Wicket-Keeper"},{"n":"Travis Head","c":"Batsman"},{"n":"Rahul Tripathi","c":"Batsman"},{"n":"Atharva Taide","c":"Batsman"},{"n":"Anmolpreet Singh","c":"Batsman"},{"n":"Sachin Baby","c":"Batsman"},{"n":"Pat Cummins","c":"All-Rounder"},{"n":"Abhishek Sharma","c":"All-Rounder"},{"n":"Nitish Kumar Reddy","c":"All-Rounder"},{"n":"Aiden Markram","c":"All-Rounder"},{"n":"Wiaan Mulder","c":"All-Rounder"},{"n":"Harshal Patel","c":"Bowler"},{"n":"Adam Zampa","c":"Bowler"},{"n":"Jaydev Unadkat","c":"Bowler"},{"n":"Brydon Carse","c":"Bowler"},{"n":"Raz Janat","c":"Bowler"},{"n":"Akeal Hosein","c":"Bowler"},{"n":"Simarjeet Singh","c":"Bowler"},{"n":"Zeeshan Ansari","c":"Bowler"}],
-    "RR": [{"n":"Sanju Samson","c":"Wicket-Keeper"},{"n":"Jos Buttler","c":"Wicket-Keeper"},{"n":"Dhruv Jurel","c":"Wicket-Keeper"},{"n":"Yashasvi Jaiswal","c":"Batsman"},{"n":"Shimron Hetmyer","c":"Batsman"},{"n":"Vaibhav Suryavanshi","c":"Batsman"},{"n":"Riyan Parag","c":"All-Rounder"},{"n":"Nitish Rana","c":"All-Rounder"},{"n":"Shubham Dubey","c":"All-Rounder"},{"n":"FA Allen","c":"All-Rounder"},{"n":"Ravichandran Ashwin","c":"All-Rounder"},{"n":"Wanindu Hasaranga","c":"All-Rounder"},{"n":"Maheesh Theekshana","c":"Bowler"},{"n":"Trent Boult","c":"Bowler"},{"n":"Sandeep Sharma","c":"Bowler"},{"n":"Yuzvendra Chahal","c":"Bowler"},{"n":"Kumar Kartikeya","c":"Bowler"},{"n":"Kuldeep Sen","c":"Bowler"},{"n":"Avesh Khan","c":"Bowler"},{"n":"Tushar Deshpande","c":"Bowler"},{"n":"Akash Madhwal","c":"Bowler"}],
-    "GT": [{"n":"Anuj Rawat","c":"Wicket-Keeper"},{"n":"Kumar Kushagra","c":"Wicket-Keeper"},{"n":"Jos Buttler","c":"Wicket-Keeper"},{"n":"Shubman Gill","c":"Batsman"},{"n":"Sai Sudharsan","c":"Batsman"},{"n":"Shahrukh Khan","c":"Batsman"},{"n":"Rahul Tewatia","c":"All-Rounder"},{"n":"Mahipal Lomror","c":"All-Rounder"},{"n":"Sherfane Rutherford","c":"All-Rounder"},{"n":"Washington Sundar","c":"All-Rounder"},{"n":"Nishant Sindhu","c":"All-Rounder"},{"n":"Rashid Khan","c":"All-Rounder"},{"n":"Arshad Khan","c":"All-Rounder"},{"n":"Sai Kishore","c":"All-Rounder"},{"n":"Jayant Yadav","c":"All-Rounder"},{"n":"Dasun Shanaka","c":"All-Rounder"},{"n":"Karim Janat","c":"All-Rounder"},{"n":"Kagiso Rabada","c":"Bowler"},{"n":"Mohammed Siraj","c":"Bowler"},{"n":"Prasidh Krishna","c":"Bowler"},{"n":"Gerald Coetzee","c":"Bowler"},{"n":"Gurnoor Brar","c":"Bowler"},{"n":"Kulwant Khejroliya","c":"Bowler"},{"n":"Ishant Sharma","c":"Bowler"},{"n":"Manav Suthar","c":"Bowler"}],
-    "LSG": [{"n":"Rishabh Pant","c":"Wicket-Keeper"},{"n":"Nicholas Pooran","c":"Wicket-Keeper"},{"n":"Aryan Juyal","c":"Wicket-Keeper"},{"n":"Matthew Breetzke","c":"Batsman"},{"n":"Himmat Singh","c":"Batsman"},{"n":"Ayush Badoni","c":"Batsman"},{"n":"David Miller","c":"Batsman"},{"n":"Mitchell Marsh","c":"All-Rounder"},{"n":"Aiden Markram","c":"All-Rounder"},{"n":"Abdul Samad","c":"All-Rounder"},{"n":"Shahbaz Ahmed","c":"All-Rounder"},{"n":"Arshin Kulkarni","c":"All-Rounder"},{"n":"Rajvardhan Hangargekar","c":"All-Rounder"},{"n":"Ravi Bishnoi","c":"Bowler"},{"n":"Avesh Khan","c":"Bowler"},{"n":"Akash Deep","c":"Bowler"},{"n":"Shamar Joseph","c":"Bowler"},{"n":"Mayank Yadav","c":"Bowler"},{"n":"Mohsin Khan","c":"Bowler"},{"n":"Digvesh Singh","c":"Bowler"},{"n":"Akash Singh","c":"Bowler"},{"n":"Yuvraj Chaudhary","c":"Bowler"},{"n":"Prince Yadav","c":"Bowler"},{"n":"Manimaran Siddharth","c":"Bowler"}],
-    "PBKS": [{"n":"Prabhsimran Singh","c":"Wicket-Keeper"},{"n":"Vishnu Vinod","c":"Wicket-Keeper"},{"n":"Shreyas Iyer","c":"Batsman"},{"n":"Priyansh Arya","c":"Batsman"},{"n":"Nehal Wadhera","c":"Batsman"},{"n":"Shashank Singh","c":"All-Rounder"},{"n":"Marcus Stoinis","c":"All-Rounder"},{"n":"Glenn Maxwell","c":"All-Rounder"},{"n":"Aaron Hardie","c":"All-Rounder"},{"n":"Azmatullah Omarzai","c":"All-Rounder"},{"n":"Suryansh Shedge","c":"All-Rounder"},{"n":"Harpreet Brar","c":"All-Rounder"},{"n":"Sam Curran","c":"All-Rounder"},{"n":"Musheer Khan","c":"All-Rounder"},{"n":"Arshdeep Singh","c":"Bowler"},{"n":"Yuzvendra Chahal","c":"Bowler"},{"n":"Harshal Patel","c":"Bowler"},{"n":"Lockie Ferguson","c":"Bowler"},{"n":"Xavier Bartlett","c":"Bowler"},{"n":"Kuldeep Sen","c":"Bowler"},{"n":"Vijaykumar Vyshak","c":"Bowler"},{"n":"Pyla Avinash","c":"Bowler"},{"n":"Yash Thakur","c":"Bowler"}]
-  },
-  "matches": [
-    {"id":"TestMatch1","name":"RCB vs PBKS","team1":"RCB","team2":"PBKS","date":"2026-03-07","time":"16:30","status":"Complete"},
-    {"id":"TestMatch2","name":"CSK vs MI","team1":"CSK","team2":"MI","date":"2026-03-07","time":"17:30","status":"Pending"},
-    {"id":"TestMatch3","name":"RR vs KKR","team1":"RR","team2":"KKR","date":"2026-03-08","time":"06:00","status":"Pending"},
-    {"id":"Match1","name":"RCB vs PBKS","team1":"RCB","team2":"PBKS","date":"2026-03-31","time":"19:30","status":"Pending"},
-    {"id":"Match2","name":"CSK vs MI","team1":"CSK","team2":"MI","date":"2026-04-01","time":"19:30","status":"Pending"},
-    {"id":"Match3","name":"RR vs KKR","team1":"RR","team2":"KKR","date":"2026-04-02","time":"19:30","status":"Pending"},
-    {"id":"Match4","name":"DC vs SRH","team1":"DC","team2":"SRH","date":"2026-04-03","time":"19:30","status":"Pending"},
-    {"id":"Match5","name":"GT vs LSG","team1":"GT","team2":"LSG","date":"2026-04-04","time":"19:30","status":"Pending"},
-    {"id":"Match6","name":"MI vs RCB","team1":"MI","team2":"RCB","date":"2026-04-05","time":"15:30","status":"Pending"},
-    {"id":"Match7","name":"PBKS vs DC","team1":"PBKS","team2":"DC","date":"2026-04-05","time":"19:30","status":"Pending"},
-    {"id":"Match8","name":"KKR vs CSK","team1":"KKR","team2":"CSK","date":"2026-04-06","time":"19:30","status":"Pending"},
-    {"id":"Match9","name":"SRH vs GT","team1":"SRH","team2":"GT","date":"2026-04-07","time":"19:30","status":"Pending"},
-    {"id":"Match10","name":"LSG vs RR","team1":"LSG","team2":"RR","date":"2026-04-08","time":"19:30","status":"Pending"},
-    {"id":"Match11","name":"PBKS vs MI","team1":"PBKS","team2":"MI","date":"2026-04-09","time":"19:30","status":"Pending"},
-    {"id":"Match12","name":"DC vs CSK","team1":"DC","team2":"CSK","date":"2026-04-10","time":"19:30","status":"Pending"},
-    {"id":"Match13","name":"KKR vs SRH","team1":"KKR","team2":"SRH","date":"2026-04-11","time":"15:30","status":"Pending"},
-    {"id":"Match14","name":"GT vs RCB","team1":"GT","team2":"RCB","date":"2026-04-11","time":"19:30","status":"Pending"},
-    {"id":"Match15","name":"RR vs PBKS","team1":"RR","team2":"PBKS","date":"2026-04-12","time":"15:30","status":"Pending"},
-    {"id":"Match16","name":"MI vs LSG","team1":"MI","team2":"LSG","date":"2026-04-12","time":"19:30","status":"Pending"},
-    {"id":"Match17","name":"SRH vs DC","team1":"SRH","team2":"DC","date":"2026-04-13","time":"19:30","status":"Pending"},
-    {"id":"Match18","name":"RCB vs KKR","team1":"RCB","team2":"KKR","date":"2026-04-14","time":"19:30","status":"Pending"},
-    {"id":"Match19","name":"CSK vs RR","team1":"CSK","team2":"RR","date":"2026-04-15","time":"19:30","status":"Pending"},
-    {"id":"Match20","name":"PBKS vs GT","team1":"PBKS","team2":"GT","date":"2026-04-16","time":"19:30","status":"Pending"},
-    {"id":"Match21","name":"LSG vs SRH","team1":"LSG","team2":"SRH","date":"2026-04-17","time":"19:30","status":"Pending"},
-    {"id":"Match22","name":"MI vs DC","team1":"MI","team2":"DC","date":"2026-04-18","time":"15:30","status":"Pending"},
-    {"id":"Match23","name":"RCB vs CSK","team1":"RCB","team2":"CSK","date":"2026-04-18","time":"19:30","status":"Pending"},
-    {"id":"Match24","name":"GT vs RR","team1":"GT","team2":"RR","date":"2026-04-19","time":"15:30","status":"Pending"},
-    {"id":"Match25","name":"KKR vs PBKS","team1":"KKR","team2":"PBKS","date":"2026-04-19","time":"19:30","status":"Pending"},
-    {"id":"Match26","name":"DC vs LSG","team1":"DC","team2":"LSG","date":"2026-04-20","time":"19:30","status":"Pending"},
-    {"id":"Match27","name":"CSK vs SRH","team1":"CSK","team2":"SRH","date":"2026-04-21","time":"19:30","status":"Pending"},
-    {"id":"Match28","name":"RR vs MI","team1":"RR","team2":"MI","date":"2026-04-22","time":"19:30","status":"Pending"},
-    {"id":"Match29","name":"PBKS vs RCB","team1":"PBKS","team2":"RCB","date":"2026-04-23","time":"19:30","status":"Pending"},
-    {"id":"Match30","name":"KKR vs GT","team1":"KKR","team2":"GT","date":"2026-04-24","time":"19:30","status":"Pending"}
-  ],
-  "users": [
-    {"id":"U20260001","name":"Rohit", "pin":"7890","email":"learn2earn06@gmail.com"},
-    {"id":"U20260002","name":"Rahul", "pin":"1234","email":"rohit.surve@outlook.com"},
-    {"id":"U20260003","name":"Priya", "pin":"2345","email":"rohitmsurve2024@gmail.com"},
-    {"id":"U20260004","name":"Amit",  "pin":"3456","email":"ashokvshelke61@gmail.com"},
-    {"id":"U20260005","name":"Rohit5","pin":"9999","email":"test@gmail.com"}
-  ]
-};
+// ─── START ───────────────────────────────────────────────────────────────────
+init();
 </script>
+
+  <!-- WHATSAPP SHARE BUTTON — fixed bottom-right -->
+  <div class="wa-share-wrap">
+    <div class="wa-share-tooltip">
+      Tap to share the league invite with your friends on WhatsApp 🏏
+    </div>
+    <a class="wa-share-btn"
+       href="https://wa.me/?text=%F0%9F%8F%8F%20%2AIPL%20Fantasy%20League%202026%20is%20LIVE%21%2A%20%F0%9F%8F%86%0A%0AThink%20you%20can%20pick%20the%20best%20XI%3F%20Join%20our%20private%20fantasy%20cricket%20league%20and%20prove%20it%21%20%F0%9F%94%A5%0A%0A%E2%9C%85%20Pick%2011%20players%20for%20each%20match%0A%E2%9C%85%20Predict%20the%20winning%20team%0A%E2%9C%85%20Earn%20points%20for%20every%20run%2C%20wicket%20%26%20catch%0A%E2%9C%85%20Compete%20with%20friends%20all%20season%0A%0A%F0%9F%91%89%20Play%20here%3A%20https%3A//sgipl2026-lgtm.github.io/selection/%0A%0A%F0%9F%93%A9%20Contact%20the%20admin%20to%20get%20your%20personal%20login%20PIN.%0A%0A_IPL%202026%20%C2%B7%20Private%20League_"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="Share IPL Fantasy League on WhatsApp">
+      <span class="wa-icon">💬</span>
+      Invite Friends
+    </a>
+  </div>
+
 </body>
 </html>
