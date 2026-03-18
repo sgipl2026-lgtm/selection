@@ -575,6 +575,80 @@
   .reg-secondary:hover { color:var(--text); }
   #reg-status { margin-top:12px; font-size:0.85rem; }
 
+
+  /* LOGIN SPLIT LAYOUT */
+  .login-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .login-split { grid-template-columns: 1fr; }
+  }
+  #login-card { max-width: 100% !important; margin: 0 !important; }
+
+  /* SCORING RULES PANEL */
+  .rules-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--card-glow);
+  }
+  .rules-card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+  .rules-section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 10px 0 4px;
+    grid-column: 1 / -1;
+    border-bottom: 1px solid rgba(245,166,35,0.2);
+    padding-bottom: 3px;
+  }
+  .rules-section-title:first-child { margin-top: 0; }
+  .rules-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 9px;
+    font-size: 0.75rem;
+  }
+  .rules-row .r-label { color: var(--muted); }
+  .rules-row .r-pts {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    margin-left: 6px;
+  }
+  .r-pts.pos { color: var(--green); }
+  .r-pts.neg { color: var(--accent2); }
+  .r-pts.bon { color: var(--accent); }
+
   @keyframes shake {
     0%,100% { transform: translateX(0); }
     20%      { transform: translateX(-8px); }
@@ -599,55 +673,110 @@
 
   <!-- LOGIN PANEL -->
   <div id="login-panel" class="hidden">
-    <div class="card" id="login-card" style="max-width:400px;margin:0 auto;padding:36px 28px;text-align:center;">
-      <div style="font-size:2.2rem;margin-bottom:10px;">🏏</div>
-      <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:4px;color:var(--accent)">SIGN IN</h2>
-      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:28px;">Enter your name and PIN to access your Fantasy XI</p>
+    <div class="login-split">
 
-      <div style="text-align:left;margin-bottom:14px;">
-        <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px;">Your Name</label>
-        <input id="login-name" type="text" placeholder="e.g. Rahul" autocomplete="name" autocapitalize="words"
-          onkeydown="if(event.key==='Enter') document.getElementById('login-pin').focus()"
-          style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);
-                 border-radius:8px;color:var(--text);padding:12px 14px;font-family:'Barlow',sans-serif;
-                 font-size:1rem;transition:border-color 0.15s;"
-          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+      <!-- LEFT COLUMN: Sign In -->
+      <div>
+        <div class="card" id="login-card" style="padding:36px 28px;text-align:center;">
+          <div style="font-size:2.2rem;margin-bottom:10px;">🏏</div>
+          <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:4px;color:var(--accent)">SIGN IN</h2>
+          <p style="color:var(--muted);font-size:0.85rem;margin-bottom:28px;">Enter your name and PIN to access your Fantasy XI</p>
+
+          <div style="text-align:left;margin-bottom:14px;">
+            <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px;">Your Name</label>
+            <input id="login-name" type="text" placeholder="e.g. Rahul" autocomplete="name" autocapitalize="words"
+              onkeydown="if(event.key==='Enter') document.getElementById('login-pin').focus()"
+              style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);
+                     border-radius:8px;color:var(--text);padding:12px 14px;font-family:'Barlow',sans-serif;
+                     font-size:1rem;transition:border-color 0.15s;"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          </div>
+
+          <div style="text-align:left;margin-bottom:20px;">
+            <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px;">Your PIN</label>
+            <input id="login-pin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"
+              onkeydown="if(event.key==='Enter') doLogin()"
+              style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);
+                     border-radius:8px;color:var(--text);padding:12px 14px;font-family:'Barlow',sans-serif;
+                     font-size:1.2rem;letter-spacing:6px;text-align:center;transition:border-color 0.15s;"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          </div>
+
+          <div id="login-error" style="display:none;background:rgba(232,54,93,0.12);border:1px solid rgba(232,54,93,0.3);
+               border-radius:8px;padding:10px 14px;color:#F87171;font-size:0.82rem;margin-bottom:16px;text-align:left;"></div>
+
+          <button onclick="doLogin()"
+            style="width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;
+                   border-radius:8px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;
+                   font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity 0.15s;"
+            onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+            ENTER MY FANTASY XI →
+          </button>
+
+          <p style="color:var(--muted);font-size:0.75rem;margin-top:20px;">
+            Forgot your PIN? Contact your league admin.
+          </p>
+          <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px">
+            <p style="color:var(--muted);font-size:0.8rem;margin-bottom:10px">New to the league?</p>
+            <button onclick="openRegister()"
+              style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);
+                     border-radius:8px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;
+                     letter-spacing:2px;cursor:pointer;transition:all 0.15s;"
+              onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              📝 REQUEST ACCESS
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div style="text-align:left;margin-bottom:20px;">
-        <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px;">Your PIN</label>
-        <input id="login-pin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"
-          onkeydown="if(event.key==='Enter') doLogin()"
-          style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);
-                 border-radius:8px;color:var(--text);padding:12px 14px;font-family:'Barlow',sans-serif;
-                 font-size:1.2rem;letter-spacing:6px;text-align:center;transition:border-color 0.15s;"
-          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+      <!-- RIGHT COLUMN: Scoring Rules -->
+      <div>
+        <div class="rules-card">
+          <div class="rules-card-title">
+            <span style="font-size:1rem">📊</span> Scoring Rules
+          </div>
+          <div class="rules-grid">
+
+            <!-- BATTING -->
+            <div class="rules-section-title">🏏 Batting</div>
+            <div class="rules-row"><span class="r-label">Run</span>              <span class="r-pts pos">+1 pt</span></div>
+            <div class="rules-row"><span class="r-label">Four</span>             <span class="r-pts pos">+6 pts</span></div>
+            <div class="rules-row"><span class="r-label">Six</span>              <span class="r-pts pos">+10 pts</span></div>
+            <div class="rules-row"><span class="r-label">50-run bonus</span>     <span class="r-pts bon">+25 pts</span></div>
+            <div class="rules-row"><span class="r-label">100-run bonus</span>    <span class="r-pts bon">+50 pts</span></div>
+            <div class="rules-row"><span class="r-label">Duck penalty</span>     <span class="r-pts neg">−10 pts</span></div>
+            <div class="rules-row" style="grid-column:1/-1">
+              <span class="r-label">Strike Rate &gt;150 (min 10 balls)</span>
+              <span class="r-pts bon">+10 pts</span>
+            </div>
+
+            <!-- BOWLING -->
+            <div class="rules-section-title">🎳 Bowling</div>
+            <div class="rules-row"><span class="r-label">Wicket</span>           <span class="r-pts pos">+10 pts</span></div>
+            <div class="rules-row"><span class="r-label">3-wicket bonus</span>   <span class="r-pts bon">+25 pts</span></div>
+            <div class="rules-row"><span class="r-label">4+ wicket bonus</span>  <span class="r-pts bon">+50 pts</span></div>
+            <div class="rules-row" style="grid-column:1/-1">
+              <span class="r-label">Economy ≤5.0 (min 2 overs)</span>
+              <span class="r-pts bon">+50 pts</span>
+            </div>
+            <div class="rules-row" style="grid-column:1/-1">
+              <span class="r-label">Economy ≤6.0 (min 2 overs)</span>
+              <span class="r-pts bon">+25 pts</span>
+            </div>
+
+            <!-- FIELDING & TEAM -->
+            <div class="rules-section-title">🧤 Fielding &amp; Team</div>
+            <div class="rules-row"><span class="r-label">Catch</span>            <span class="r-pts pos">+25 pts</span></div>
+            <div class="rules-row"><span class="r-label">Run-out</span>          <span class="r-pts pos">+25 pts</span></div>
+            <div class="rules-row" style="grid-column:1/-1">
+              <span class="r-label">Predicted winner correct</span>
+              <span class="r-pts bon">+50 pts</span>
+            </div>
+
+          </div>
+        </div>
       </div>
 
-      <div id="login-error" style="display:none;background:rgba(232,54,93,0.12);border:1px solid rgba(232,54,93,0.3);
-           border-radius:8px;padding:10px 14px;color:#F87171;font-size:0.82rem;margin-bottom:16px;text-align:left;"></div>
-
-      <button onclick="doLogin()"
-        style="width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;
-               border-radius:8px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;
-               font-weight:700;letter-spacing:2px;cursor:pointer;transition:opacity 0.15s;"
-        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-        ENTER MY FANTASY XI →
-      </button>
-
-      <p style="color:var(--muted);font-size:0.75rem;margin-top:20px;">
-        Forgot your PIN? Contact your league admin.
-      </p>
-      <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px">
-        <p style="color:var(--muted);font-size:0.8rem;margin-bottom:10px">New to the league?</p>
-        <button onclick="openRegister()"
-          style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--accent);
-                 border-radius:8px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;
-                 letter-spacing:2px;cursor:pointer;transition:all 0.15s;"
-          onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-          📝 REQUEST ACCESS
-        </button>
-      </div>
     </div>
   </div>
 
