@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>IPL Fantasy Selector</title>
+<title>Pitch Perfect XI — IPL Fantasy League</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
   :root {
@@ -649,6 +649,128 @@
   .r-pts.neg { color: var(--accent2); }
   .r-pts.bon { color: var(--accent); }
 
+  /* GAME RULES INFO ROWS */
+  .game-rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 2px;
+  }
+  .game-rule-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 0.77rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .game-rule-row .gr-icon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .game-rule-row strong { color: var(--text); font-weight: 600; }
+  .game-rule-row.gr-warn  { border-color: rgba(232,54,93,0.3);  background: rgba(232,54,93,0.05); }
+  .game-rule-row.gr-info  { border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.05); }
+  .game-rule-row.gr-green { border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.05); }
+  .game-rule-row.gr-amber { border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.05); }
+
+
+  /* WHATSAPP SHARE BUTTON */
+  .wa-share-wrap {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  .wa-share-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #25D366;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px 12px 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    transition: all 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .wa-share-btn:hover {
+    background: #1ebe5d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(37,211,102,0.55);
+  }
+  .wa-share-btn:active { transform: translateY(0); }
+  .wa-icon {
+    width: 26px; height: 26px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .wa-share-tooltip {
+    background: var(--surface);
+    border: 1px solid #25D366;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    max-width: 220px;
+    text-align: center;
+    line-height: 1.5;
+    display: none;
+    animation: fadeUp 0.2s ease;
+  }
+  .wa-share-wrap:hover .wa-share-tooltip { display: block; }
+  @media (max-width: 480px) {
+    .wa-share-wrap { bottom: 16px; right: 16px; }
+    .wa-share-btn { padding: 11px 16px 11px 12px; font-size: 0.88rem; }
+  }
+
+
+  /* COLLAPSIBLE SUMMARY STYLE (shared by scoring rules + game rules) */
+  .collapsible-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.15s;
+    padding: 2px 0;
+  }
+  .collapsible-summary::-webkit-details-marker { display: none; }
+  .collapsible-summary:hover { color: var(--accent); }
+  details[open] > .collapsible-summary { color: var(--accent); }
+  .coll-chevron {
+    font-size: 0.65rem;
+    transition: transform 0.2s;
+    color: var(--muted);
+  }
+  details[open] > .collapsible-summary .coll-chevron { transform: rotate(180deg); color: var(--accent); }
+
   @keyframes shake {
     0%,100% { transform: translateX(0); }
     20%      { transform: translateX(-8px); }
@@ -663,9 +785,73 @@
 
 <header>
   <div id="user-badge" class="hidden"><span class="dot"></span><span id="user-name-display"></span></div>
-  <div class="logo-mark"><span class="cricket-icon">🏏</span></div>
-  <h1>IPL Fantasy</h1>
-  <p class="subtitle">Select Your Dream XI</p>
+  <div class="logo-mark">
+    <!-- Shield crest logo: bat + trophy -->
+    <svg width="64" height="72" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="shieldGrad" x1="0" y1="0" x2="64" y2="72" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#1a2235"/>
+          <stop offset="100%" stop-color="#0e1520"/>
+        </linearGradient>
+        <linearGradient id="borderGrad" x1="0" y1="0" x2="64" y2="72" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#f5a623"/>
+          <stop offset="100%" stop-color="#e8365d"/>
+        </linearGradient>
+        <linearGradient id="batG" x1="20" y1="14" x2="28" y2="46" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#f5d78e"/>
+          <stop offset="100%" stop-color="#c47d10"/>
+        </linearGradient>
+        <linearGradient id="trophyG" x1="32" y1="18" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFE566"/>
+          <stop offset="100%" stop-color="#f5a623"/>
+        </linearGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- Shield outer border (gradient stroke) -->
+      <path d="M32 2 L60 12 L60 38 C60 54 32 70 32 70 C32 70 4 54 4 38 L4 12 Z"
+            fill="url(#borderGrad)" />
+      <!-- Shield inner fill -->
+      <path d="M32 6 L56 15 L56 38 C56 52 32 66 32 66 C32 66 8 52 8 38 L8 15 Z"
+            fill="url(#shieldGrad)" />
+
+      <!-- Divider line in shield -->
+      <line x1="8" y1="30" x2="56" y2="30" stroke="rgba(245,166,35,0.25)" stroke-width="0.8"/>
+
+      <!-- Cricket bat (left, tilted) -->
+      <g transform="rotate(-20, 24, 36)">
+        <rect x="20" y="14" width="7" height="22" rx="3.5" fill="url(#batG)"/>
+        <rect x="18.5" y="34" width="10" height="4" rx="1.5" fill="#f5a623" opacity="0.9"/>
+        <rect x="20.5" y="38" width="6" height="8" rx="1.5" fill="#c47d10"/>
+      </g>
+
+      <!-- Trophy (right side) -->
+      <g filter="url(#glow)">
+        <!-- Cup body -->
+        <path d="M36 20 L36 36 Q36 40 40 40 Q44 40 44 36 L44 20 Z"
+              fill="url(#trophyG)" opacity="0.95"/>
+        <!-- Handles -->
+        <path d="M36 23 Q31 23 31 28 Q31 33 36 33" stroke="url(#trophyG)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <path d="M44 23 Q49 23 49 28 Q49 33 44 33" stroke="url(#trophyG)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <!-- Stem -->
+        <rect x="38.5" y="40" width="3" height="5" rx="1" fill="#f5a623"/>
+        <!-- Base -->
+        <rect x="35" y="45" width="10" height="2.5" rx="1.2" fill="#f5a623"/>
+        <!-- Star in cup -->
+        <text x="40" y="33" text-anchor="middle" font-size="8" fill="#fff" opacity="0.9" font-weight="bold">★</text>
+      </g>
+
+      <!-- XI text at bottom of shield -->
+      <text x="32" y="61" text-anchor="middle"
+            font-family="'Rajdhani', sans-serif" font-weight="700"
+            font-size="11" fill="url(#borderGrad)" letter-spacing="3">XI</text>
+    </svg>
+  </div>
+  <h1>Pitch Perfect XI</h1>
+  <p class="subtitle">IPL Fantasy League 2026</p>
   <div class="divider"></div>
 </header>
 
@@ -729,54 +915,100 @@
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: Scoring Rules -->
+      <!-- RIGHT COLUMN: Scoring Rules (collapsible) -->
       <div>
         <div class="rules-card">
-          <div class="rules-card-title">
-            <span style="font-size:1rem">📊</span> Scoring Rules
-          </div>
-          <div class="rules-grid">
+          <details id="scoring-details">
+            <summary class="collapsible-summary">
+              <span><span style="font-size:1rem">📊</span> &nbsp;Scoring Rules</span>
+              <span class="coll-chevron">▼</span>
+            </summary>
+            <div class="rules-grid" style="margin-top:14px">
 
-            <!-- BATTING -->
-            <div class="rules-section-title">🏏 Batting</div>
-            <div class="rules-row"><span class="r-label">Run</span>              <span class="r-pts pos">+1 pt</span></div>
-            <div class="rules-row"><span class="r-label">Four</span>             <span class="r-pts pos">+6 pts</span></div>
-            <div class="rules-row"><span class="r-label">Six</span>              <span class="r-pts pos">+10 pts</span></div>
-            <div class="rules-row"><span class="r-label">50-run bonus</span>     <span class="r-pts bon">+25 pts</span></div>
-            <div class="rules-row"><span class="r-label">100-run bonus</span>    <span class="r-pts bon">+50 pts</span></div>
-            <div class="rules-row"><span class="r-label">Duck penalty</span>     <span class="r-pts neg">−10 pts</span></div>
-            <div class="rules-row" style="grid-column:1/-1">
-              <span class="r-label">Strike Rate &gt;150 (min 10 balls)</span>
-              <span class="r-pts bon">+10 pts</span>
-            </div>
+              <!-- BATTING -->
+              <div class="rules-section-title">🏏 Batting</div>
+              <div class="rules-row"><span class="r-label">Run</span>              <span class="r-pts pos">+1 pt</span></div>
+              <div class="rules-row"><span class="r-label">Four</span>             <span class="r-pts pos">+6 pts</span></div>
+              <div class="rules-row"><span class="r-label">Six</span>              <span class="r-pts pos">+10 pts</span></div>
+              <div class="rules-row"><span class="r-label">50-run bonus</span>     <span class="r-pts bon">+25 pts</span></div>
+              <div class="rules-row"><span class="r-label">100-run bonus</span>    <span class="r-pts bon">+50 pts</span></div>
+              <div class="rules-row"><span class="r-label">Duck penalty</span>     <span class="r-pts neg">−10 pts</span></div>
+              <div class="rules-row" style="grid-column:1/-1">
+                <span class="r-label">Strike Rate &gt;150 (min 10 balls)</span>
+                <span class="r-pts bon">+10 pts</span>
+              </div>
 
-            <!-- BOWLING -->
-            <div class="rules-section-title">🎳 Bowling</div>
-            <div class="rules-row"><span class="r-label">Wicket</span>           <span class="r-pts pos">+10 pts</span></div>
-            <div class="rules-row"><span class="r-label">3-wicket bonus</span>   <span class="r-pts bon">+25 pts</span></div>
-            <div class="rules-row"><span class="r-label">4+ wicket bonus</span>  <span class="r-pts bon">+50 pts</span></div>
-            <div class="rules-row" style="grid-column:1/-1">
-              <span class="r-label">Economy ≤5.0 (min 2 overs)</span>
-              <span class="r-pts bon">+50 pts</span>
-            </div>
-            <div class="rules-row" style="grid-column:1/-1">
-              <span class="r-label">Economy ≤6.0 (min 2 overs)</span>
-              <span class="r-pts bon">+25 pts</span>
-            </div>
+              <!-- BOWLING -->
+              <div class="rules-section-title">🎳 Bowling</div>
+              <div class="rules-row"><span class="r-label">Wicket</span>           <span class="r-pts pos">+10 pts</span></div>
+              <div class="rules-row"><span class="r-label">3-wicket bonus</span>   <span class="r-pts bon">+25 pts</span></div>
+              <div class="rules-row"><span class="r-label">4+ wicket bonus</span>  <span class="r-pts bon">+50 pts</span></div>
+              <div class="rules-row" style="grid-column:1/-1">
+                <span class="r-label">Economy ≤5.0 (min 2 overs)</span>
+                <span class="r-pts bon">+50 pts</span>
+              </div>
+              <div class="rules-row" style="grid-column:1/-1">
+                <span class="r-label">Economy ≤6.0 (min 2 overs)</span>
+                <span class="r-pts bon">+25 pts</span>
+              </div>
 
-            <!-- FIELDING & TEAM -->
-            <div class="rules-section-title">🧤 Fielding &amp; Team</div>
-            <div class="rules-row"><span class="r-label">Catch</span>            <span class="r-pts pos">+25 pts</span></div>
-            <div class="rules-row"><span class="r-label">Run-out</span>          <span class="r-pts pos">+25 pts</span></div>
-            <div class="rules-row" style="grid-column:1/-1">
-              <span class="r-label">Predicted winner correct</span>
-              <span class="r-pts bon">+50 pts</span>
-            </div>
+              <!-- FIELDING & TEAM -->
+              <div class="rules-section-title">🧤 Fielding &amp; Team</div>
+              <div class="rules-row"><span class="r-label">Catch</span>            <span class="r-pts pos">+25 pts</span></div>
+              <div class="rules-row"><span class="r-label">Run-out</span>          <span class="r-pts pos">+25 pts</span></div>
+              <div class="rules-row" style="grid-column:1/-1">
+                <span class="r-label">Predicted winner correct</span>
+                <span class="r-pts bon">+50 pts</span>
+              </div>
 
-          </div>
+            </div>
+          </details>
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- GAME RULES — separate collapsible section -->
+  <div style="max-width:900px;margin:16px auto 0">
+    <div class="rules-card">
+      <details id="gamerules-details">
+        <summary class="collapsible-summary">
+          <span><span style="font-size:1rem">📋</span> &nbsp;Game Rules</span>
+          <span class="coll-chevron">▼</span>
+        </summary>
+        <div class="game-rules-list" style="margin-top:14px">
+
+          <div class="game-rule-row gr-info">
+            <span class="gr-icon">📧</span>
+            <span><strong>Reminders</strong> — You'll receive email reminders
+              <strong>4 hours</strong> and <strong>2 hours</strong> before each match starts.
+              Don't forget to make your selection!</span>
+          </div>
+
+          <div class="game-rule-row gr-warn">
+            <span class="gr-icon">🔒</span>
+            <span><strong>Selection Lock</strong> — Selections are locked
+              <strong>30 minutes before</strong> the match starts. No changes
+              can be accepted after the cutoff.</span>
+          </div>
+
+          <div class="game-rule-row gr-amber">
+            <span class="gr-icon">⚠️</span>
+            <span><strong>No Selection = 0 Points</strong> — If you don't submit
+              your Fantasy XI before the lock time, your score for that match
+              will be <strong>0</strong>.</span>
+          </div>
+
+          <div class="game-rule-row gr-green">
+            <span class="gr-icon">🏆</span>
+            <span><strong>Results &amp; Rankings</strong> — Match results and the
+              updated leaderboard will be emailed to all players the
+              <strong>day after</strong> the match.</span>
+          </div>
+
+        </div>
+      </details>
     </div>
   </div>
 
@@ -786,7 +1018,7 @@
     <div class="register-box">
       <div style="font-size:2rem;margin-bottom:10px">📝</div>
       <h2>JOIN THE LEAGUE</h2>
-      <p>Request access to IPL Fantasy XI. Your admin will review and send your PIN.</p>
+      <p>Request access to Pitch Perfect XI. Your admin will review and send your PIN.</p>
 
       <div id="reg-form-wrap">
         <input class="reg-input" id="reg-name"  type="text"  placeholder="Your Name (e.g. Sneha)" autocapitalize="words"/>
@@ -807,6 +1039,107 @@
       </div>
     </div>
   </div>
+
+
+  <!-- PRIZES & CONTACT -->
+  <div style="max-width:900px;margin:16px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:16px" id="prizes-contact-grid">
+
+    <!-- PRIZES -->
+    <div class="rules-card">
+      <div class="rules-card-title"><span style="font-size:1rem">🏆</span> &nbsp;Prizes</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+
+        <div style="display:flex;align-items:center;gap:14px;background:rgba(255,215,0,0.06);
+             border:1px solid rgba(255,215,0,0.3);border-radius:10px;padding:14px 16px">
+          <span style="font-size:2rem;flex-shrink:0">🥇</span>
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;
+                 color:var(--muted);text-transform:uppercase">1st Place</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;
+                 color:#FFD700;letter-spacing:1px">🏆 Winner Takes the Crown</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:14px;background:rgba(192,192,192,0.06);
+             border:1px solid rgba(192,192,192,0.25);border-radius:10px;padding:14px 16px">
+          <span style="font-size:2rem;flex-shrink:0">🥈</span>
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;
+                 color:var(--muted);text-transform:uppercase">2nd Place</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;
+                 color:#C0C0C0;letter-spacing:1px">🥈 Runner Up Prize</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:14px;background:rgba(205,127,50,0.06);
+             border:1px solid rgba(205,127,50,0.25);border-radius:10px;padding:14px 16px">
+          <span style="font-size:2rem;flex-shrink:0">🥉</span>
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;
+                 color:var(--muted);text-transform:uppercase">3rd Place</div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;
+                 color:#CD7F32;letter-spacing:1px">🥉 Third Place Prize</div>
+          </div>
+        </div>
+
+        <div style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:2px;
+             padding:8px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          💰 Entry: <strong style="color:var(--accent)">$10 per player</strong> &nbsp;·&nbsp;
+          More players = bigger prizes!
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="rules-card">
+      <div class="rules-card-title"><span style="font-size:1rem">📬</span> &nbsp;Contact &amp; Support</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+
+        <a href="mailto:sg.ipl2026@gmail.com"
+           style="display:flex;align-items:center;gap:14px;background:rgba(59,130,246,0.06);
+                  border:1px solid rgba(59,130,246,0.25);border-radius:10px;padding:14px 16px;
+                  text-decoration:none;transition:border-color 0.15s"
+           onmouseover="this.style.borderColor='rgba(59,130,246,0.5)'"
+           onmouseout="this.style.borderColor='rgba(59,130,246,0.25)'">
+          <span style="font-size:1.8rem;flex-shrink:0">📧</span>
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;
+                 color:var(--muted);text-transform:uppercase">Email Us</div>
+            <div style="font-size:0.9rem;color:#93C5FD;font-weight:500">sg.ipl2026@gmail.com</div>
+          </div>
+        </a>
+
+        <a href="https://wa.me/6588092342?text=Hi%2C%20I%27m%20interested%20in%20Pitch%20Perfect%20XI%20Fantasy%20League!"
+           target="_blank" rel="noopener"
+           style="display:flex;align-items:center;gap:14px;background:rgba(37,211,102,0.06);
+                  border:1px solid rgba(37,211,102,0.25);border-radius:10px;padding:14px 16px;
+                  text-decoration:none;transition:border-color 0.15s"
+           onmouseover="this.style.borderColor='rgba(37,211,102,0.5)'"
+           onmouseout="this.style.borderColor='rgba(37,211,102,0.25)'">
+          <span style="font-size:1.8rem;flex-shrink:0">💬</span>
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;
+                 color:var(--muted);text-transform:uppercase">WhatsApp</div>
+            <div style="font-size:0.9rem;color:#4ade80;font-weight:500">+65 8809 2342</div>
+          </div>
+        </a>
+
+        <div style="font-size:0.75rem;color:var(--muted);text-align:center;padding:10px;
+             background:var(--surface2);border-radius:6px;border:1px solid var(--border);line-height:1.6">
+          Questions about registration, rules, or prizes?<br>
+          <strong style="color:var(--text)">We're here to help!</strong>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <style>
+    @media (max-width:600px) {
+      #prizes-contact-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
 
   <!-- MAIN FORM -->
   <div id="main-form" class="hidden">
@@ -875,106 +1208,54 @@ const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzsDKKt0lMUZYcdbwq2
 
 // @@BEGIN_SQUADS@@
 const SQUADS = {
-  RCB: [{n:"Virat Kohli",c:"Batsman"},{n:"Rajat Patidar",c:"Batsman"},{n:"Phil Salt",c:"Wicket-Keeper"},{n:"Devdutt Padikkal",c:"Batsman"},{n:"Jacob Bethell",c:"All-Rounder"},{n:"Liam Livingstone",c:"All-Rounder"},{n:"Tim David",c:"All-Rounder"},{n:"Jitesh Sharma",c:"Wicket-Keeper"},{n:"Krunal Pandya",c:"All-Rounder"},{n:"Cameron Green",c:"All-Rounder"},{n:"Romario Shepherd",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Swapnil Singh",c:"All-Rounder"},{n:"Yash Dayal",c:"Bowler"},{n:"Bhuvneshwar Kumar",c:"Bowler"},{n:"Josh Hazlewood",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Nwelwetsi Rabada",c:"Bowler"},{n:"Suyash Sharma",c:"Bowler"},{n:"Rasikh Dar",c:"Bowler"},{n:"Lungi Ngidi",c:"Bowler"},{n:"Manoj Bhandage",c:"Bowler"},{n:"Abhinandan Singh",c:"Bowler"},{n:"Nuwan Thushara",c:"Bowler"},{n:"Venkatesh Iyer",c:"All-Rounder"},{n:"Mangesh Yadav",c:"Bowler"},{n:"Jacob Duffy",c:"Bowler"},{n:"Jordan Cox",c:"Batsman"},{n:"Satvik Deswal",c:"Wicket-Keeper"},{n:"Vicky Ostwal",c:"Bowler"},{n:"Vihaan Malhotra",c:"Batsman"},{n:"Kanishk Chouhan",c:"Bowler"}],
-  MI: [{n:"Rohit Sharma",c:"Batsman"},{n:"Suryakumar Yadav",c:"Batsman"},{n:"Tilak Varma",c:"Batsman"},{n:"Ryan Rickelton",c:"Wicket-Keeper"},{n:"Robin Minz",c:"Wicket-Keeper"},{n:"Krishnan Shrijith",c:"Wicket-Keeper"},{n:"Hardik Pandya",c:"All-Rounder"},{n:"Will Jacks",c:"All-Rounder"},{n:"Mitchell Santner",c:"All-Rounder"},{n:"Naman Dhir",c:"All-Rounder"},{n:"Raj Angad Bawa",c:"All-Rounder"},{n:"Bevon Jacobs",c:"All-Rounder"},{n:"Arjun Tendulkar",c:"All-Rounder"},{n:"Jasprit Bumrah",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Karn Sharma",c:"Bowler"},{n:"Mujeeb Ur Rahman",c:"Bowler"},{n:"Reece Topley",c:"Bowler"},{n:"Vignesh Puthur",c:"Bowler"},{n:"Ashwani Kumar",c:"Bowler"},{n:"Satyanarayana Raju",c:"Bowler"},{n:"Lizaad Williams",c:"Bowler"},{n:"Corbin Bosch",c:"All-Rounder"},{n:"AM Ghazanfar",c:"Bowler"},{n:"Shardul Thakur",c:"All-Rounder"},{n:"Sherfane Rutherford",c:"Batsman"},{n:"Raj Bawa",c:"All-Rounder"},{n:"Raghu Sharma",c:"Bowler"},{n:"Mayank Markande",c:"Bowler"},{n:"Quinton de Kock",c:"Wicket-Keeper"},{n:"Atharva Ankolekar",c:"All-Rounder"},{n:"Mayank Rawat",c:"Batsman"},{n:"Mohammad Izhar",c:"Bowler"},{n:"Danish Malewar",c:"Batsman"}],
-  CSK: [{n:"MS Dhoni",c:"Wicket-Keeper"},{n:"Devon Conway",c:"Wicket-Keeper"},{n:"Urvil Patel",c:"Wicket-Keeper"},{n:"Ruturaj Gaikwad",c:"Batsman"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Shaik Rasheed",c:"Batsman"},{n:"Rachin Ravindra",c:"All-Rounder"},{n:"Shivam Dube",c:"All-Rounder"},{n:"Vijay Shankar",c:"All-Rounder"},{n:"Ravindra Jadeja",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Jamie Overton",c:"All-Rounder"},{n:"RS Hangargekar",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Shardul Thakur",c:"All-Rounder"},{n:"Matheesha Pathirana",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Mukesh Choudhary",c:"Bowler"},{n:"Noor Ahmad",c:"Bowler"},{n:"Khaleel Ahmed",c:"Bowler"},{n:"Kamlesh Nagarkoti",c:"Bowler"},{n:"Anshul Kamboj",c:"Bowler"},{n:"Nathan Ellis",c:"Bowler"},{n:"Sanju Samson",c:"Wicket-Keeper"},{n:"Ayush Mhatre",c:"Batsman"},{n:"Dewald Brevis",c:"Batsman"},{n:"Shreyas Gopal",c:"Bowler"},{n:"Ramakrishna Ghosh",c:"All-Rounder"},{n:"Gurjapneet Singh",c:"Bowler"},{n:"Prashant Veer",c:"Bowler"},{n:"Kartik Sharma",c:"Bowler"},{n:"Rahul Chahar",c:"Bowler"},{n:"Akeal Hosein",c:"All-Rounder"},{n:"Matt Henry",c:"Bowler"},{n:"Matthew Short",c:"Batsman"},{n:"Sarfaraz Khan",c:"Batsman"},{n:"Zak Foulkes",c:"Bowler"},{n:"Aman Khan",c:"Batsman"}],
-  KKR: [{n:"Quinton de Kock",c:"Wicket-Keeper"},{n:"Rahmanullah Gurbaz",c:"Wicket-Keeper"},{n:"Luvnith Sisodia",c:"Wicket-Keeper"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Angkrish Raghuvanshi",c:"Batsman"},{n:"Rinku Singh",c:"Batsman"},{n:"Manish Pandey",c:"Batsman"},{n:"Rovman Powell",c:"All-Rounder"},{n:"Ramandeep Singh",c:"All-Rounder"},{n:"Andre Russell",c:"All-Rounder"},{n:"Moeen Ali",c:"All-Rounder"},{n:"Sunil Narine",c:"All-Rounder"},{n:"Venkatesh Iyer",c:"All-Rounder"},{n:"Anukul Roy",c:"All-Rounder"},{n:"Shivam Shukla",c:"All-Rounder"},{n:"Vaibhav Arora",c:"Bowler"},{n:"Harshit Rana",c:"Bowler"},{n:"Anrich Nortje",c:"Bowler"},{n:"Spencer Johnson",c:"Bowler"},{n:"Mayank Markande",c:"Bowler"},{n:"Chetan Sakariya",c:"Bowler"},{n:"Varun Chakravarthy",c:"Bowler"},{n:"Umran Malik",c:"Bowler"},{n:"Cameron Green",c:"All-Rounder"},{n:"Matheesha Pathirana",c:"Bowler"},{n:"Blessing Muzarabani",c:"Bowler"},{n:"Tejasvi Singh",c:"Batsman"},{n:"Finn Allen",c:"Batsman"},{n:"Rachin Ravindra",c:"All-Rounder"},{n:"Tim Seifert",c:"Wicket-Keeper"},{n:"Akash Deep",c:"Bowler"},{n:"Rahul Tripathi",c:"Batsman"},{n:"Prashant Solanki",c:"Bowler"},{n:"Kartik Tyagi",c:"Bowler"},{n:"Sarthak Ranjan",c:"Wicket-Keeper"},{n:"Daksh Kamra",c:"Batsman"}],
-  DC: [{n:"KL Rahul",c:"Wicket-Keeper"},{n:"Abishek Porel",c:"Wicket-Keeper"},{n:"Harry Brook",c:"Batsman"},{n:"Faf du Plessis",c:"Batsman"},{n:"Jake Fraser-McGurk",c:"Batsman"},{n:"Karun Nair",c:"Batsman"},{n:"Sameer Rizvi",c:"Batsman"},{n:"Axar Patel",c:"All-Rounder"},{n:"Triston Stubbs",c:"All-Rounder"},{n:"Ashutosh Sharma",c:"All-Rounder"},{n:"Donovan Ferreira",c:"All-Rounder"},{n:"Tripurana Vijay",c:"All-Rounder"},{n:"Kuldeep Yadav",c:"Bowler"},{n:"Mitchell Starc",c:"Bowler"},{n:"Mukesh Kumar",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"T Natarajan",c:"Bowler"},{n:"Mohit Sharma",c:"Bowler"},{n:"Darshan Nalkande",c:"Bowler"},{n:"Vipraj Nigam",c:"Bowler"},{n:"Tristan Stubbs",c:"Batsman"},{n:"Nitish Rana",c:"Batsman"},{n:"Ajay Mandal",c:"All-Rounder"},{n:"Dushmantha Chameera",c:"Bowler"},{n:"Madhav Tiwari",c:"Bowler"},{n:"Auqib Nabi Dar",c:"Bowler"},{n:"Pathum Nissanka",c:"Batsman"},{n:"David Miller",c:"Batsman"},{n:"Ben Duckett",c:"Batsman"},{n:"Lungi Ngidi",c:"Bowler"},{n:"Kyle Jamieson",c:"All-Rounder"},{n:"Prithiv Shaw",c:"Batsman"},{n:"Sahil Parikh",c:"Bowler"}],
-  SRH: [{n:"Heinrich Klaasen",c:"Wicket-Keeper"},{n:"Ishan Kishan",c:"Wicket-Keeper"},{n:"Travis Head",c:"Batsman"},{n:"Rahul Tripathi",c:"Batsman"},{n:"Atharva Taide",c:"Batsman"},{n:"Anmolpreet Singh",c:"Batsman"},{n:"Sachin Baby",c:"Batsman"},{n:"Pat Cummins",c:"All-Rounder"},{n:"Abhishek Sharma",c:"All-Rounder"},{n:"Nitish Kumar Reddy",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Wiaan Mulder",c:"All-Rounder"},{n:"Harshal Patel",c:"Bowler"},{n:"Adam Zampa",c:"Bowler"},{n:"Jaydev Unadkat",c:"Bowler"},{n:"Brydon Carse",c:"Bowler"},{n:"Raz Janat",c:"Bowler"},{n:"Akeal Hosein",c:"Bowler"},{n:"Simarjeet Singh",c:"Bowler"},{n:"Zeeshan Ansari",c:"Bowler"},{n:"Kamindu Mendis",c:"All-Rounder"},{n:"Harsh Dubey",c:"Bowler"},{n:"Eshan Malinga",c:"Bowler"},{n:"Aniket Verma",c:"Batsman"},{n:"R Smaran",c:"Batsman"},{n:"Liam Livingstone",c:"All-Rounder"},{n:"Jack Edwards",c:"All-Rounder"},{n:"Shivam Mavi",c:"Bowler"},{n:"Salil Arora",c:"Bowler"},{n:"Shivang Kumar",c:"Batsman"},{n:"Krains Fuletra",c:"Bowler"},{n:"Praful Hinge",c:"Bowler"},{n:"Amit Kumar",c:"Bowler"},{n:"Onkar Tarmale",c:"Batsman"},{n:"Sakib Hussain",c:"Bowler"}],
-  RR: [{n:"Sanju Samson",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Dhruv Jurel",c:"Wicket-Keeper"},{n:"Yashasvi Jaiswal",c:"Batsman"},{n:"Shimron Hetmyer",c:"Batsman"},{n:"Vaibhav Suryavanshi",c:"Batsman"},{n:"Riyan Parag",c:"All-Rounder"},{n:"Nitish Rana",c:"All-Rounder"},{n:"Shubham Dubey",c:"All-Rounder"},{n:"FA Allen",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Wanindu Hasaranga",c:"All-Rounder"},{n:"Maheesh Theekshana",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Sandeep Sharma",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Kumar Kartikeya",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Akash Madhwal",c:"Bowler"},{n:"Jofra Archer",c:"Bowler"},{n:"Ravindra Jadeja",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Kwena Maphaka",c:"Bowler"},{n:"Nandre Burger",c:"Bowler"},{n:"Donovan Ferreira",c:"Batsman"},{n:"Lhuan-Dre Pretorius",c:"Batsman"},{n:"Yudhvir Singh Charak",c:"Bowler"},{n:"Ravi Bishnoi",c:"Bowler"},{n:"Adam Milne",c:"Bowler"},{n:"Ravi Singh",c:"Bowler"},{n:"Sushant Mishra",c:"Bowler"},{n:"Vignesh Puthur",c:"Bowler"},{n:"Yash Punja",c:"Batsman"},{n:"Aman Rao",c:"Batsman"},{n:"Brijesh Sharma",c:"Batsman"}],
-  GT: [{n:"Anuj Rawat",c:"Wicket-Keeper"},{n:"Kumar Kushagra",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Shubman Gill",c:"Batsman"},{n:"Sai Sudharsan",c:"Batsman"},{n:"Shahrukh Khan",c:"Batsman"},{n:"Rahul Tewatia",c:"All-Rounder"},{n:"Mahipal Lomror",c:"All-Rounder"},{n:"Sherfane Rutherford",c:"All-Rounder"},{n:"Washington Sundar",c:"All-Rounder"},{n:"Nishant Sindhu",c:"All-Rounder"},{n:"Rashid Khan",c:"All-Rounder"},{n:"Arshad Khan",c:"All-Rounder"},{n:"Sai Kishore",c:"All-Rounder"},{n:"Jayant Yadav",c:"All-Rounder"},{n:"Dasun Shanaka",c:"All-Rounder"},{n:"Karim Janat",c:"All-Rounder"},{n:"Kagiso Rabada",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Prasidh Krishna",c:"Bowler"},{n:"Gerald Coetzee",c:"Bowler"},{n:"Gurnoor Brar",c:"Bowler"},{n:"Kulwant Khejroliya",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"Manav Suthar",c:"Bowler"},{n:"B Sai Sudharsan",c:"Batsman"},{n:"R Sai Kishore",c:"Bowler"},{n:"M Shahrukh Khan",c:"Batsman"},{n:"Glenn Phillips",c:"All-Rounder"},{n:"Jason Holder",c:"All-Rounder"},{n:"Tom Banton",c:"Wicket-Keeper"},{n:"Ashok Sharma",c:"Bowler"},{n:"Luke Wood",c:"Bowler"},{n:"Prithvi Raj",c:"Batsman"}],
-  LSG: [{n:"Rishabh Pant",c:"Wicket-Keeper"},{n:"Nicholas Pooran",c:"Wicket-Keeper"},{n:"Aryan Juyal",c:"Wicket-Keeper"},{n:"Matthew Breetzke",c:"Batsman"},{n:"Himmat Singh",c:"Batsman"},{n:"Ayush Badoni",c:"Batsman"},{n:"David Miller",c:"Batsman"},{n:"Mitchell Marsh",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Abdul Samad",c:"All-Rounder"},{n:"Shahbaz Ahmed",c:"All-Rounder"},{n:"Arshin Kulkarni",c:"All-Rounder"},{n:"Rajvardhan Hangargekar",c:"All-Rounder"},{n:"Ravi Bishnoi",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Akash Deep",c:"Bowler"},{n:"Shamar Joseph",c:"Bowler"},{n:"Mayank Yadav",c:"Bowler"},{n:"Mohsin Khan",c:"Bowler"},{n:"Digvesh Singh",c:"Bowler"},{n:"Akash Singh",c:"Bowler"},{n:"Yuvraj Chaudhary",c:"Bowler"},{n:"Prince Yadav",c:"Bowler"},{n:"Manimaran Siddharth",c:"Bowler"},{n:"Mohammed Shami",c:"Bowler"},{n:"Arjun Tendulkar",c:"Bowler"},{n:"Digvesh Rathi",c:"Bowler"},{n:"Josh Inglis",c:"Wicket-Keeper"},{n:"Anrich Nortje",c:"Bowler"},{n:"Wanindu Hasaranga",c:"All-Rounder"},{n:"Akshat Raghuwanshi",c:"Batsman"},{n:"Mukul Choudhary",c:"Bowler"},{n:"Naman Tiwari",c:"Batsman"}],
-  PBKS: [{n:"Prabhsimran Singh",c:"Wicket-Keeper"},{n:"Vishnu Vinod",c:"Wicket-Keeper"},{n:"Shreyas Iyer",c:"Batsman"},{n:"Priyansh Arya",c:"Batsman"},{n:"Nehal Wadhera",c:"Batsman"},{n:"Shashank Singh",c:"All-Rounder"},{n:"Marcus Stoinis",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Aaron Hardie",c:"All-Rounder"},{n:"Azmatullah Omarzai",c:"All-Rounder"},{n:"Suryansh Shedge",c:"All-Rounder"},{n:"Harpreet Brar",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Musheer Khan",c:"All-Rounder"},{n:"Arshdeep Singh",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Harshal Patel",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Xavier Bartlett",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Vijaykumar Vyshak",c:"Bowler"},{n:"Pyla Avinash",c:"Bowler"},{n:"Yash Thakur",c:"Bowler"},{n:"Marco Jansen",c:"All-Rounder"},{n:"Mitch Owen",c:"Batsman"},{n:"Vyshak Vijaykumar",c:"Bowler"},{n:"Harnoor Singh Pannu",c:"Batsman"},{n:"Ben Dwarshuis",c:"Bowler"},{n:"Cooper Connolly",c:"All-Rounder"},{n:"Vishal Nishad",c:"Bowler"},{n:"Pravin Dubey",c:"Bowler"}],
+  RCB: [{n:"Virat Kohli",c:"Batsman"},{n:"Rajat Patidar",c:"Batsman"},{n:"Phil Salt",c:"Wicket-Keeper"},{n:"Devdutt Padikkal",c:"Batsman"},{n:"Jacob Bethell",c:"All-Rounder"},{n:"Liam Livingstone",c:"All-Rounder"},{n:"Tim David",c:"All-Rounder"},{n:"Jitesh Sharma",c:"Wicket-Keeper"},{n:"Krunal Pandya",c:"All-Rounder"},{n:"Cameron Green",c:"All-Rounder"},{n:"Romario Shepherd",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Swapnil Singh",c:"All-Rounder"},{n:"Yash Dayal",c:"Bowler"},{n:"Bhuvneshwar Kumar",c:"Bowler"},{n:"Josh Hazlewood",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Nwelwetsi Rabada",c:"Bowler"},{n:"Suyash Sharma",c:"Bowler"},{n:"Rasikh Dar",c:"Bowler"},{n:"Lungi Ngidi",c:"Bowler"},{n:"Manoj Bhandage",c:"Bowler"},{n:"Abhinandan Singh",c:"Bowler"}],
+  MI: [{n:"Rohit Sharma",c:"Batsman"},{n:"Suryakumar Yadav",c:"Batsman"},{n:"Tilak Varma",c:"Batsman"},{n:"Ryan Rickelton",c:"Wicket-Keeper"},{n:"Robin Minz",c:"Wicket-Keeper"},{n:"Krishnan Shrijith",c:"Wicket-Keeper"},{n:"Hardik Pandya",c:"All-Rounder"},{n:"Will Jacks",c:"All-Rounder"},{n:"Mitchell Santner",c:"All-Rounder"},{n:"Naman Dhir",c:"All-Rounder"},{n:"Raj Angad Bawa",c:"All-Rounder"},{n:"Bevon Jacobs",c:"All-Rounder"},{n:"Arjun Tendulkar",c:"All-Rounder"},{n:"Jasprit Bumrah",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Karn Sharma",c:"Bowler"},{n:"Mujeeb Ur Rahman",c:"Bowler"},{n:"Reece Topley",c:"Bowler"},{n:"Vignesh Puthur",c:"Bowler"},{n:"Ashwani Kumar",c:"Bowler"},{n:"Satyanarayana Raju",c:"Bowler"},{n:"Lizaad Williams",c:"Bowler"}],
+  CSK: [{n:"MS Dhoni",c:"Wicket-Keeper"},{n:"Devon Conway",c:"Wicket-Keeper"},{n:"Urvil Patel",c:"Wicket-Keeper"},{n:"Ruturaj Gaikwad",c:"Batsman"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Shaik Rasheed",c:"Batsman"},{n:"Rachin Ravindra",c:"All-Rounder"},{n:"Shivam Dube",c:"All-Rounder"},{n:"Vijay Shankar",c:"All-Rounder"},{n:"Ravindra Jadeja",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Jamie Overton",c:"All-Rounder"},{n:"RS Hangargekar",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Shardul Thakur",c:"All-Rounder"},{n:"Matheesha Pathirana",c:"Bowler"},{n:"Deepak Chahar",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Mukesh Choudhary",c:"Bowler"},{n:"Noor Ahmad",c:"Bowler"},{n:"Khaleel Ahmed",c:"Bowler"},{n:"Kamlesh Nagarkoti",c:"Bowler"},{n:"Anshul Kamboj",c:"Bowler"},{n:"Nathan Ellis",c:"Bowler"}],
+  KKR: [{n:"Quinton de Kock",c:"Wicket-Keeper"},{n:"Rahmanullah Gurbaz",c:"Wicket-Keeper"},{n:"Luvnith Sisodia",c:"Wicket-Keeper"},{n:"Ajinkya Rahane",c:"Batsman"},{n:"Angkrish Raghuvanshi",c:"Batsman"},{n:"Rinku Singh",c:"Batsman"},{n:"Manish Pandey",c:"Batsman"},{n:"Rovman Powell",c:"All-Rounder"},{n:"Ramandeep Singh",c:"All-Rounder"},{n:"Andre Russell",c:"All-Rounder"},{n:"Moeen Ali",c:"All-Rounder"},{n:"Sunil Narine",c:"All-Rounder"},{n:"Venkatesh Iyer",c:"All-Rounder"},{n:"Anukul Roy",c:"All-Rounder"},{n:"Shivam Shukla",c:"All-Rounder"},{n:"Vaibhav Arora",c:"Bowler"},{n:"Harshit Rana",c:"Bowler"},{n:"Anrich Nortje",c:"Bowler"},{n:"Spencer Johnson",c:"Bowler"},{n:"Mayank Markande",c:"Bowler"},{n:"Chetan Sakariya",c:"Bowler"}],
+  DC: [{n:"KL Rahul",c:"Wicket-Keeper"},{n:"Abishek Porel",c:"Wicket-Keeper"},{n:"Harry Brook",c:"Batsman"},{n:"Faf du Plessis",c:"Batsman"},{n:"Jake Fraser-McGurk",c:"Batsman"},{n:"Karun Nair",c:"Batsman"},{n:"Sameer Rizvi",c:"Batsman"},{n:"Axar Patel",c:"All-Rounder"},{n:"Triston Stubbs",c:"All-Rounder"},{n:"Ashutosh Sharma",c:"All-Rounder"},{n:"Donovan Ferreira",c:"All-Rounder"},{n:"Tripurana Vijay",c:"All-Rounder"},{n:"Kuldeep Yadav",c:"Bowler"},{n:"Mitchell Starc",c:"Bowler"},{n:"Mukesh Kumar",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"T Natarajan",c:"Bowler"},{n:"Mohit Sharma",c:"Bowler"},{n:"Darshan Nalkande",c:"Bowler"},{n:"Vipraj Nigam",c:"Bowler"}],
+  SRH: [{n:"Heinrich Klaasen",c:"Wicket-Keeper"},{n:"Ishan Kishan",c:"Wicket-Keeper"},{n:"Travis Head",c:"Batsman"},{n:"Rahul Tripathi",c:"Batsman"},{n:"Atharva Taide",c:"Batsman"},{n:"Anmolpreet Singh",c:"Batsman"},{n:"Sachin Baby",c:"Batsman"},{n:"Pat Cummins",c:"All-Rounder"},{n:"Abhishek Sharma",c:"All-Rounder"},{n:"Nitish Kumar Reddy",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Wiaan Mulder",c:"All-Rounder"},{n:"Harshal Patel",c:"Bowler"},{n:"Adam Zampa",c:"Bowler"},{n:"Jaydev Unadkat",c:"Bowler"},{n:"Brydon Carse",c:"Bowler"},{n:"Raz Janat",c:"Bowler"},{n:"Akeal Hosein",c:"Bowler"},{n:"Simarjeet Singh",c:"Bowler"},{n:"Zeeshan Ansari",c:"Bowler"}],
+  RR: [{n:"Sanju Samson",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Dhruv Jurel",c:"Wicket-Keeper"},{n:"Yashasvi Jaiswal",c:"Batsman"},{n:"Shimron Hetmyer",c:"Batsman"},{n:"Vaibhav Suryavanshi",c:"Batsman"},{n:"Riyan Parag",c:"All-Rounder"},{n:"Nitish Rana",c:"All-Rounder"},{n:"Shubham Dubey",c:"All-Rounder"},{n:"FA Allen",c:"All-Rounder"},{n:"Ravichandran Ashwin",c:"All-Rounder"},{n:"Wanindu Hasaranga",c:"All-Rounder"},{n:"Maheesh Theekshana",c:"Bowler"},{n:"Trent Boult",c:"Bowler"},{n:"Sandeep Sharma",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Kumar Kartikeya",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Tushar Deshpande",c:"Bowler"},{n:"Akash Madhwal",c:"Bowler"}],
+  GT: [{n:"Anuj Rawat",c:"Wicket-Keeper"},{n:"Kumar Kushagra",c:"Wicket-Keeper"},{n:"Jos Buttler",c:"Wicket-Keeper"},{n:"Shubman Gill",c:"Batsman"},{n:"Sai Sudharsan",c:"Batsman"},{n:"Shahrukh Khan",c:"Batsman"},{n:"Rahul Tewatia",c:"All-Rounder"},{n:"Mahipal Lomror",c:"All-Rounder"},{n:"Sherfane Rutherford",c:"All-Rounder"},{n:"Washington Sundar",c:"All-Rounder"},{n:"Nishant Sindhu",c:"All-Rounder"},{n:"Rashid Khan",c:"All-Rounder"},{n:"Arshad Khan",c:"All-Rounder"},{n:"Sai Kishore",c:"All-Rounder"},{n:"Jayant Yadav",c:"All-Rounder"},{n:"Dasun Shanaka",c:"All-Rounder"},{n:"Karim Janat",c:"All-Rounder"},{n:"Kagiso Rabada",c:"Bowler"},{n:"Mohammed Siraj",c:"Bowler"},{n:"Prasidh Krishna",c:"Bowler"},{n:"Gerald Coetzee",c:"Bowler"},{n:"Gurnoor Brar",c:"Bowler"},{n:"Kulwant Khejroliya",c:"Bowler"},{n:"Ishant Sharma",c:"Bowler"},{n:"Manav Suthar",c:"Bowler"}],
+  LSG: [{n:"Rishabh Pant",c:"Wicket-Keeper"},{n:"Nicholas Pooran",c:"Wicket-Keeper"},{n:"Aryan Juyal",c:"Wicket-Keeper"},{n:"Matthew Breetzke",c:"Batsman"},{n:"Himmat Singh",c:"Batsman"},{n:"Ayush Badoni",c:"Batsman"},{n:"David Miller",c:"Batsman"},{n:"Mitchell Marsh",c:"All-Rounder"},{n:"Aiden Markram",c:"All-Rounder"},{n:"Abdul Samad",c:"All-Rounder"},{n:"Shahbaz Ahmed",c:"All-Rounder"},{n:"Arshin Kulkarni",c:"All-Rounder"},{n:"Rajvardhan Hangargekar",c:"All-Rounder"},{n:"Ravi Bishnoi",c:"Bowler"},{n:"Avesh Khan",c:"Bowler"},{n:"Akash Deep",c:"Bowler"},{n:"Shamar Joseph",c:"Bowler"},{n:"Mayank Yadav",c:"Bowler"},{n:"Mohsin Khan",c:"Bowler"},{n:"Digvesh Singh",c:"Bowler"},{n:"Akash Singh",c:"Bowler"},{n:"Yuvraj Chaudhary",c:"Bowler"},{n:"Prince Yadav",c:"Bowler"},{n:"Manimaran Siddharth",c:"Bowler"}],
+  PBKS: [{n:"Prabhsimran Singh",c:"Wicket-Keeper"},{n:"Vishnu Vinod",c:"Wicket-Keeper"},{n:"Shreyas Iyer",c:"Batsman"},{n:"Priyansh Arya",c:"Batsman"},{n:"Nehal Wadhera",c:"Batsman"},{n:"Shashank Singh",c:"All-Rounder"},{n:"Marcus Stoinis",c:"All-Rounder"},{n:"Glenn Maxwell",c:"All-Rounder"},{n:"Aaron Hardie",c:"All-Rounder"},{n:"Azmatullah Omarzai",c:"All-Rounder"},{n:"Suryansh Shedge",c:"All-Rounder"},{n:"Harpreet Brar",c:"All-Rounder"},{n:"Sam Curran",c:"All-Rounder"},{n:"Musheer Khan",c:"All-Rounder"},{n:"Arshdeep Singh",c:"Bowler"},{n:"Yuzvendra Chahal",c:"Bowler"},{n:"Harshal Patel",c:"Bowler"},{n:"Lockie Ferguson",c:"Bowler"},{n:"Xavier Bartlett",c:"Bowler"},{n:"Kuldeep Sen",c:"Bowler"},{n:"Vijaykumar Vyshak",c:"Bowler"},{n:"Pyla Avinash",c:"Bowler"},{n:"Yash Thakur",c:"Bowler"}],
 };
 // @@END_SQUADS@@
 
 // @@BEGIN_MATCHES@@
 const MATCHES = [
-  {id:"TestMatch01",name:"GT vs CSK",team1:"GT",team2:"CSK",date:"2026-03-22",time:"19:30",status:"Pending"},
-  {id:"TestMatch02",name:"GT vs CSK",team1:"GT",team2:"CSK",date:"2026-03-23",time:"19:30",status:"Pending"},
-  {id:"TestMatch03",name:"GT vs CSK",team1:"GT",team2:"CSK",date:"2026-03-24",time:"19:30",status:"Pending"},
-  {id:"TestMatch04",name:"GT vs CSK",team1:"GT",team2:"CSK",date:"2026-03-25",time:"19:30",status:"Pending"},
-  {id:"IPL26_M001",name:"RCB vs SRH",team1:"RCB",team2:"SRH",date:"2026-03-28",time:"19:30",status:"Pending"},
-  {id:"IPL26_M002",name:"MI vs KKR",team1:"MI",team2:"KKR",date:"2026-03-29",time:"19:30",status:"Pending"},
-  {id:"IPL26_M003",name:"RR vs CSK",team1:"RR",team2:"CSK",date:"2026-03-30",time:"19:30",status:"Pending"},
-  {id:"IPL26_M004",name:"PBKS vs GT",team1:"PBKS",team2:"GT",date:"2026-03-31",time:"19:30",status:"Pending"},
-  {id:"IPL26_M005",name:"LSG vs DC",team1:"LSG",team2:"DC",date:"2026-04-01",time:"19:30",status:"Pending"},
-  {id:"IPL26_M006",name:"KKR vs SRH",team1:"KKR",team2:"SRH",date:"2026-04-02",time:"19:30",status:"Pending"},
-  {id:"IPL26_M007",name:"CSK vs PBKS",team1:"CSK",team2:"PBKS",date:"2026-04-03",time:"19:30",status:"Pending"},
-  {id:"IPL26_M008",name:"DC vs MI",team1:"DC",team2:"MI",date:"2026-04-04",time:"15:30",status:"Pending"},
-  {id:"IPL26_M009",name:"GT vs RR",team1:"GT",team2:"RR",date:"2026-04-04",time:"19:30",status:"Pending"},
-  {id:"IPL26_M010",name:"SRH vs LSG",team1:"SRH",team2:"LSG",date:"2026-04-05",time:"19:30",status:"Pending"},
-  {id:"IPL26_M011",name:"RCB vs CSK",team1:"RCB",team2:"CSK",date:"2026-04-06",time:"19:30",status:"Pending"},
-  {id:"IPL26_M012",name:"KKR vs PBKS",team1:"KKR",team2:"PBKS",date:"2026-04-07",time:"19:30",status:"Pending"},
-  {id:"IPL26_M013",name:"RR vs MI",team1:"RR",team2:"MI",date:"2026-04-08",time:"19:30",status:"Pending"},
-  {id:"IPL26_M014",name:"DC vs GT",team1:"DC",team2:"GT",date:"2026-04-11",time:"15:30",status:"Pending"},
-  {id:"IPL26_M015",name:"KKR vs LSG",team1:"KKR",team2:"LSG",date:"2026-04-11",time:"19:30",status:"Pending"},
-  {id:"IPL26_M016",name:"RR vs RCB",team1:"RR",team2:"RCB",date:"2026-04-12",time:"15:30",status:"Pending"},
-  {id:"IPL26_M017",name:"PBKS vs SRH",team1:"PBKS",team2:"SRH",date:"2026-04-12",time:"19:30",status:"Pending"},
-  {id:"IPL26_M018",name:"CSK vs DC",team1:"CSK",team2:"DC",date:"2026-04-13",time:"19:30",status:"Pending"},
-  {id:"IPL26_M019",name:"LSG vs GT",team1:"LSG",team2:"GT",date:"2026-04-14",time:"15:30",status:"Pending"},
-  {id:"IPL26_M020",name:"MI vs RCB",team1:"MI",team2:"RCB",date:"2026-04-14",time:"19:30",status:"Pending"},
-  {id:"IPL26_M021",name:"SRH vs MI",team1:"SRH",team2:"MI",date:"2026-04-15",time:"19:30",status:"Pending"},
-  {id:"IPL26_M022",name:"RCB vs KKR",team1:"RCB",team2:"KKR",date:"2026-04-16",time:"19:30",status:"Pending"},
-  {id:"IPL26_M023",name:"GT vs CSK",team1:"GT",team2:"CSK",date:"2026-04-17",time:"19:30",status:"Pending"},
-  {id:"IPL26_M024",name:"LSG vs PBKS",team1:"LSG",team2:"PBKS",date:"2026-04-18",time:"15:30",status:"Pending"},
-  {id:"IPL26_M025",name:"DC vs RR",team1:"DC",team2:"RR",date:"2026-04-18",time:"19:30",status:"Pending"},
-  {id:"IPL26_M026",name:"MI vs SRH",team1:"MI",team2:"SRH",date:"2026-04-19",time:"15:30",status:"Pending"},
-  {id:"IPL26_M027",name:"KKR vs RCB",team1:"KKR",team2:"RCB",date:"2026-04-19",time:"19:30",status:"Pending"},
-  {id:"IPL26_M028",name:"CSK vs GT",team1:"CSK",team2:"GT",date:"2026-04-20",time:"19:30",status:"Pending"},
-  {id:"IPL26_M029",name:"PBKS vs LSG",team1:"PBKS",team2:"LSG",date:"2026-04-21",time:"19:30",status:"Pending"},
-  {id:"IPL26_M030",name:"RR vs DC",team1:"RR",team2:"DC",date:"2026-04-22",time:"19:30",status:"Pending"},
-  {id:"IPL26_M031",name:"SRH vs KKR",team1:"SRH",team2:"KKR",date:"2026-04-23",time:"19:30",status:"Pending"},
-  {id:"IPL26_M032",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-04-24",time:"19:30",status:"Pending"},
-  {id:"IPL26_M033",name:"GT vs MI",team1:"GT",team2:"MI",date:"2026-04-25",time:"15:30",status:"Pending"},
-  {id:"IPL26_M034",name:"LSG vs RR",team1:"LSG",team2:"RR",date:"2026-04-25",time:"19:30",status:"Pending"},
-  {id:"IPL26_M035",name:"DC vs CSK",team1:"DC",team2:"CSK",date:"2026-04-26",time:"15:30",status:"Pending"},
-  {id:"IPL26_M036",name:"KKR vs SRH",team1:"KKR",team2:"SRH",date:"2026-04-26",time:"19:30",status:"Pending"},
-  {id:"IPL26_M037",name:"MI vs PBKS",team1:"MI",team2:"PBKS",date:"2026-04-27",time:"19:30",status:"Pending"},
-  {id:"IPL26_M038",name:"RR vs GT",team1:"RR",team2:"GT",date:"2026-04-28",time:"19:30",status:"Pending"},
-  {id:"IPL26_M039",name:"CSK vs LSG",team1:"CSK",team2:"LSG",date:"2026-04-29",time:"19:30",status:"Pending"},
-  {id:"IPL26_M040",name:"RCB vs DC",team1:"RCB",team2:"DC",date:"2026-04-30",time:"19:30",status:"Pending"},
-  {id:"IPL26_M041",name:"SRH vs PBKS",team1:"SRH",team2:"PBKS",date:"2026-05-01",time:"19:30",status:"Pending"},
-  {id:"IPL26_M042",name:"GT vs KKR",team1:"GT",team2:"KKR",date:"2026-05-02",time:"15:30",status:"Pending"},
-  {id:"IPL26_M043",name:"LSG vs MI",team1:"LSG",team2:"MI",date:"2026-05-02",time:"19:30",status:"Pending"},
-  {id:"IPL26_M044",name:"DC vs SRH",team1:"DC",team2:"SRH",date:"2026-05-03",time:"19:30",status:"Pending"},
-  {id:"IPL26_M045",name:"RR vs PBKS",team1:"RR",team2:"PBKS",date:"2026-05-04",time:"19:30",status:"Pending"},
-  {id:"IPL26_M046",name:"KKR vs GT",team1:"KKR",team2:"GT",date:"2026-05-05",time:"19:30",status:"Pending"},
-  {id:"IPL26_M047",name:"CSK vs RCB",team1:"CSK",team2:"RCB",date:"2026-05-06",time:"19:30",status:"Pending"},
-  {id:"IPL26_M048",name:"MI vs RR",team1:"MI",team2:"RR",date:"2026-05-07",time:"19:30",status:"Pending"},
-  {id:"IPL26_M049",name:"PBKS vs DC",team1:"PBKS",team2:"DC",date:"2026-05-08",time:"19:30",status:"Pending"},
-  {id:"IPL26_M050",name:"SRH vs GT",team1:"SRH",team2:"GT",date:"2026-05-09",time:"15:30",status:"Pending"},
-  {id:"IPL26_M051",name:"LSG vs KKR",team1:"LSG",team2:"KKR",date:"2026-05-09",time:"19:30",status:"Pending"},
-  {id:"IPL26_M052",name:"RCB vs RR",team1:"RCB",team2:"RR",date:"2026-05-10",time:"19:30",status:"Pending"},
-  {id:"IPL26_M053",name:"DC vs MI",team1:"DC",team2:"MI",date:"2026-05-11",time:"19:30",status:"Pending"},
-  {id:"IPL26_M054",name:"GT vs PBKS",team1:"GT",team2:"PBKS",date:"2026-05-12",time:"19:30",status:"Pending"},
-  {id:"IPL26_M055",name:"CSK vs SRH",team1:"CSK",team2:"SRH",date:"2026-05-13",time:"19:30",status:"Pending"},
-  {id:"IPL26_M056",name:"KKR vs RCB",team1:"KKR",team2:"RCB",date:"2026-05-14",time:"19:30",status:"Pending"},
-  {id:"IPL26_M057",name:"RR vs LSG",team1:"RR",team2:"LSG",date:"2026-05-15",time:"19:30",status:"Pending"},
-  {id:"IPL26_M058",name:"MI vs DC",team1:"MI",team2:"DC",date:"2026-05-16",time:"15:30",status:"Pending"},
-  {id:"IPL26_M059",name:"PBKS vs CSK",team1:"PBKS",team2:"CSK",date:"2026-05-16",time:"19:30",status:"Pending"},
-  {id:"IPL26_M060",name:"SRH vs RCB",team1:"SRH",team2:"RCB",date:"2026-05-17",time:"19:30",status:"Pending"},
-  {id:"IPL26_M061",name:"GT vs LSG",team1:"GT",team2:"LSG",date:"2026-05-18",time:"19:30",status:"Pending"},
-  {id:"IPL26_M062",name:"KKR vs RR",team1:"KKR",team2:"RR",date:"2026-05-19",time:"19:30",status:"Pending"},
-  {id:"IPL26_M063",name:"DC vs PBKS",team1:"DC",team2:"PBKS",date:"2026-05-20",time:"19:30",status:"Pending"},
-  {id:"IPL26_M064",name:"MI vs CSK",team1:"MI",team2:"CSK",date:"2026-05-21",time:"19:30",status:"Pending"},
-  {id:"IPL26_M065",name:"RCB vs GT",team1:"RCB",team2:"GT",date:"2026-05-22",time:"19:30",status:"Pending"},
-  {id:"IPL26_M066",name:"LSG vs SRH",team1:"LSG",team2:"SRH",date:"2026-05-23",time:"15:30",status:"Pending"},
-  {id:"IPL26_M067",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-05-23",time:"19:30",status:"Pending"},
-  {id:"IPL26_M068",name:"PBKS vs MI",team1:"PBKS",team2:"MI",date:"2026-05-24",time:"15:30",status:"Pending"},
-  {id:"IPL26_M069",name:"CSK vs RCB",team1:"CSK",team2:"RCB",date:"2026-05-24",time:"19:30",status:"Pending"},
-  {id:"IPL26_M070",name:"SRH vs DC",team1:"SRH",team2:"DC",date:"2026-05-25",time:"15:30",status:"Pending"},
-  {id:"IPL26_M071",name:"GT vs KKR",team1:"GT",team2:"KKR",date:"2026-05-25",time:"19:30",status:"Pending"},
-  {id:"IPL26_M072",name:"LSG vs RR",team1:"LSG",team2:"RR",date:"2026-05-26",time:"15:30",status:"Pending"},
-  {id:"IPL26_M073",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-05-26",time:"19:30",status:"Pending"},
-  {id:"IPL26_M074",name:"MI vs SRH",team1:"MI",team2:"SRH",date:"2026-05-27",time:"15:30",status:"Pending"},
-  {id:"IPL26_M075",name:"CSK vs KKR",team1:"CSK",team2:"KKR",date:"2026-05-27",time:"19:30",status:"Pending"},
-  {id:"IPL26_M076",name:"DC vs GT",team1:"DC",team2:"GT",date:"2026-05-28",time:"15:30",status:"Pending"},
-  {id:"IPL26_M077",name:"PBKS vs RR",team1:"PBKS",team2:"RR",date:"2026-05-28",time:"19:30",status:"Pending"},
-  {id:"IPL26_M078",name:"LSG vs RCB",team1:"LSG",team2:"RCB",date:"2026-05-29",time:"15:30",status:"Pending"},
-  {id:"IPL26_M079",name:"SRH vs CSK",team1:"SRH",team2:"CSK",date:"2026-05-29",time:"19:30",status:"Pending"},
-  {id:"IPL26_M080",name:"KKR vs DC",team1:"KKR",team2:"DC",date:"2026-05-30",time:"15:30",status:"Pending"},
-  {id:"IPL26_M081",name:"RR vs MI",team1:"RR",team2:"MI",date:"2026-05-30",time:"19:30",status:"Pending"}
+  {id:"TestMatch1",name:"RCB vs PBKS",team1:"RCB",team2:"PBKS",date:"2026-03-15",time:"13:30",status:"Complete"},
+  {id:"TestMatch2",name:"CSK vs MI",team1:"CSK",team2:"MI",date:"2026-03-16",time:"12:30",status:"Complete"},
+  {id:"TestMatch3",name:"RR vs KKR",team1:"RR",team2:"KKR",date:"2026-03-17",time:"14:00",status:"Complete"},
+  {id:"Match1",name:"RCB vs SRH",team1:"RCB",team2:"SRH",date:"2026-03-28",time:"19:30",status:"Pending"},
+  {id:"Match2",name:"MI vs KKR",team1:"MI",team2:"KKR",date:"2026-03-29",time:"19:30",status:"Pending"},
+  {id:"Match3",name:"RR vs CSK",team1:"RR",team2:"CSK",date:"2026-03-30",time:"19:30",status:"Pending"},
+  {id:"Match4",name:"PBKS vs GT",team1:"PBKS",team2:"GT",date:"2026-03-31",time:"19:30",status:"Pending"},
+  {id:"Match5",name:"LSG vs DC",team1:"LSG",team2:"DC",date:"2026-04-01",time:"19:30",status:"Pending"},
+  {id:"Match6",name:"KKR vs SRH",team1:"KKR",team2:"SRH",date:"2026-04-02",time:"19:30",status:"Pending"},
+  {id:"Match7",name:"CSK vs PBKS",team1:"CSK",team2:"PBKS",date:"2026-04-03",time:"19:30",status:"Pending"},
+  {id:"Match8",name:"DC vs MI",team1:"DC",team2:"MI",date:"2026-04-04",time:"15:30",status:"Pending"},
+  {id:"Match9",name:"GT vs RR",team1:"GT",team2:"RR",date:"2026-04-04",time:"19:30",status:"Pending"},
+  {id:"Match10",name:"SRH vs LSG",team1:"SRH",team2:"LSG",date:"2026-04-05",time:"15:30",status:"Pending"},
+  {id:"Match11",name:"RCB vs CSK",team1:"RCB",team2:"CSK",date:"2026-04-05",time:"19:30",status:"Pending"},
+  {id:"Match12",name:"KKR vs PBKS",team1:"KKR",team2:"PBKS",date:"2026-04-06",time:"19:30",status:"Pending"},
+  {id:"Match13",name:"RR vs MI",team1:"RR",team2:"MI",date:"2026-04-07",time:"19:30",status:"Pending"},
+  {id:"Match14",name:"DC vs GT",team1:"DC",team2:"GT",date:"2026-04-08",time:"19:30",status:"Pending"},
+  {id:"Match15",name:"KKR vs LSG",team1:"KKR",team2:"LSG",date:"2026-04-09",time:"19:30",status:"Pending"},
+  {id:"Match16",name:"RR vs RCB",team1:"RR",team2:"RCB",date:"2026-04-10",time:"19:30",status:"Pending"},
+  {id:"Match17",name:"PBKS vs SRH",team1:"PBKS",team2:"SRH",date:"2026-04-11",time:"15:30",status:"Pending"},
+  {id:"Match18",name:"CSK vs DC",team1:"CSK",team2:"DC",date:"2026-04-11",time:"19:30",status:"Pending"},
+  {id:"Match19",name:"LSG vs GT",team1:"LSG",team2:"GT",date:"2026-04-12",time:"15:30",status:"Pending"},
+  {id:"Match20",name:"MI vs RCB",team1:"MI",team2:"RCB",date:"2026-04-12",time:"19:30",status:"Pending"},
+  {id:"Match21",name:"LSG vs SRH",team1:"LSG",team2:"SRH",date:"2026-04-17",time:"19:30",status:"Pending"},
+  {id:"Match22",name:"MI vs DC",team1:"MI",team2:"DC",date:"2026-04-18",time:"15:30",status:"Pending"},
+  {id:"Match23",name:"RCB vs CSK",team1:"RCB",team2:"CSK",date:"2026-04-18",time:"19:30",status:"Pending"},
+  {id:"Match24",name:"GT vs RR",team1:"GT",team2:"RR",date:"2026-04-19",time:"15:30",status:"Pending"},
+  {id:"Match25",name:"KKR vs PBKS",team1:"KKR",team2:"PBKS",date:"2026-04-19",time:"19:30",status:"Pending"},
+  {id:"Match26",name:"DC vs LSG",team1:"DC",team2:"LSG",date:"2026-04-20",time:"19:30",status:"Pending"},
+  {id:"Match27",name:"CSK vs SRH",team1:"CSK",team2:"SRH",date:"2026-04-21",time:"19:30",status:"Pending"},
+  {id:"Match28",name:"RR vs MI",team1:"RR",team2:"MI",date:"2026-04-22",time:"19:30",status:"Pending"},
+  {id:"Match29",name:"PBKS vs RCB",team1:"PBKS",team2:"RCB",date:"2026-04-23",time:"19:30",status:"Pending"},
+  {id:"Match30",name:"KKR vs GT",team1:"KKR",team2:"GT",date:"2026-04-24",time:"19:30",status:"Pending"}
 ];
 // @@END_MATCHES@@
 
@@ -1517,5 +1798,21 @@ function submitRegistration() {
 // ─── START ───────────────────────────────────────────────────────────────────
 init();
 </script>
+
+  <!-- WHATSAPP SHARE BUTTON — fixed bottom-right -->
+  <div class="wa-share-wrap">
+    <div class="wa-share-tooltip">
+      Tap to share the league invite with your friends on WhatsApp 🏏
+    </div>
+    <a class="wa-share-btn"
+       href="https://wa.me/?text=%F0%9F%8F%8F%20%2AIPL%20Fantasy%20League%202026%20is%20LIVE%21%2A%20%F0%9F%8F%86%0A%0AThink%20you%20can%20pick%20the%20best%20XI%3F%20Join%20our%20private%20fantasy%20cricket%20league%20and%20prove%20it%21%20%F0%9F%94%A5%0A%0A%E2%9C%85%20Pick%2011%20players%20for%20each%20match%0A%E2%9C%85%20Predict%20the%20winning%20team%0A%E2%9C%85%20Earn%20points%20for%20every%20run%2C%20wicket%20%26%20catch%0A%E2%9C%85%20Compete%20with%20friends%20all%20season%0A%0A%F0%9F%91%89%20Play%20here%3A%20https%3A//sgipl2026-lgtm.github.io/selection/%0A%0A%F0%9F%93%A9%20Contact%20the%20admin%20to%20get%20your%20personal%20login%20PIN.%0A%0A_IPL%202026%20%C2%B7%20Private%20League_"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="Share IPL Fantasy League on WhatsApp">
+      <span class="wa-icon">💬</span>
+      Invite Friends
+    </a>
+  </div>
+
 </body>
 </html>
