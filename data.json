@@ -1041,6 +1041,15 @@
       "status": "Pending"
     },
     {
+      "id": "IPL25_TEST3",
+      "name": "GT vs CSK",
+      "team1": "GT",
+      "team2": "CSK",
+      "date": "2026-03-25",
+      "time": "19:30",
+      "status": "Pending"
+    },
+    {
       "id": "IPL25_TEST4",
       "name": "RCB vs PBKS",
       "team1": "RCB",
@@ -1659,15 +1668,6 @@
       "team2": "MI",
       "date": "2026-05-24",
       "time": "15:30",
-      "status": "Pending"
-    },
-    {
-      "id": "IPL25_TEST3",
-      "name": "GT vs CSK",
-      "team1": "GT",
-      "team2": "CSK",
-      "date": "2026-05-24",
-      "time": "19:30",
       "status": "Pending"
     },
     {
