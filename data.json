@@ -1413,7 +1413,7 @@
       "team2": "RCB",
       "date": "2025-03-22",
       "time": "19:30",
-      "status": "Pending"
+      "status": "Complete"
     },
     {
       "id": "IPL25_TEST2",
@@ -1422,7 +1422,7 @@
       "team2": "MI",
       "date": "2025-03-23",
       "time": "19:30",
-      "status": "Pending"
+      "status": "Complete"
     },
     {
       "id": "IPL25_TEST3",
@@ -1431,7 +1431,7 @@
       "team2": "CSK",
       "date": "2025-05-25",
       "time": "19:30",
-      "status": "Pending"
+      "status": "Complete"
     },
     {
       "id": "IPL25_TEST4",
@@ -1440,7 +1440,7 @@
       "team2": "PBKS",
       "date": "2025-06-03",
       "time": "19:30",
-      "status": "Pending"
+      "status": "Complete"
     },
     {
       "id": "IPL26_M001",
