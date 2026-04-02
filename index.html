@@ -1918,7 +1918,16 @@ async function openDashboard() {
     // Pick the latest HTML file (sort descending by filename)
     const htmlFiles = files
       .filter(f => f.name.endsWith('.html') || f.name.endsWith('.htm'))
-      .sort((a, b) => b.name.localeCompare(a.name));
+      .sort((a, b) => {
+  // Extract YYYY-MM-DD prefix if present, otherwise use epoch 0 (sorts last)
+  const dateRe = /^(\d{4}-\d{2}-\d{2})/;
+  const da = a.name.match(dateRe);
+  const db = b.name.match(dateRe);
+  if (da && db) return db[1].localeCompare(da[1]); // both dated — newest first
+  if (da) return -1;  // only a has date — a wins
+  if (db) return 1;   // only b has date — b wins
+  return b.name.localeCompare(a.name); // neither dated — plain alpha desc
+});
 
     if (htmlFiles.length === 0) {
       const others = files.map(f => f.name).join(', ') || '(empty)';
